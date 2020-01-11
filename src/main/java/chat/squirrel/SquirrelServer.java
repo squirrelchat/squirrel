@@ -20,8 +20,8 @@ public final class SquirrelServer {
     private List<SquirrelModule> modules;
 
     public static void main(String[] args) {
-	SquirrelServer main = new SquirrelServer();
-	main.start();
+        SquirrelServer main = new SquirrelServer();
+        main.start();
     }
 
     /**
@@ -29,20 +29,20 @@ public final class SquirrelServer {
      * @return the vertx Router used by the server
      */
     public Router getRouter() {
-	return router;
+        return router;
     }
 
     /**
      * Initialize various components for the server
      */
     private SquirrelServer() {
-	LOG.info("Initializing");
-	vertx = Vertx.factory.vertx();
-	server = vertx.createHttpServer();
-	router = new RouterImpl(vertx);
-	server.requestHandler(router);
-	registerModules();
-	setupModules();
+        LOG.info("Initializing");
+        vertx = Vertx.factory.vertx();
+        server = vertx.createHttpServer();
+        router = new RouterImpl(vertx);
+        server.requestHandler(router);
+        registerModules();
+        setupModules();
 
     }
 
@@ -50,22 +50,22 @@ public final class SquirrelServer {
      * Actually starts the server and other components
      */
     private void start() {
-	LOG.info("Starting server");
-	server.listen(8080);
+        LOG.info("Starting server");
+        server.listen(8080);
     }
 
     /**
      * @TODO: make this better
      */
     private void registerModules() {
-	modules = new ArrayList<SquirrelModule>();
-	modules.add(new ModulePing(this));
+        modules = new ArrayList<SquirrelModule>();
+        modules.add(new ModulePing(this));
     }
 
     private void setupModules() {
-	for (SquirrelModule m : modules) {
-	    LOG.debug("Setting up module " + m.getClass().getCanonicalName());
-	    m.setupRoutes();
-	}
+        for (SquirrelModule m : modules) {
+            LOG.debug("Setting up module " + m.getClass().getCanonicalName());
+            m.setupRoutes();
+        }
     }
 }

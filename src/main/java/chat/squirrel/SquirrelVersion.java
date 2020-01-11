@@ -9,12 +9,12 @@ public class SquirrelVersion {
     public static final String COMMIT;
 
     static {
-	VERSION_MAJOR = "@VERSION_MAJOR@";
-	VERSION_MINOR = "@VERSION_MINOR@";
-	VERSION_REVISION = "@VERSION_REVISION@";
-	COMMIT = "@COMMIT@";
+        VERSION_MAJOR = "@VERSION_MAJOR@";
+        VERSION_MINOR = "@VERSION_MINOR@";
+        VERSION_REVISION = "@VERSION_REVISION@";
+        COMMIT = "@COMMIT@";
 
-	VERSION = VERSION_MAJOR.startsWith("@") ? "indev"
-		: VERSION_MAJOR + "." + VERSION_MINOR + "." + VERSION_REVISION;
+        VERSION = VERSION_MAJOR.startsWith("@") ? "indev"
+                : VERSION_MAJOR + "." + VERSION_MINOR + "." + VERSION_REVISION;
     }
 }

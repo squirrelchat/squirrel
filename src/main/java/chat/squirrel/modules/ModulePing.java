@@ -7,14 +7,14 @@ import chat.squirrel.SquirrelVersion;
 public class ModulePing extends SquirrelModule {
 
     public ModulePing(SquirrelServer mainInstance) {
-	super(mainInstance);
+        super(mainInstance);
     }
 
     @Override
     public void setupRoutes() {
-	mainInstance.getRouter().get("/squirrelPing").handler(r -> {
-	    r.response().end("Squirrel " + SquirrelVersion.VERSION);
-	});
+        mainInstance.getRouter().get("/squirrelPing").handler(r -> {
+            r.response().end("Squirrel " + SquirrelVersion.VERSION);
+        });
     }
 
 }

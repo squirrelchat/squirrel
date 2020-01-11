@@ -4,18 +4,18 @@ public class SquirrelServerInfo {
     private String orgName, srvDescription;
 
     public String getOrgName() {
-	return orgName;
+        return orgName;
     }
 
     public void setOrgName(String orgName) {
-	this.orgName = orgName;
+        this.orgName = orgName;
     }
 
     public String getSrvDescription() {
-	return srvDescription;
+        return srvDescription;
     }
 
     public void setSrvDescription(String srvDescription) {
-	this.srvDescription = srvDescription;
+        this.srvDescription = srvDescription;
     }
 }
