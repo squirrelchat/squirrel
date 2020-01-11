@@ -1,0 +1,20 @@
+# JetBrains stuff
+.idea
+*.iml
+
+# Gradle
+.gradle
+build
+out
+
+# vertx
+.vertx
+
+# Stuff
+*.nogit.*
+*.nogit/
+
+# Eclipse bs
+/.settings/
+.project
+.classpath
