@@ -25,19 +25,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.modules;
+package chat.squirrel.core;
 
-import chat.squirrel.Version;
-import io.vertx.core.http.HttpMethod;
-import io.vertx.ext.web.RoutingContext;
+import chat.squirrel.modules.AbstractModule;
+import chat.squirrel.modules.ModulePing;
 
-public class ModulePing extends AbstractModule {
-    @Override
-    public void initialize() {
-        this.registerRoute(HttpMethod.GET, "/squirrelPing", this::ping);
+import java.util.HashMap;
+import java.util.Map;
+
+public class ModuleManager {
+    private static final Map<String, AbstractModule> modules;
+
+    public void loadModules () {
+        modules.forEach((c, m) -> {
+            m.initialize();
+            // @todo: don't enable some based on settings
+            m.enable();
+        });
     }
 
-    private void ping(RoutingContext ctx) {
-        ctx.response().end("Squirrel " + Version.VERSION);
+    public void loadModule(String mod) {
+        modules.get(mod).enable();
+    }
+
+    public void unloadModule(String mod) {
+        modules.get(mod).disable();
+    }
+
+    static {
+        modules = new HashMap<>();
+        // @todo: automate this shit
+        modules.put(ModulePing.class.getCanonicalName(), new ModulePing());
     }
 }

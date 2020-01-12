@@ -27,17 +27,29 @@
 
 package chat.squirrel.modules;
 
-import chat.squirrel.Version;
+import chat.squirrel.Squirrel;
+import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.ext.web.Route;
 import io.vertx.ext.web.RoutingContext;
 
-public class ModulePing extends AbstractModule {
-    @Override
-    public void initialize() {
-        this.registerRoute(HttpMethod.GET, "/squirrelPing", this::ping);
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class AbstractModule {
+    private final List<Route> routes = new ArrayList<>();
+
+    public void registerRoute(HttpMethod method, String path, Handler<RoutingContext> handler) {
+        routes.add(Squirrel.getInstance().getRouter().route(method, path).handler(handler).disable());
     }
 
-    private void ping(RoutingContext ctx) {
-        ctx.response().end("Squirrel " + Version.VERSION);
+    public void enable() {
+        routes.forEach(Route::enable);
     }
+
+    public void disable() {
+        routes.forEach(Route::disable);
+    }
+
+    public abstract void initialize();
 }

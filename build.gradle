@@ -1,3 +1,32 @@
+/*
+ * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+// @todo: Pull and build React stuff
+
 buildscript {
     repositories {
         jcenter()
@@ -10,7 +39,7 @@ buildscript {
 }
 
 apply plugin: 'application'
-mainClassName = 'chat.squirrel.SquirrelMain'
+mainClassName = 'chat.squirrel.Squirrel'
 def versionObj = new Version(major: 0, minor: 0, revision: 1)
 
 apply plugin: 'com.github.johnrengelman.shadow'
@@ -28,7 +57,7 @@ repositories {
 
 dependencies {
     implementation 'io.vertx:vertx-web:3.8.4'
-    
+
     implementation 'io.sentry:sentry-logback:1.7.22'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
 
@@ -44,7 +73,7 @@ task sourcesForRelease(type: Copy) {
     outputs.upToDateWhen { false }
 
     from('src/main/java') {
-        include '**/SquirrelVersion.java'
+        include '**/Version.java'
         filter(ReplaceTokens, tokens: [
                 VERSION_MAJOR   : versionObj.major,
                 VERSION_MINOR   : versionObj.minor,
@@ -53,7 +82,6 @@ task sourcesForRelease(type: Copy) {
         ])
     }
     into 'build/filteredSrc'
-
     includeEmptyDirs = false
 }
 
@@ -62,7 +90,7 @@ task generateJavaSources(type: SourceTask) {
     outputs.upToDateWhen { false }
 
     def javaSources = sourceSets.main.allJava.filter {
-        it.name != 'SquirrelVersion.java'
+        it.name != 'Version.java'
     }
     source = javaSources + sourcesForRelease.destinationDir
 

@@ -25,19 +25,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.modules;
+package chat.squirrel;
 
-import chat.squirrel.Version;
-import io.vertx.core.http.HttpMethod;
-import io.vertx.ext.web.RoutingContext;
+// @todo: mongo entity
+public class SquirrelConfig {
+    private String orgName, srvDescription;
 
-public class ModulePing extends AbstractModule {
-    @Override
-    public void initialize() {
-        this.registerRoute(HttpMethod.GET, "/squirrelPing", this::ping);
+    public String getOrgName() {
+        return orgName;
     }
 
-    private void ping(RoutingContext ctx) {
-        ctx.response().end("Squirrel " + Version.VERSION);
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
+
+    public String getSrvDescription() {
+        return srvDescription;
+    }
+
+    public void setSrvDescription(String srvDescription) {
+        this.srvDescription = srvDescription;
     }
 }

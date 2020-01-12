@@ -25,19 +25,70 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.modules;
+package chat.squirrel;
 
-import chat.squirrel.Version;
-import io.vertx.core.http.HttpMethod;
-import io.vertx.ext.web.RoutingContext;
+import chat.squirrel.core.ModuleManager;
+import chat.squirrel.modules.AbstractModule;
+import chat.squirrel.modules.ModulePing;
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServer;
+import io.vertx.ext.web.Router;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ModulePing extends AbstractModule {
-    @Override
-    public void initialize() {
-        this.registerRoute(HttpMethod.GET, "/squirrelPing", this::ping);
+import java.util.ArrayList;
+
+public final class Squirrel {
+    // Stuff
+    private static Squirrel instance;
+    private static final Logger LOG = LoggerFactory.getLogger(Squirrel.class);
+
+    // Managers
+    private final ModuleManager moduleManager;
+
+    // Vert.x
+    private final Vertx vertx;
+    private final HttpServer server;
+    private final Router router;
+
+    public static void main(String[] args) {
+        instance = new Squirrel();
+        instance.start();
     }
 
-    private void ping(RoutingContext ctx) {
-        ctx.response().end("Squirrel " + Version.VERSION);
+    public static Squirrel getInstance() {
+        return instance;
+    }
+
+    /**
+     * @return The vert.x Router used by the server
+     */
+    public Router getRouter() {
+        return router;
+    }
+
+    /**
+     * Initialize various components for the server
+     */
+    private Squirrel() {
+        LOG.info("Initializing managers");
+        moduleManager = new ModuleManager();
+
+        LOG.info("Initializing vert.x");
+        vertx = Vertx.vertx();
+        server = vertx.createHttpServer();
+        router = Router.router(vertx);
+        server.requestHandler(router);
+    }
+
+    /**
+     * Actually starts the server and other components
+     */
+    private void start() {
+        LOG.info("Loading routes");
+        moduleManager.loadModules();
+
+        LOG.info("Starting server");
+        server.listen(8080);
     }
 }

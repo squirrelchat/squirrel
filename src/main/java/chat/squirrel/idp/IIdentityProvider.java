@@ -25,19 +25,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.modules;
+package chat.squirrel.idp;
 
-import chat.squirrel.Version;
-import io.vertx.core.http.HttpMethod;
-import io.vertx.ext.web.RoutingContext;
+import chat.squirrel.idp.identities.IIdentity;
 
-public class ModulePing extends AbstractModule {
-    @Override
-    public void initialize() {
-        this.registerRoute(HttpMethod.GET, "/squirrelPing", this::ping);
-    }
+import java.util.concurrent.Future;
 
-    private void ping(RoutingContext ctx) {
-        ctx.response().end("Squirrel " + Version.VERSION);
-    }
+interface IIdentityProvider {
+    Future<IIdentity> provide(Object props);
 }
