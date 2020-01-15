@@ -31,6 +31,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import chat.squirrel.auth.AuthHandler;
+import chat.squirrel.core.ModuleManager;
+import chat.squirrel.modules.AbstractModule;
+import chat.squirrel.modules.ModulePing;
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServer;
+import io.vertx.ext.web.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +57,9 @@ public final class Squirrel {
     // Managers
     private final ModuleManager moduleManager;
     private final DatabaseManager dbManager;
+    private final AuthHandler authHandler;
 
     // Vert.x
-    private final Vertx vertx;
     private final HttpServer server;
     private final Router router;
 
@@ -80,9 +87,12 @@ public final class Squirrel {
         LOG.info("Initializing managers");
         moduleManager = new ModuleManager();
         dbManager = new DatabaseManager();
+        authHandler = new AuthHandler();
 
+        LOG.info("Loading modules");
+        moduleManager.scanPackage("chat.squirrel.modules");
         LOG.info("Initializing vert.x");
-        vertx = Vertx.vertx();
+        final Vertx vertx = Vertx.vertx();
         server = vertx.createHttpServer();
         router = Router.router(vertx);
         server.requestHandler(router);
