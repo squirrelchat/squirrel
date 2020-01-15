@@ -29,6 +29,8 @@ package chat.squirrel.idp.identities;
 
 import java.util.concurrent.Future;
 
+import chat.squirrel.entities.User;
+
 public interface IIdentity {
-    Future<Object> getSquirrelAccount();
+    Future<User> getSquirrelAccount();
 }

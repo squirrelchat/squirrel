@@ -32,6 +32,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.impl.BodyHandlerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +40,19 @@ import java.util.List;
 public abstract class AbstractModule {
     private final List<Route> routes = new ArrayList<>();
 
-    public void registerRoute(HttpMethod method, String path, Handler<RoutingContext> handler) {
-        routes.add(Squirrel.getInstance().getRouter().route(method, path).handler(handler).disable());
+    /**
+     * Registers a new and disabled route. The Route will be enabled on server
+     * startup, so this should be called only when your module initializes.
+     * 
+     * @param method  The HTTP Method
+     * @param path    The absolute path
+     * @param handler The handler (preferably use a lambda pwease)
+     * @return The new route to be slick :sunglasses:
+     */
+    public Route registerRoute(HttpMethod method, String path, Handler<RoutingContext> handler) {
+        final Route rt = Squirrel.getInstance().getRouter().route(method, path).handler(new BodyHandlerImpl(false)).handler(handler).disable();
+        routes.add(rt);
+        return rt;
     }
 
     public void enable() {

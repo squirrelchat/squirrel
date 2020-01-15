@@ -27,24 +27,29 @@
 
 package chat.squirrel;
 
-import chat.squirrel.core.ModuleManager;
-import chat.squirrel.modules.AbstractModule;
-import chat.squirrel.modules.ModulePing;
-import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServer;
-import io.vertx.ext.web.Router;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import chat.squirrel.core.DatabaseManager;
+import chat.squirrel.core.ModuleManager;
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServer;
+import io.vertx.ext.web.Router;
 
 public final class Squirrel {
     // Stuff
     private static Squirrel instance;
     private static final Logger LOG = LoggerFactory.getLogger(Squirrel.class);
 
+    private final Properties properties;
+
     // Managers
     private final ModuleManager moduleManager;
+    private final DatabaseManager dbManager;
 
     // Vert.x
     private final Vertx vertx;
@@ -61,18 +66,20 @@ public final class Squirrel {
     }
 
     /**
-     * @return The vert.x Router used by the server
-     */
-    public Router getRouter() {
-        return router;
-    }
-
-    /**
      * Initialize various components for the server
      */
     private Squirrel() {
+        properties = new Properties();
+        try {
+            properties.load(new FileInputStream("./squirrel.properties"));
+        } catch (IOException e) {
+            LOG.error("Error while loading settings from squirrel.properties", e);
+            LOG.error("Fatal error, exiting");
+            System.exit(-1);
+        }
         LOG.info("Initializing managers");
         moduleManager = new ModuleManager();
+        dbManager = new DatabaseManager();
 
         LOG.info("Initializing vert.x");
         vertx = Vertx.vertx();
@@ -90,5 +97,30 @@ public final class Squirrel {
 
         LOG.info("Starting server");
         server.listen(8080);
+    }
+
+    /**
+     * @return The vert.x Router used by the server
+     */
+    public Router getRouter() {
+        return router;
+    }
+
+    /**
+     * @return The DatabaseManager used by this server
+     */
+    public DatabaseManager getDatabaseManager() {
+        return dbManager;
+    }
+
+    /**
+     * @return The property content from the config file
+     */
+    public String getProperty(String key) {
+        return properties.getProperty(key);
+    }
+
+    public String getProperty(String key, String def) {
+        return properties.getProperty(key, def);
     }
 }

@@ -27,8 +27,11 @@
 
 package chat.squirrel.entities;
 
+import org.bson.types.ObjectId;
+
 import io.vertx.core.json.JsonObject;
 
-interface IEntity {
-    JsonObject toJson();
+public interface IEntity {
+    public ObjectId getId();
+    public JsonObject toJson();
 }
