@@ -27,6 +27,7 @@
 
 package chat.squirrel;
 
+import chat.squirrel.auth.AuthHandler;
 import chat.squirrel.core.ModuleManager;
 import chat.squirrel.modules.AbstractModule;
 import chat.squirrel.modules.ModulePing;
@@ -46,8 +47,9 @@ public final class Squirrel {
     // Managers
     private final ModuleManager moduleManager;
 
+    private final AuthHandler authHandler;
+
     // Vert.x
-    private final Vertx vertx;
     private final HttpServer server;
     private final Router router;
 
@@ -61,21 +63,17 @@ public final class Squirrel {
     }
 
     /**
-     * @return The vert.x Router used by the server
-     */
-    public Router getRouter() {
-        return router;
-    }
-
-    /**
      * Initialize various components for the server
      */
     private Squirrel() {
         LOG.info("Initializing managers");
         moduleManager = new ModuleManager();
+        authHandler = new AuthHandler();
 
+        LOG.info("Loading modules");
+        moduleManager.scanPackage("chat.squirrel.modules");
         LOG.info("Initializing vert.x");
-        vertx = Vertx.vertx();
+        final Vertx vertx = Vertx.vertx();
         server = vertx.createHttpServer();
         router = Router.router(vertx);
         server.requestHandler(router);
@@ -90,5 +88,12 @@ public final class Squirrel {
 
         LOG.info("Starting server");
         server.listen(8080);
+    }
+
+    /**
+     * @return The vert.x Router used by the server
+     */
+    public Router getRouter() {
+        return router;
     }
 }

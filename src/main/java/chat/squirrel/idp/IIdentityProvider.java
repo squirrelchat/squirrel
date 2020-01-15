@@ -32,5 +32,5 @@ import chat.squirrel.idp.identities.IIdentity;
 import java.util.concurrent.Future;
 
 interface IIdentityProvider {
-    Future<IIdentity> provide(Object props);
+    Future<? extends IIdentity> provide(Object props);
 }

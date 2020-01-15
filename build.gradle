@@ -57,10 +57,13 @@ repositories {
 
 dependencies {
     implementation 'io.vertx:vertx-web:3.8.4'
+    implementation 'org.reflections:reflections:0.9.12'
 
+    // Logging
     implementation 'io.sentry:sentry-logback:1.7.22'
     implementation 'ch.qos.logback:logback-classic:1.2.3'
 
+    // Databases
     implementation 'io.lettuce:lettuce-core:5.1.6.RELEASE'
     implementation 'org.mongodb:mongo-java-driver:3.8.2'
     implementation 'org.javadelight:delight-metrics:0.0.6'

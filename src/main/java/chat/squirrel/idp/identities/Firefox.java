@@ -25,49 +25,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.core;
+package chat.squirrel.idp.identities;
 
-import chat.squirrel.modules.AbstractModule;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.concurrent.Future;
 
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
-
-public class ModuleManager {
-    private static final Logger LOG = LoggerFactory.getLogger(ModuleManager.class);
-    private static final Map<String, AbstractModule> modules = new HashMap<>();
-
-    public void loadModules () {
-        modules.forEach((c, m) -> {
-            m.initialize();
-            if (m.shouldEnable()) {
-                m.enable();
-            }
-        });
-    }
-
-    public void loadModule(String mod) {
-        modules.get(mod).enable();
-    }
-
-    public void unloadModule(String mod) {
-        modules.get(mod).disable();
-    }
-
-    public void scanPackage(String pkg) {
-        final Reflections reflections = new Reflections(pkg, new SubTypesScanner());
-        reflections.getSubTypesOf(AbstractModule.class).forEach(cls -> {
-            if (!cls.isInterface() && !Modifier.isAbstract(cls.getModifiers())) {
-                try {
-                    modules.put(cls.getCanonicalName(), cls.newInstance());
-                } catch (InstantiationException | IllegalAccessException e) {
-                    LOG.warn("Failed to load module \"" + cls.getSimpleName() + "\"");
-                }
-            }
-        });
+public class Firefox implements IIdentity {
+    @Override
+    public Future<Object> getSquirrelAccount() {
+        return null;
     }
 }

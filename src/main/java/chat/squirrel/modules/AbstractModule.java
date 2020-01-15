@@ -51,5 +51,9 @@ public abstract class AbstractModule {
         routes.forEach(Route::disable);
     }
 
+    public boolean shouldEnable() {
+        return true;
+    }
+
     public abstract void initialize();
 }
