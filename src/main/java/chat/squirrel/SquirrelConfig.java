@@ -27,8 +27,9 @@
 
 package chat.squirrel;
 
-// @todo: mongo entity
-public class SquirrelConfig {
+import chat.squirrel.entities.AbstractEntity;
+
+public class SquirrelConfig extends AbstractEntity {
     private String orgName, srvDescription;
 
     public String getOrgName() {

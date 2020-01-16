@@ -15,7 +15,7 @@ public class ModuleAuth extends AbstractModule {
     private void handleRegister(RoutingContext ctx) {
         JsonObject obj = ctx.getBodyAsJson();
         if (obj == null) {
-            ctx.fail(401);
+            ctx.fail(400);
             return;
         }
 
@@ -26,7 +26,7 @@ public class ModuleAuth extends AbstractModule {
     private void handleLogin(RoutingContext ctx) {
         JsonObject obj = ctx.getBodyAsJson();
         if (obj == null) {
-            ctx.fail(401);
+            ctx.fail(400);
             return;
         }
 

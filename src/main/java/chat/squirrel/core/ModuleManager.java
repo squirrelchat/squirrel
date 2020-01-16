@@ -27,27 +27,36 @@
 
 package chat.squirrel.core;
 
-import chat.squirrel.modules.AbstractModule;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
+import chat.squirrel.modules.AbstractModule;
 
 public class ModuleManager {
     private static final Logger LOG = LoggerFactory.getLogger(ModuleManager.class);
     private static final Map<String, AbstractModule> modules = new HashMap<>();
 
-    public void loadModules () {
+    public void loadModules() {
         modules.forEach((c, m) -> {
+            LOG.debug("Init module " + m.getClass().getCanonicalName());
             m.initialize();
             if (m.shouldEnable()) {
                 m.enable();
             }
         });
+    }
+
+    public void disableModules() {
+        LOG.info("Shutting down all modules");
+        for (AbstractModule m : modules.values()) {
+            m.disable();
+        }
     }
 
     public void loadModule(String mod) {
@@ -63,9 +72,10 @@ public class ModuleManager {
         reflections.getSubTypesOf(AbstractModule.class).forEach(cls -> {
             if (!cls.isInterface() && !Modifier.isAbstract(cls.getModifiers())) {
                 try {
-                    modules.put(cls.getCanonicalName(), cls.newInstance());
-                } catch (InstantiationException | IllegalAccessException e) {
-                    LOG.warn("Failed to load module \"" + cls.getSimpleName() + "\"");
+                    modules.put(cls.getCanonicalName(),
+                            (AbstractModule) cls.getDeclaredConstructors()[0].newInstance());
+                } catch (Exception e) {
+                    LOG.warn("Failed to load module \"" + cls.getSimpleName() + "\"", e);
                 }
             }
         });

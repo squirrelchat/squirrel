@@ -31,16 +31,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import chat.squirrel.auth.AuthHandler;
-import chat.squirrel.core.ModuleManager;
-import chat.squirrel.modules.AbstractModule;
-import chat.squirrel.modules.ModulePing;
-import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServer;
-import io.vertx.ext.web.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import chat.squirrel.auth.AuthHandler;
 import chat.squirrel.core.DatabaseManager;
 import chat.squirrel.core.ModuleManager;
 import io.vertx.core.Vertx;
@@ -51,7 +45,7 @@ public final class Squirrel {
     // Stuff
     private static Squirrel instance;
     private static final Logger LOG = LoggerFactory.getLogger(Squirrel.class);
-
+    private final WebExceptionHandler webExceptionHandler;
     private final Properties properties;
 
     // Managers
@@ -86,7 +80,7 @@ public final class Squirrel {
         }
         LOG.info("Initializing managers");
         moduleManager = new ModuleManager();
-        dbManager = new DatabaseManager();
+        dbManager = new DatabaseManager(getProperty("mongo.con-string"), getProperty("mongo.db-name", "squirrel"));
         authHandler = new AuthHandler();
 
         LOG.info("Loading modules");
@@ -96,6 +90,10 @@ public final class Squirrel {
         server = vertx.createHttpServer();
         router = Router.router(vertx);
         server.requestHandler(router);
+        webExceptionHandler = new WebExceptionHandler();
+        server.exceptionHandler(webExceptionHandler);
+        
+        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "squirrel-shutdown"));
     }
 
     /**
@@ -107,6 +105,17 @@ public final class Squirrel {
 
         LOG.info("Starting server");
         server.listen(8080);
+    }
+
+    /**
+     * Stops the web server and gracefully shutdowns the managers
+     */
+    public void shutdown() {
+        LOG.info("Gracefully shutting down");
+        server.close();
+        moduleManager.disableModules();
+        dbManager.shutdown();
+        LOG.info("Shutdown successful");
     }
 
     /**
