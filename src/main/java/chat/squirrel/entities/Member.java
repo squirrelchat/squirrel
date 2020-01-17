@@ -12,6 +12,7 @@ import org.bson.types.ObjectId;
 import com.mongodb.client.model.Filters;
 
 import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 
 /**
  * Member of a guild
@@ -32,32 +33,46 @@ public class Member extends AbstractEntity {
     @BsonIgnore
     public Future<User> getUser() {
         return new FutureTask<User>(() -> {
-            return (User) Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class, "users",
-                    Filters.eq("_id", getUserId()));
+            return (User) Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class, SquirrelCollection.USERS,
+                    Filters.eq(getUserId()));
         });
     }
 
-    public Collection<ObjectId> getRoles() {
+    public Collection<ObjectId> getRolesIds() {
         return roles;
     }
 
-    public void setRoles(Collection<ObjectId> roles) {
+    public void setRolesIds(Collection<ObjectId> roles) {
         this.roles = roles;
     }
 
     @BsonIgnore
-    public Future<Collection<Role>> getRealRoles() {
-        return new FutureTask<Collection<Role>>(new Callable<Collection<Role>>() {
-
+    public Future<Guild> getGuild() {
+        return new FutureTask<Guild>(new Callable<Guild>() {
             @Override
-            public Collection<Role> call() throws Exception { // TODO
-                Collection<Role> realRoles = new ArrayList<Role>();
-                for (ObjectId id : getRoles()) {
+            public Guild call() throws Exception {
+                return (Guild) Squirrel.getInstance().getDatabaseManager().findFirstEntity(Guild.class,
+                        SquirrelCollection.GUILDS, Filters.eq(getGuildId()));
+            }
+        });
+    }
+
+    @BsonIgnore
+    public Future<Collection<Role>> getRoles() {
+        return new FutureTask<Collection<Role>>(new Callable<Collection<Role>>() {
+            @Override
+            public Collection<Role> call() throws Exception { // XXX this is ugly
+                final Guild guild = getGuild().get();
+                final Collection<ObjectId> ids = getRolesIds();
+                final Collection<Role> realRoles = new ArrayList<Role>();
+                for (final Role role : guild.getRoles()) {
+                    if (ids.contains(role.getId()))
+                        realRoles.add(role);
                 }
                 return realRoles;
             }
         });
-       
+
     }
 
     public String getNickmame() {

@@ -40,29 +40,43 @@ public class DatabaseManager {
         db = client.getDatabase(dbName);
     }
 
-    public FindIterable<Document> rawRequest(String collection, Bson statement) {
-        return db.getCollection(collection).find(statement);
+    public FindIterable<Document> rawRequest(SquirrelCollection collection, Bson statement) {
+        return db.getCollection(collection.getMongoName()).find(statement);
     }
 
-    public void updateEntity(String col, Bson filter, Bson update) {
-        db.getCollection(col).updateOne(filter, update);
+    public void updateEntity(SquirrelCollection col, Bson filter, Bson update) {
+        db.getCollection(col.getMongoName()).updateOne(filter, update);
     }
 
-    public void insertEntity(String col, IEntity ent) {
-        db.getCollection(col, IEntity.class).insertOne(ent);
+    public void insertEntity(SquirrelCollection col, IEntity ent) {
+        db.getCollection(col.getMongoName(), IEntity.class).insertOne(ent);
     }
     
-    public IEntity findFirstEntity(Class<? extends IEntity> type, String col, Bson filters) {
+    public IEntity findFirstEntity(Class<? extends IEntity> type, SquirrelCollection col, Bson filters) {
         return findEntities(type, col, filters).first();
     }
     
-    public FindIterable<? extends IEntity> findEntities(Class<? extends IEntity> type, String col, Bson filters) {
-        return db.getCollection(col, type).find(filters);
+    public FindIterable<? extends IEntity> findEntities(Class<? extends IEntity> type, SquirrelCollection col, Bson filters) {
+        return db.getCollection(col.getMongoName(), type).find(filters);
     }
     
     public void shutdown() {
         LOG.info("Shutting down MongoDB driver");
         client.close();
+    }
+    
+    public enum SquirrelCollection {
+        USERS("users"), GUILDS("guilds"), ;
+        
+        private String mongoName;
+        
+        private SquirrelCollection(String mongoName) {
+            this.mongoName = mongoName;
+        }
+        
+        public String getMongoName() {
+            return mongoName;
+        }
     }
 
 }
