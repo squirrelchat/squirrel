@@ -27,5 +27,20 @@
 
 package chat.squirrel.auth;
 
-public class AuthHandler {
+public interface AuthHandler {
+    /**
+     * Attempts a login
+     * @param credential Can be either full email or full username with discriminator
+     * @param password Password
+     * @return AuthResult
+     */
+    AuthResult attemptLogin(String credential, final char[] password);
+    
+    /**
+     * Attempts to register a new account
+     * @param email The new user's email address
+     * @param password The clear text password
+     * @return AuthResult
+     */
+    AuthResult register(String email, String username, final char[] password);
 }

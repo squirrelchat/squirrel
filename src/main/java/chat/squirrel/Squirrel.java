@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import chat.squirrel.auth.AuthHandler;
+import chat.squirrel.auth.MongoAuthHandler;
 import chat.squirrel.core.DatabaseManager;
 import chat.squirrel.core.ModuleManager;
 import io.vertx.core.Vertx;
@@ -81,7 +82,7 @@ public final class Squirrel {
         LOG.info("Initializing managers");
         moduleManager = new ModuleManager();
         dbManager = new DatabaseManager(getProperty("mongo.con-string"), getProperty("mongo.db-name", "squirrel"));
-        authHandler = new AuthHandler();
+        authHandler = new MongoAuthHandler(); // TODO: make customizable
 
         LOG.info("Loading modules");
         moduleManager.scanPackage("chat.squirrel.modules");

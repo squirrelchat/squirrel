@@ -1,5 +1,7 @@
 package chat.squirrel.core;
 
+import org.bson.BsonDocument;
+import org.bson.BsonInt32;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -14,9 +16,11 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 import chat.squirrel.Version;
 import chat.squirrel.entities.IEntity;
+import chat.squirrel.entities.User;
 
 public class DatabaseManager {
     private static final Logger LOG = LoggerFactory.getLogger(DatabaseManager.class);
@@ -29,7 +33,7 @@ public class DatabaseManager {
                 CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()));
 
         final ConnectionString conStr = new ConnectionString(connectionString);
-        
+
         LOG.info("Connecting to MongoDB using con string: " + conStr.toString());
 
         final MongoClientSettings set = MongoClientSettings.builder()
@@ -51,29 +55,50 @@ public class DatabaseManager {
     public void insertEntity(SquirrelCollection col, IEntity ent) {
         db.getCollection(col.getMongoName(), IEntity.class).insertOne(ent);
     }
-    
+
     public IEntity findFirstEntity(Class<? extends IEntity> type, SquirrelCollection col, Bson filters) {
         return findEntities(type, col, filters).first();
     }
-    
-    public FindIterable<? extends IEntity> findEntities(Class<? extends IEntity> type, SquirrelCollection col, Bson filters) {
+
+    public FindIterable<? extends IEntity> findEntities(Class<? extends IEntity> type, SquirrelCollection col,
+            Bson filters) {
         return db.getCollection(col.getMongoName(), type).find(filters);
     }
-    
+
+    public long countDocuments(SquirrelCollection col, Bson filters) {
+        return db.getCollection(col.getMongoName()).countDocuments(filters);
+    }
+
+    /**
+     * This method is used to get an available discriminator for the specified
+     * username
+     * 
+     * @return The free discriminator, or if none are available, -1
+     */
+    public int getFreeDiscriminator(final String username) { // TODO
+        if (countDocuments(SquirrelCollection.USERS, Filters.eq("username", username)) >= 9999) {
+            LOG.warn("Username '" + username + "' is out of discriminators and one was just requested.");
+            return -1;
+        }
+        
+        return -1;
+
+    }
+
     public void shutdown() {
         LOG.info("Shutting down MongoDB driver");
         client.close();
     }
-    
+
     public enum SquirrelCollection {
-        USERS("users"), GUILDS("guilds"), ;
-        
+        USERS("users"), GUILDS("guilds"),;
+
         private String mongoName;
-        
+
         private SquirrelCollection(String mongoName) {
             this.mongoName = mongoName;
         }
-        
+
         public String getMongoName() {
             return mongoName;
         }
