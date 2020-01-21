@@ -38,11 +38,16 @@ import org.slf4j.LoggerFactory;
 import chat.squirrel.auth.AuthHandler;
 import chat.squirrel.auth.MongoAuthHandler;
 import chat.squirrel.core.DatabaseManager;
-import chat.squirrel.core.ModuleManager;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.core.ModuleManager;
+import chat.squirrel.entities.channels.VoiceChannel;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.SessionHandler;
+import io.vertx.ext.web.sstore.SessionStore;
 
 public final class Squirrel {
     // Stuff
@@ -60,6 +65,8 @@ public final class Squirrel {
     // Vert.x
     private final HttpServer server;
     private final Router router;
+    private final SessionStore sessionStore;
+    private final Handler<RoutingContext> apiAuthHandler;
 
     public static void main(String[] args) {
         instance = new Squirrel();
@@ -85,7 +92,8 @@ public final class Squirrel {
         LOG.info("Initializing managers");
         moduleManager = new ModuleManager();
         dbManager = new DatabaseManager(getProperty("mongo.con-string"), getProperty("mongo.db-name", "squirrel"));
-        config = (SquirrelConfig) dbManager.findFirstEntity(SquirrelConfig.class, SquirrelCollection.CONFIG, new BsonDocument());
+        config = (SquirrelConfig) dbManager.findFirstEntity(SquirrelConfig.class, SquirrelCollection.CONFIG,
+                new BsonDocument());
         authHandler = new MongoAuthHandler(); // TODO: make customizable when there'll be more
 
         LOG.info("Loading modules");
@@ -93,11 +101,19 @@ public final class Squirrel {
         LOG.info("Initializing vert.x");
         final Vertx vertx = Vertx.vertx();
         server = vertx.createHttpServer();
+
         router = Router.router(vertx);
         server.requestHandler(router);
+
+        sessionStore = SessionStore.create(vertx);
+        final SessionHandler sessionHandler = SessionHandler.create(sessionStore);
+        router.route().handler(sessionHandler);
+
+        apiAuthHandler = new WebAuthHandler();
+
         webExceptionHandler = new WebExceptionHandler();
         server.exceptionHandler(webExceptionHandler);
-        
+
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "squirrel-shutdown"));
     }
 
@@ -105,6 +121,8 @@ public final class Squirrel {
      * Actually starts the server and other components
      */
     private void start() {
+        VoiceChannel.wipeCurrentlyConnected(); // XXX: is this actually a good place to put this?
+
         LOG.info("Loading routes");
         moduleManager.loadModules();
 
@@ -119,6 +137,7 @@ public final class Squirrel {
         LOG.info("Gracefully shutting down");
         server.close();
         moduleManager.disableModules();
+        VoiceChannel.wipeCurrentlyConnected();
         dbManager.shutdown();
         LOG.info("Shutdown successful");
     }
@@ -147,7 +166,19 @@ public final class Squirrel {
     public String getProperty(String key, String def) {
         return properties.getProperty(key, def);
     }
+
+    public SquirrelConfig getConfig() {
+        return config;
+    }
     
+    public AuthHandler getAuthHandler() {
+        return authHandler;
+    }
+
+    public Handler<RoutingContext> getApiAuthHandler() {
+        return apiAuthHandler;
+    }
+
     /**
      * 
      * @param dis String format of integer with up to 4 leading zeros
@@ -159,7 +190,4 @@ public final class Squirrel {
         return String.format("%04d", dis);
     }
 
-    public SquirrelConfig getConfig() {
-        return config;
-    }
 }

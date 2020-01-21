@@ -10,7 +10,6 @@ import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.SquirrelConfig;
 import chat.squirrel.auth.AuthResult.FailureReason;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.User;
@@ -33,7 +32,6 @@ public class MongoAuthHandler implements AuthHandler {
         final String hashedPassword = argon.hash(ARGON_ITERATION, ARGON_MEMORY, ARGON_PARALLELISM, password);
         argon.wipeArray(password);
         final AuthResult res = new AuthResult();
-        res.setUsername(credential);
 
         Iterator<User> it;
 
@@ -56,7 +54,7 @@ public class MongoAuthHandler implements AuthHandler {
 
         if (it.hasNext()) {
             final User user = it.next();
-            res.setUserId(user.getId());
+            res.setUser(user);
             res.setReason(null);
         } else {
             res.setReason(FailureReason.INVALID_USERNAME); // TODO make better
@@ -103,8 +101,7 @@ public class MongoAuthHandler implements AuthHandler {
                     + pwdUp.getModifiedCount() + " passwords have been changed");
         }
 
-        res.setUserId(user.getId());
-        res.setUsername(username);
+        res.setUser(user);
         res.setReason(null);
         return res;
     }

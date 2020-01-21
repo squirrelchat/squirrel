@@ -10,6 +10,8 @@ import chat.squirrel.entities.IEntity;
 public interface IChannel extends IEntity {
     String getName();
 
+    void setName(String name);
+
     @BsonIgnore
     Collection<ObjectId> getParticipants();
 }

@@ -16,6 +16,11 @@ public class TextChannel extends AbstractEntity implements IChannel {
     public String getName() {
         return name;
     }
+    
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
 
     @BsonIgnore
     public Collection<IMessage> getMessages(int nbr) { // TODO

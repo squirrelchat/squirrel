@@ -50,8 +50,25 @@ public abstract class AbstractModule {
      * @return The new route to be slick :sunglasses:
      */
     public Route registerRoute(HttpMethod method, String path, Handler<RoutingContext> handler) {
-        final Route rt = Squirrel.getInstance().getRouter().route(method, path).handler(new BodyHandlerImpl(false)).handler(handler).disable();
+        final Route rt = Squirrel.getInstance().getRouter().route(method, path).handler(new BodyHandlerImpl(false))
+                .handler(handler).disable();
         routes.add(rt);
+        return rt;
+    }
+
+    /**
+     * Registers a new and disabled route behind the default authentication handler.
+     * The Route will be enable on server startup, so this should be called only
+     * when your module initializes.
+     * 
+     * @param method  The HTTP Method
+     * @param path    The absolute path
+     * @param handler The handler
+     * @return The new route to be slick :sunglasses:
+     */
+    public Route registerAuthedRoute(HttpMethod method, String path, Handler<RoutingContext> handler) {
+        final Route rt = registerRoute(method, path, Squirrel.getInstance().getApiAuthHandler());
+        rt.handler(handler);
         return rt;
     }
 

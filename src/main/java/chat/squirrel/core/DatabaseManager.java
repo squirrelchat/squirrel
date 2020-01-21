@@ -67,6 +67,10 @@ public class DatabaseManager {
         return db.getCollection(col.getMongoName(), type).find(filters);
     }
 
+    public UpdateResult updateMany(SquirrelCollection col, Bson filter, Bson update) {
+        return db.getCollection(col.getMongoName()).updateMany(filter, update);
+    }
+    
     public long countDocuments(SquirrelCollection col, Bson filters) {
         return db.getCollection(col.getMongoName()).countDocuments(filters);
     }
@@ -102,7 +106,7 @@ public class DatabaseManager {
     }
 
     public enum SquirrelCollection {
-        USERS("users"), GUILDS("guilds"), CONFIG("config");
+        USERS("users"), GUILDS("guilds"), CONFIG("config"), MESSAGES("messages"), CHANNELS("channels");
 
         private String mongoName;
 

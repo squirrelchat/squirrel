@@ -35,9 +35,14 @@ public class ModulePing extends AbstractModule {
     @Override
     public void initialize() {
         this.registerRoute(HttpMethod.GET, "/squirrelPing", this::ping);
+        this.registerAuthedRoute(HttpMethod.GET, "/squirrelAuthPing", this::authPing);
     }
 
     private void ping(RoutingContext ctx) {
+        ctx.response().end("Squirrel " + Version.VERSION);
+    }
+
+    private void authPing(RoutingContext ctx) {
         ctx.response().end("Squirrel " + Version.VERSION);
     }
 }
