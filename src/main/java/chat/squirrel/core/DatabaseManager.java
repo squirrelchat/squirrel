@@ -1,7 +1,7 @@
 package chat.squirrel.core;
 
-import org.bson.BsonDocument;
-import org.bson.BsonInt32;
+import java.util.Random;
+
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -17,6 +17,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.UpdateResult;
 
 import chat.squirrel.Version;
 import chat.squirrel.entities.IEntity;
@@ -26,6 +27,7 @@ public class DatabaseManager {
     private static final Logger LOG = LoggerFactory.getLogger(DatabaseManager.class);
     private final MongoClient client;
     private final MongoDatabase db;
+    private final Random random = new Random();
 
     public DatabaseManager(String connectionString, String dbName) {
         final CodecRegistry pojoCodecRegistry = CodecRegistries.fromRegistries(
@@ -48,8 +50,8 @@ public class DatabaseManager {
         return db.getCollection(collection.getMongoName()).find(statement);
     }
 
-    public void updateEntity(SquirrelCollection col, Bson filter, Bson update) {
-        db.getCollection(col.getMongoName()).updateOne(filter, update);
+    public UpdateResult updateEntity(SquirrelCollection col, Bson filter, Bson update) {
+        return db.getCollection(col.getMongoName()).updateOne(filter, update);
     }
 
     public void insertEntity(SquirrelCollection col, IEntity ent) {
@@ -73,16 +75,25 @@ public class DatabaseManager {
      * This method is used to get an available discriminator for the specified
      * username
      * 
+     * Not thread safe cause of big gay loop
+     * 
      * @return The free discriminator, or if none are available, -1
      */
-    public int getFreeDiscriminator(final String username) { // TODO
+    public int getFreeDiscriminator(final String username) { // TODO make better
         if (countDocuments(SquirrelCollection.USERS, Filters.eq("username", username)) >= 9999) {
             LOG.warn("Username '" + username + "' is out of discriminators and one was just requested.");
             return -1;
         }
+        int dis = -1;
+        while(isDiscriminatorTaken(username, dis = random.nextInt(10000))) {
+        }
         
-        return -1;
+        return dis;
+    }
 
+    public boolean isDiscriminatorTaken(final String username, final int dis) {
+        return findFirstEntity(User.class, SquirrelCollection.USERS,
+                Filters.and(Filters.eq("discriminator", dis), Filters.eq("username", username))) != null;
     }
 
     public void shutdown() {
@@ -91,7 +102,7 @@ public class DatabaseManager {
     }
 
     public enum SquirrelCollection {
-        USERS("users"), GUILDS("guilds"),;
+        USERS("users"), GUILDS("guilds"), CONFIG("config");
 
         private String mongoName;
 

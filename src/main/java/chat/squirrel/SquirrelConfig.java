@@ -31,6 +31,8 @@ import chat.squirrel.entities.AbstractEntity;
 
 public class SquirrelConfig extends AbstractEntity {
     private String orgName, srvDescription;
+    private int maximumUsernameCount = -1;
+    private boolean allowRegister;
 
     public String getOrgName() {
         return orgName;
@@ -46,5 +48,25 @@ public class SquirrelConfig extends AbstractEntity {
 
     public void setSrvDescription(String srvDescription) {
         this.srvDescription = srvDescription;
+    }
+
+    public boolean isAllowRegister() {
+        return allowRegister;
+    }
+
+    public void setAllowRegister(boolean allowRegister) {
+        this.allowRegister = allowRegister;
+    }
+
+    /**
+     * -1 for standard maximum
+     * @return
+     */
+    public int getMaximumUsernameCount() {
+        return maximumUsernameCount;
+    }
+
+    public void setMaximumUsernameCount(int maximumUsernameCount) {
+        this.maximumUsernameCount = maximumUsernameCount;
     }
 }

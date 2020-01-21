@@ -56,6 +56,8 @@ repositories {
 }
 
 dependencies {
+    testImplementation('junit:junit:4.13')
+
     implementation 'io.vertx:vertx-web:3.8.4'
     implementation 'org.reflections:reflections:0.9.12'
     implementation 'de.mkammerer:argon2-jvm:2.6'

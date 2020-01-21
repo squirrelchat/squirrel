@@ -31,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.bson.BsonDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,7 @@ import chat.squirrel.auth.AuthHandler;
 import chat.squirrel.auth.MongoAuthHandler;
 import chat.squirrel.core.DatabaseManager;
 import chat.squirrel.core.ModuleManager;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
@@ -48,6 +50,7 @@ public final class Squirrel {
     private static final Logger LOG = LoggerFactory.getLogger(Squirrel.class);
     private final WebExceptionHandler webExceptionHandler;
     private final Properties properties;
+    private final SquirrelConfig config;
 
     // Managers
     private final ModuleManager moduleManager;
@@ -82,7 +85,8 @@ public final class Squirrel {
         LOG.info("Initializing managers");
         moduleManager = new ModuleManager();
         dbManager = new DatabaseManager(getProperty("mongo.con-string"), getProperty("mongo.db-name", "squirrel"));
-        authHandler = new MongoAuthHandler(); // TODO: make customizable
+        config = (SquirrelConfig) dbManager.findFirstEntity(SquirrelConfig.class, SquirrelCollection.CONFIG, new BsonDocument());
+        authHandler = new MongoAuthHandler(); // TODO: make customizable when there'll be more
 
         LOG.info("Loading modules");
         moduleManager.scanPackage("chat.squirrel.modules");
@@ -142,5 +146,20 @@ public final class Squirrel {
 
     public String getProperty(String key, String def) {
         return properties.getProperty(key, def);
+    }
+    
+    /**
+     * 
+     * @param dis String format of integer with up to 4 leading zeros
+     * @return
+     */
+    public static String formatDiscriminator(int dis) {
+        if (dis < 0 || dis > 9999)
+            throw new IllegalArgumentException("Discriminator to be formated is out of bounds");
+        return String.format("%04d", dis);
+    }
+
+    public SquirrelConfig getConfig() {
+        return config;
     }
 }
