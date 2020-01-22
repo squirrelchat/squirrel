@@ -63,7 +63,8 @@ public final class Squirrel {
 
     // Vert.x
     private final HttpServer server;
-    private final Router router;
+    private final Router rootRouter;
+    private final Router apiRouter;
     private final SessionStore sessionStore;
     private final Handler<RoutingContext> apiAuthHandler;
 
@@ -101,17 +102,19 @@ public final class Squirrel {
         final Vertx vertx = Vertx.vertx();
         server = vertx.createHttpServer();
 
-        router = Router.router(vertx);
-        server.requestHandler(router);
+        rootRouter = Router.router(vertx);
+        apiRouter = Router.router(vertx);
+        server.requestHandler(rootRouter);
+        rootRouter.mountSubRouter("/api", apiRouter);
 
         sessionStore = SessionStore.create(vertx);
         final SessionHandler sessionHandler = SessionHandler.create(sessionStore);
-        router.route().handler(sessionHandler);
+        rootRouter.route().handler(sessionHandler);
 
         apiAuthHandler = new WebAuthHandler();
 
         webExceptionHandler = new WebExceptionHandler();
-        router.errorHandler(500, webExceptionHandler);
+        rootRouter.errorHandler(500, webExceptionHandler);
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "squirrel-shutdown"));
     }
@@ -142,7 +145,7 @@ public final class Squirrel {
      * @return The vert.x Router used by the server
      */
     public Router getRouter() {
-        return router;
+        return apiRouter;
     }
 
     /**
