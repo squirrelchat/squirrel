@@ -18,7 +18,7 @@ public class WebExceptionHandler implements Handler<RoutingContext> {
             obj.put("path", event.normalisedPath());
             obj.put("body", event.getBody());
         }
-        LOG.error("An unknown error has been caught in routing: " + event.normalisedPath());
+        LOG.error("An unknown error has been caught in routing: " + obj.encode());
         event.response().end(obj.toBuffer());
     }
 }
