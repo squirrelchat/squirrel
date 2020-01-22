@@ -35,7 +35,8 @@ public class ModuleAuth extends AbstractModule {
         ctx.response().setStatusCode(201)
                 .end(new JsonObject().put("user",
                         new JsonObject().put("username", usr.getUsername()).put("discriminator", usr.getDiscriminator())
-                                .put("id", usr.getId().toString()).put("server_role", usr.getServerRole()).put("flag", usr.getFlag()))
+                                .put("id", usr.getId().toString()).put("server_role", usr.getServerRole())
+                                .put("flag", usr.getFlag()))
                         .encode());
 
     }
@@ -57,11 +58,14 @@ public class ModuleAuth extends AbstractModule {
 
         final User usr = res.getUser();
 
-        ctx.response().setStatusCode(201)
-        .end(new JsonObject().put("user",
-                new JsonObject().put("username", usr.getUsername()).put("discriminator", usr.getDiscriminator())
-                        .put("id", usr.getId().toString()).put("flag", usr.getFlag()))
-                .encode());
+        ctx.response().setStatusCode(
+                201).end(
+                        new JsonObject()
+                                .put("user",
+                                        new JsonObject().put("username", usr.getUsername())
+                                                .put("discriminator", usr.getDiscriminator())
+                                                .put("id", usr.getId().toString()).put("flag", usr.getFlag()))
+                                .encode());
     }
 
 }

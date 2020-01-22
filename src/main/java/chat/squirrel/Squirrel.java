@@ -54,7 +54,7 @@ public final class Squirrel {
     private static final Logger LOG = LoggerFactory.getLogger(Squirrel.class);
     private final WebExceptionHandler webExceptionHandler;
     private final Properties properties;
-    private final SquirrelConfig config;
+    private SquirrelConfig config;
 
     // Managers
     private final ModuleManager moduleManager;
@@ -92,8 +92,12 @@ public final class Squirrel {
         LOG.info("Initializing managers");
         moduleManager = new ModuleManager();
         dbManager = new DatabaseManager(getProperty("mongo.con-string"), getProperty("mongo.db-name", "squirrel"));
+        
         config = (SquirrelConfig) dbManager.findFirstEntity(SquirrelConfig.class, SquirrelCollection.CONFIG,
                 new BsonDocument());
+        if (config == null)
+            config = new SquirrelConfig();
+        
         authHandler = new MongoAuthHandler(); // TODO: make customizable when there'll be more
 
         LOG.info("Loading modules");
