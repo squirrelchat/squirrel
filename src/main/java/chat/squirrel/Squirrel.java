@@ -112,7 +112,7 @@ public final class Squirrel {
         apiAuthHandler = new WebAuthHandler();
 
         webExceptionHandler = new WebExceptionHandler();
-        server.exceptionHandler(webExceptionHandler);
+        router.errorHandler(500, webExceptionHandler);
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "squirrel-shutdown"));
     }
