@@ -30,6 +30,7 @@ package chat.squirrel.modules;
 import chat.squirrel.Squirrel;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.impl.BodyHandlerImpl;
@@ -43,13 +44,13 @@ public abstract class AbstractModule {
     /**
      * Registers a new and disabled route. The Route will be enabled on server
      * startup, so this should be called only when your module initializes.
-     * 
+     *
      * @param method  The HTTP Method
      * @param path    The absolute path
      * @param handler The handler (preferably use a lambda pwease)
      * @return The new route to be slick :sunglasses:
      */
-    public Route registerRoute(HttpMethod method, String path, Handler<RoutingContext> handler) {
+    protected Route registerRoute(HttpMethod method, String path, Handler<RoutingContext> handler) {
         final Route rt = Squirrel.getInstance().getRouter().route(method, path).handler(new BodyHandlerImpl(false))
                 .handler(handler).disable();
         routes.add(rt);
@@ -58,15 +59,15 @@ public abstract class AbstractModule {
 
     /**
      * Registers a new and disabled route behind the default authentication handler.
-     * The Route will be enable on server startup, so this should be called only
+     * The Route will be enabled on server startup, so this should be called only
      * when your module initializes.
-     * 
+     *
      * @param method  The HTTP Method
      * @param path    The absolute path
      * @param handler The handler
      * @return The new route to be slick :sunglasses:
      */
-    public Route registerAuthedRoute(HttpMethod method, String path, Handler<RoutingContext> handler) {
+    protected Route registerAuthedRoute(HttpMethod method, String path, Handler<RoutingContext> handler) {
         final Route rt = registerRoute(method, path, Squirrel.getInstance().getApiAuthHandler());
         rt.handler(handler);
         return rt;
@@ -82,6 +83,11 @@ public abstract class AbstractModule {
 
     public boolean shouldEnable() {
         return true;
+    }
+
+    protected void notImplemented(RoutingContext ctx) {
+        ctx.response().setStatusCode(501)
+                .end(new JsonObject().put("code", 501).put("message", "Not Implemented").encode());
     }
 
     public abstract void initialize();
