@@ -40,7 +40,6 @@ import chat.squirrel.auth.MongoAuthHandler;
 import chat.squirrel.core.DatabaseManager;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.core.ModuleManager;
-import chat.squirrel.entities.channels.VoiceChannel;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
@@ -121,8 +120,6 @@ public final class Squirrel {
      * Actually starts the server and other components
      */
     private void start() {
-        VoiceChannel.wipeCurrentlyConnected(); // XXX: is this actually a good place to put this?
-
         LOG.info("Loading routes");
         moduleManager.loadModules();
 
@@ -137,7 +134,6 @@ public final class Squirrel {
         LOG.info("Gracefully shutting down");
         server.close();
         moduleManager.disableModules();
-        VoiceChannel.wipeCurrentlyConnected();
         dbManager.shutdown();
         LOG.info("Shutdown successful");
     }
