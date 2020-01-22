@@ -3,6 +3,7 @@ package chat.squirrel.auth;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
+import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import com.mongodb.client.model.Filters;
@@ -29,11 +30,9 @@ public class MongoAuthHandler implements AuthHandler {
 
     @Override
     public AuthResult attemptLogin(final String credential, final char[] password) {
-        final String hashedPassword = argon.hash(ARGON_ITERATION, ARGON_MEMORY, ARGON_PARALLELISM, password);
-        argon.wipeArray(password);
         final AuthResult res = new AuthResult();
 
-        Iterator<User> it;
+        Iterator<Document> it;
 
         if (credential.contains("#")) { // Contains discriminator separator so interpret as username
             final String[] parts = credential.split("#");
@@ -41,24 +40,29 @@ public class MongoAuthHandler implements AuthHandler {
                 res.setReason(FailureReason.INVALID_USERNAME);
                 return res;
             }
-
             final String username = parts[0], discriminator = parts[1];
-            it = fetchUsers(Filters.and(Filters.eq("username", username), Filters.eq("discriminator", discriminator),
-                    Filters.eq("password", hashedPassword)));
+            it = fetchUsers(Filters.and(Filters.eq("username", username), Filters.eq("discriminator", discriminator)));
         } else if (credential.contains("@")) { // interpret as email
-            it = fetchUsers(Filters.and(Filters.eq("email", credential), Filters.eq("password", hashedPassword)));
+            it = fetchUsers(Filters.eq("email", credential));
         } else {
             res.setReason(FailureReason.INVALID_USERNAME);
             return res;
         }
 
         if (it.hasNext()) {
-            final User user = it.next();
-            res.setUser(user);
-            res.setReason(null);
+            final Document doc = it.next();
+            final String hash = doc.getString("password");
+            if (argon.verify(hash, password)) {
+                res.setUser((User) Squirrel.getInstance().getDatabaseManager().convertDocument(doc, User.class));
+                res.setReason(null);
+            } else {
+                res.setReason(FailureReason.INVALID_PASSWORD);
+            }
         } else {
             res.setReason(FailureReason.INVALID_USERNAME); // TODO make better
         }
+        
+        argon.wipeArray(password);
 
         return res;
     }
@@ -122,9 +126,8 @@ public class MongoAuthHandler implements AuthHandler {
     }
 
     @SuppressWarnings("unchecked")
-    private Iterator<User> fetchUsers(final Bson filters) {
-        return (Iterator<User>) Squirrel.getInstance().getDatabaseManager().findEntities(User.class,
-                SquirrelCollection.USERS, filters);
+    private Iterator<Document> fetchUsers(final Bson filters) {
+        return (Iterator<Document>) Squirrel.getInstance().getDatabaseManager().rawRequest(SquirrelCollection.USERS, filters);
     }
 
 }

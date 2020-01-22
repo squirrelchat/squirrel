@@ -28,9 +28,10 @@ public class DatabaseManager {
     private final MongoClient client;
     private final MongoDatabase db;
     private final Random random = new Random();
+    private final CodecRegistry pojoCodecRegistry;
 
     public DatabaseManager(String connectionString, String dbName) {
-        final CodecRegistry pojoCodecRegistry = CodecRegistries.fromRegistries(
+        pojoCodecRegistry = CodecRegistries.fromRegistries(
                 MongoClientSettings.getDefaultCodecRegistry(),
                 CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()));
 
@@ -73,6 +74,12 @@ public class DatabaseManager {
     
     public long countDocuments(SquirrelCollection col, Bson filters) {
         return db.getCollection(col.getMongoName()).countDocuments(filters);
+    }
+    
+    public IEntity convertDocument(Document doc, Class<? extends IEntity> cls) {
+        if(doc == null)
+            throw new NullPointerException();
+        return (IEntity) doc.toBsonDocument(cls, pojoCodecRegistry);
     }
 
     /**
