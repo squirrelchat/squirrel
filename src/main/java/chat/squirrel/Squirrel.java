@@ -92,12 +92,12 @@ public final class Squirrel {
         LOG.info("Initializing managers");
         moduleManager = new ModuleManager();
         dbManager = new DatabaseManager(getProperty("mongo.con-string"), getProperty("mongo.db-name", "squirrel"));
-        
+
         config = (SquirrelConfig) dbManager.findFirstEntity(SquirrelConfig.class, SquirrelCollection.CONFIG,
                 new BsonDocument());
         if (config == null)
             config = new SquirrelConfig();
-        
+
         authHandler = new MongoAuthHandler(); // TODO: make customizable when there'll be more
 
         LOG.info("Loading modules");
@@ -109,7 +109,7 @@ public final class Squirrel {
         rootRouter = Router.router(vertx);
         apiRouter = Router.router(vertx);
         server.requestHandler(rootRouter);
-        rootRouter.mountSubRouter("/api", apiRouter);
+        rootRouter.mountSubRouter("/api/v1", apiRouter);
 
         sessionStore = SessionStore.create(vertx);
         final SessionHandler sessionHandler = SessionHandler.create(sessionStore);
@@ -173,7 +173,7 @@ public final class Squirrel {
     public SquirrelConfig getConfig() {
         return config;
     }
-    
+
     public AuthHandler getAuthHandler() {
         return authHandler;
     }
@@ -183,7 +183,7 @@ public final class Squirrel {
     }
 
     /**
-     * 
+     *
      * @param dis String format of integer with up to 4 leading zeros
      * @return
      */

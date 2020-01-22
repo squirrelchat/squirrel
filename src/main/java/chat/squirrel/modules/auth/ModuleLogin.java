@@ -1,19 +1,20 @@
-package chat.squirrel.modules;
+package chat.squirrel.modules.auth;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.auth.AuthHandler;
 import chat.squirrel.auth.AuthResult;
 import chat.squirrel.entities.User;
+import chat.squirrel.modules.AbstractModule;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
-public class ModuleAuth extends AbstractModule {
-
+public class ModuleLogin extends AbstractModule {
     @Override
     public void initialize() {
         registerRoute(HttpMethod.POST, "/auth/register", this::handleRegister);
         registerRoute(HttpMethod.POST, "/auth/login", this::handleLogin);
+        registerRoute(HttpMethod.POST, "/auth/mfa", this::notImplemented);
     }
 
     private void handleLogin(RoutingContext ctx) {
@@ -30,14 +31,12 @@ public class ModuleAuth extends AbstractModule {
             return;
         }
 
-        final User usr = res.getUser();
-
-        ctx.response().setStatusCode(201)
-                .end(new JsonObject().put("user",
-                        new JsonObject().put("username", usr.getUsername()).put("discriminator", usr.getDiscriminator())
-                                .put("id", usr.getId().toString()).put("server_role", usr.getServerRole())
-                                .put("flag", usr.getFlag()))
-                        .encode());
+        ctx.response().setStatusCode(200).end(
+                new JsonObject()
+                        .put("mfa_required", false)
+                        .put("token", "btw.have.i.told.you.i.use.arch")
+                        .encode()
+        );
 
     }
 
@@ -56,16 +55,7 @@ public class ModuleAuth extends AbstractModule {
             return;
         }
 
-        final User usr = res.getUser();
-
-        ctx.response().setStatusCode(
-                201).end(
-                        new JsonObject()
-                                .put("user",
-                                        new JsonObject().put("username", usr.getUsername())
-                                                .put("discriminator", usr.getDiscriminator())
-                                                .put("id", usr.getId().toString()).put("flag", usr.getFlag()))
-                                .encode());
+        // @todo: Immediately return a valid token?
+        ctx.response().setStatusCode(201).end();
     }
-
 }
