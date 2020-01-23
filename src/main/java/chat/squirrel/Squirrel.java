@@ -48,6 +48,12 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.SessionHandler;
 import io.vertx.ext.web.sstore.SessionStore;
 
+/**
+ * The main Squirrel Class.
+ * 
+ * This class is the core of the server, it supervises all of the managers and
+ * api.
+ */
 public final class Squirrel {
     // Stuff
     private static Squirrel instance;
@@ -68,11 +74,19 @@ public final class Squirrel {
     private final SessionStore sessionStore;
     private final Handler<RoutingContext> apiAuthHandler;
 
+    /**
+     * Call this if you want stuff to break
+     * 
+     * @param args
+     */
     public static void main(String[] args) {
         instance = new Squirrel();
         instance.start();
     }
 
+    /**
+     * @return The main Squirrel instance running on this JVM
+     */
     public static Squirrel getInstance() {
         return instance;
     }
@@ -160,32 +174,49 @@ public final class Squirrel {
     }
 
     /**
-     * @return The property content from the config file
+     * @param key The key representing the setting in the properties file to get
+     * @return The property content from the properties file
      */
     public String getProperty(String key) {
         return properties.getProperty(key);
     }
 
+    /**
+     * @param key The key representing the setting in the properties file to get
+     * @param def The default value in case it's not defined
+     * @return The value of {@link key} or {@link def}
+     */
     public String getProperty(String key, String def) {
         return properties.getProperty(key, def);
     }
 
+    /**
+     * 
+     * @return The SquirrelConfig object for this instance
+     */
     public SquirrelConfig getConfig() {
         return config;
     }
 
+    /**
+     * 
+     * @return The AuthHandler that manages authentication to the database
+     */
     public AuthHandler getAuthHandler() {
         return authHandler;
     }
 
+    /**
+     * @return The Vert.x authentication handler the precedes protected routes.
+     */
     public Handler<RoutingContext> getApiAuthHandler() {
         return apiAuthHandler;
     }
 
     /**
      *
-     * @param dis String format of integer with up to 4 leading zeros
-     * @return
+     * @param dis The discriminator integer to format
+     * @return String format of integer with up to 4 leading zeros
      */
     public static String formatDiscriminator(int dis) {
         if (dis < 0 || dis > 9999)

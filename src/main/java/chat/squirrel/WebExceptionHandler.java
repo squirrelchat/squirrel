@@ -34,6 +34,9 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
+/**
+ * This route handler handles various exceptions including server side Java Exceptions
+ */
 public class WebExceptionHandler implements Handler<RoutingContext> {
     private static final Logger LOG = LoggerFactory.getLogger(WebExceptionHandler.class);
     private boolean shouldPrintError = false;

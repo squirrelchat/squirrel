@@ -29,6 +29,10 @@ package chat.squirrel.entities;
 
 import org.bson.types.ObjectId;
 
+/**
+ * A standard text message
+ * TODO: Rename to TextMessage
+ */
 public class Message extends AbstractEntity implements IMessage {
     private ObjectId author;
     private String content;

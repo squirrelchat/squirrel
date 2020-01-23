@@ -50,6 +50,9 @@ import chat.squirrel.Version;
 import chat.squirrel.entities.IEntity;
 import chat.squirrel.entities.User;
 
+/**
+ * A DatabaseManager manages the interactions with MongoDB
+ */
 public class DatabaseManager {
     private static final Logger LOG = LoggerFactory.getLogger(DatabaseManager.class);
     private final MongoClient client;
@@ -57,9 +60,13 @@ public class DatabaseManager {
     private final Random random = new Random();
     private final CodecRegistry pojoCodecRegistry;
 
+    /**
+     * 
+     * @param connectionString MongoDB Connection String
+     * @param dbName           The database to use
+     */
     public DatabaseManager(String connectionString, String dbName) {
-        pojoCodecRegistry = CodecRegistries.fromRegistries(
-                MongoClientSettings.getDefaultCodecRegistry(),
+        pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
                 CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()));
 
         final ConnectionString conStr = new ConnectionString(connectionString);
@@ -91,7 +98,7 @@ public class DatabaseManager {
     }
 
     public FindIterable<? extends IEntity> findEntities(Class<? extends IEntity> type, SquirrelCollection col,
-                                                        Bson filters) {
+            Bson filters) {
         return db.getCollection(col.getMongoName(), type).find(filters);
     }
 
@@ -129,18 +136,51 @@ public class DatabaseManager {
         return dis;
     }
 
+    /**
+     * 
+     * @param username The username string to check
+     * @param dis      The discriminator integer to check
+     * @return {@link true} if the discriminator is already used for this username,
+     *         {@link false} otherwise
+     */
     public boolean isDiscriminatorTaken(final String username, final int dis) {
         return findFirstEntity(User.class, SquirrelCollection.USERS,
                 Filters.and(Filters.eq("discriminator", dis), Filters.eq("username", username))) != null;
     }
 
+    /**
+     * Shutdown the MongoDB Driver
+     */
     public void shutdown() {
         LOG.info("Shutting down MongoDB driver");
         client.close();
     }
 
+    /**
+     * The Mongo collections used by squirrel.
+     */
     public enum SquirrelCollection {
-        USERS("users"), GUILDS("guilds"), CONFIG("config"), MESSAGES("messages"), CHANNELS("channels");
+
+        /**
+         * 'users' collection. Contains entity type {@link User}
+         */
+        USERS("users"),
+        /**
+         * 'guilds' collection. Contains entity type {@link Guild}
+         */
+        GUILDS("guilds"),
+        /**
+         * 'config' collection. Contains entity type {@link SquirrelConfig}
+         */
+        CONFIG("config"),
+        /**
+         * 'messages' collection. Contains entity type {@link IMessage}
+         */
+        MESSAGES("messages"),
+        /**
+         * 'channels' collection. Contains entity type {@link IChannel}
+         */
+        CHANNELS("channels");
 
         private String mongoName;
 
@@ -148,6 +188,10 @@ public class DatabaseManager {
             this.mongoName = mongoName;
         }
 
+        /**
+         * @return the name of the MongoDB collection to use because we try to comply
+         *         with BSON naming standards.
+         */
         public String getMongoName() {
             return mongoName;
         }

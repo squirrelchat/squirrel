@@ -29,7 +29,6 @@ package chat.squirrel.entities;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
@@ -49,34 +48,59 @@ public class Member extends AbstractEntity {
     private String nickmame;
     private Collection<ObjectId> roles;
 
+    /**
+     * @return The ID corresponding to the {@link User} associated with this Member
+     */
     public ObjectId getUserId() {
         return userId;
     }
 
+    /**
+     * @param userId The ID corresponding to the {@link User} associated with this
+     *               Member.
+     */
     public void setUserId(ObjectId userId) {
         this.userId = userId;
     }
 
+    /**
+     * Async because DB request
+     * 
+     * @return Future that will return the {@link User} corresponding to this
+     *         Member.
+     */
     @BsonIgnore
     public Future<User> getUser() {
-        return new FutureTask<>(() ->  (User) Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
+        return new FutureTask<>(() -> (User) Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
                 SquirrelCollection.USERS, Filters.eq(getUserId())));
     }
 
+    /**
+     * @return The IDs corresponding to the Guild roles that the Member possesses.
+     */
     public Collection<ObjectId> getRolesIds() {
         return roles;
     }
 
+    /**
+     * @param roles The IDs corresponding to the Guild roles that the Member possesses.
+     */
     public void setRolesIds(Collection<ObjectId> roles) {
         this.roles = roles;
     }
 
+    /**
+     * @return The {@link Guild} that this Member is appart of
+     */
     @BsonIgnore
     public Future<Guild> getGuild() {
         return new FutureTask<>(() -> (Guild) Squirrel.getInstance().getDatabaseManager().findFirstEntity(Guild.class,
                 SquirrelCollection.GUILDS, Filters.eq(getGuildId())));
     }
 
+    /**
+     * @return Get the roles this Member possesses.
+     */
     @BsonIgnore
     public Future<Collection<Role>> getRoles() {
         return new FutureTask<>(() -> { // XXX this is ugly
@@ -91,18 +115,32 @@ public class Member extends AbstractEntity {
         });
     }
 
+    /**
+     * 
+     * @return This user's nickname for this Guild
+     */
     public String getNickmame() {
         return nickmame;
     }
 
+    /**
+     * @param nickmame The user's nickname for this Guild
+     */
     public void setNickmame(String nickmame) {
         this.nickmame = nickmame;
     }
 
+    /**
+     * @return The ID corresponding to the Guild this Member is apart of.
+     */
     public ObjectId getGuildId() {
         return guildId;
     }
 
+    /**
+     * 
+     * @param guildId The ID corresponding to the Guild this Member is apart of.
+     */
     public void setGuildId(ObjectId guildId) {
         this.guildId = guildId;
     }

@@ -29,36 +29,79 @@ package chat.squirrel.entities;
 
 import java.util.Collection;
 
+/**
+ * A basic Guild
+ */
 public class Guild extends AbstractEntity {
     private String name;
     private Collection<Member> members;
     private Collection<Role> roles;
 
+    /**
+     * @return The display name of the Guild
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @param name The display name of the Guild
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * @return The {@link Member}s that are apart of this Guild
+     */
     public Collection<Member> getMembers() {
         return members;
     }
 
+    /**
+     * @param members The {@link Member}s that are apart of this Guild
+     */
     public void setMembers(Collection<Member> members) {
         this.members = members;
     }
 
+    /**
+     * @return The {@link Role}s that are created in this Guild
+     */
     public Collection<Role> getRoles() {
         return roles;
     }
 
+    /**
+     * @param roles The {@link Role}s that are created in this Guild
+     */
     public void setRoles(Collection<Role> roles) {
         this.roles = roles;
     }
 
+    /**
+     * Guild permissions
+     */
     public enum Permissions {
-        CHANGE_NICKNAME, BAN, KICK, ROLE_IMMUNITY, MANAGE_CHANNELS
+        /**
+         * Allow Member to change own nickname
+         */
+        CHANGE_NICKNAME,
+        /**
+         * Ban {@link Member}s from the Guild
+         */
+        BAN,
+        /**
+         * Kick {@link Member} from this Guild
+         */
+        KICK,
+        /**
+         * TODO i forgot what this is supposed to be
+         */
+        ROLE_IMMUNITY,
+        /**
+         * Manage the Guild's Channels
+         */
+        MANAGE_CHANNELS
     }
 }

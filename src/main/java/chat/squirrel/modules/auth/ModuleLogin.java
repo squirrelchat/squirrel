@@ -3,12 +3,14 @@ package chat.squirrel.modules.auth;
 import chat.squirrel.Squirrel;
 import chat.squirrel.auth.AuthHandler;
 import chat.squirrel.auth.AuthResult;
-import chat.squirrel.entities.User;
 import chat.squirrel.modules.AbstractModule;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
+/**
+ * This Module manages authentication and MFA to Squirrel
+ */
 public class ModuleLogin extends AbstractModule {
     @Override
     public void initialize() {

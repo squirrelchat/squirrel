@@ -27,23 +27,38 @@
 
 package chat.squirrel.entities;
 
+/**
+ * A standard {@link Guild} Role
+ */
 public class Role extends AbstractEntity {
     // @todo: Permissions: as an int (bitwise) or collection of strings?
     private int color;
     private String name;
 
+    /**
+     * @return The RGB color corresponding to this role
+     */
     public int getColor() {
         return color;
     }
 
+    /**
+     * @param color The RGB color corresponding to this role
+     */
     public void setColor(int color) {
         this.color = color;
     }
 
+    /**
+     * @param name The display name of this Role
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * @return The display name of this Role
+     */
     public String getName() {
         return name;
     }

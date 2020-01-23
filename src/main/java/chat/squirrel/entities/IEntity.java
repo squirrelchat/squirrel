@@ -31,7 +31,16 @@ import org.bson.types.ObjectId;
 
 import io.vertx.core.json.JsonObject;
 
+/**
+ * A basic Squirrel Entity.
+ */
 public interface IEntity {
+    /**
+     * @return The Mongo ID of this entity
+     */
     public ObjectId getId();
+    /**
+     * @return Vert.x {@link JsonObject} generated from this POJO
+     */
     public JsonObject toJson();
 }

@@ -45,6 +45,9 @@ import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import de.mkammerer.argon2.Argon2Factory.Argon2Types;
 
+/**
+ * This {@link AuthHandler} manages authentication against the MongoDB database.
+ */
 public class MongoAuthHandler implements AuthHandler {
     private static Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
             Pattern.CASE_INSENSITIVE), USERNAME_PATTERN = Pattern.compile("^\\S[^#\\e\\p{Cntrl}}\\R]+\\S$", Pattern.CASE_INSENSITIVE);
@@ -52,6 +55,9 @@ public class MongoAuthHandler implements AuthHandler {
     @SuppressWarnings("FieldCanBeLocal")
     private final int ARGON_ITERATION = 3, ARGON_MEMORY = 128000, ARGON_PARALLELISM = 4;
 
+    /**
+     * Creates a basic {@link MongoAuthHandler}
+     */
     public MongoAuthHandler() {
         argon = Argon2Factory.create(Argon2Types.ARGON2d);
     }
