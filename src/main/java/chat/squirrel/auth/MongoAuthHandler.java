@@ -47,7 +47,7 @@ import de.mkammerer.argon2.Argon2Factory.Argon2Types;
 
 public class MongoAuthHandler implements AuthHandler {
     private static Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
-            Pattern.CASE_INSENSITIVE), USERNAME_PATTERN = Pattern.compile("^\\S[^#]+\\S$", Pattern.CASE_INSENSITIVE);
+            Pattern.CASE_INSENSITIVE), USERNAME_PATTERN = Pattern.compile("^\\S[^#\\e\\p{Cntrl}}\\R]+\\S$", Pattern.CASE_INSENSITIVE);
     private final Argon2 argon;
     @SuppressWarnings("FieldCanBeLocal")
     private final int ARGON_ITERATION = 3, ARGON_MEMORY = 128000, ARGON_PARALLELISM = 4;
@@ -92,13 +92,16 @@ public class MongoAuthHandler implements AuthHandler {
                         SquirrelCollection.USERS, Filters.eq(doc.get("_id"))));
                 res.setReason(null);
             } else {
-                res.setReason(shouldDistinguish ? FailureReason.INVALID_PASSWORD : FailureReason.INVALID_CREDENTIALS);
+                res.setReason(FailureReason.INVALID_PASSWORD);
             }
         } else {
-            res.setReason(shouldDistinguish ? FailureReason.INVALID_USERNAME : FailureReason.INVALID_CREDENTIALS);
+            res.setReason(FailureReason.INVALID_USERNAME);
         }
 
         argon.wipeArray(password);
+
+        if (!shouldDistinguish)
+            res.setReason(FailureReason.INVALID_CREDENTIALS);
 
         return res;
     }
