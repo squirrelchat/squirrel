@@ -179,7 +179,7 @@ public class MongoAuthHandler implements AuthHandler {
         final int max = Squirrel.getInstance().getConfig().getMaximumUsernameCount();
         final long count = Squirrel.getInstance().getDatabaseManager().countDocuments(SquirrelCollection.USERS,
                 Filters.eq("username", username));
-        return count >= 9999 || (max != -1 && count >= max);
+        return count >= 5000 || (max != -1 && count >= max);
     }
 
     private FindIterable<Document> fetchUsers(final Bson filters) {

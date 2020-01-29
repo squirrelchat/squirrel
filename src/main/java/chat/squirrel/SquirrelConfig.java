@@ -58,12 +58,9 @@ public class SquirrelConfig extends AbstractEntity {
         this.allowRegister = allowRegister;
     }
 
-    // @todo: is it a good idea to allow allocating all discriminators, given the randomness?
-    // We should maybe consider either forcing it to be below 8000, or handle differently usernames
-    // close to have all discriminators allocated to prevent long-running loops.
     /**
-     * -1 for standard maximum (9999)
-     * @return
+     * -1 for standard maximum (5000).
+     * Cannot be higher than 5000.
      */
     public int getMaximumUsernameCount() {
         return maximumUsernameCount;

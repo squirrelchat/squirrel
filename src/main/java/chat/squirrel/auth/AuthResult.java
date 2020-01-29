@@ -82,7 +82,7 @@ public class AuthResult {
         UNKNOWN_IP_ADDRESS, // IP never logged in on that account
         /**
          * If the limit for a username has been reached or if there are no free
-         * discriminators (registration/account update)
+         * discriminators
          */
         OVERUSED_USERNAME,
         DISABLED_ACCOUNT,

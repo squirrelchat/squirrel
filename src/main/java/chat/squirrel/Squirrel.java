@@ -50,7 +50,7 @@ import io.vertx.ext.web.sstore.SessionStore;
 
 /**
  * The main Squirrel Class.
- * 
+ *
  * This class is the core of the server, it supervises all of the managers and
  * api.
  */
@@ -76,7 +76,7 @@ public final class Squirrel {
 
     /**
      * Call this if you want stuff to break
-     * 
+     *
      * @param args
      */
     public static void main(String[] args) {
@@ -184,14 +184,14 @@ public final class Squirrel {
     /**
      * @param key The key representing the setting in the properties file to get
      * @param def The default value in case it's not defined
-     * @return The value of {@link key} or {@link def}
+     * @return The value of key or def
      */
     public String getProperty(String key, String def) {
         return properties.getProperty(key, def);
     }
 
     /**
-     * 
+     *
      * @return The SquirrelConfig object for this instance
      */
     public SquirrelConfig getConfig() {
@@ -199,7 +199,7 @@ public final class Squirrel {
     }
 
     /**
-     * 
+     *
      * @return The AuthHandler that manages authentication to the database
      */
     public AuthHandler getAuthHandler() {
@@ -220,7 +220,7 @@ public final class Squirrel {
      */
     public static String formatDiscriminator(int dis) {
         if (dis < 0 || dis > 9999)
-            throw new IllegalArgumentException("Discriminator to be formated is out of bounds");
+            throw new IllegalArgumentException("Discriminator to be formatted is out of bounds");
         return String.format("%04d", dis);
     }
 
