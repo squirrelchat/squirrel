@@ -27,41 +27,11 @@
 
 package chat.squirrel.entities;
 
-import java.util.Collection;
+import chat.squirrel.entities.channels.IChannel;
 
 /**
- * A standard {@link Guild} Role
+ * Permission override to a {@link IChannel}
  */
-public class Role extends AbstractEntity {
-    private int color;
-    private String name;
-    private Collection<String> permissions;
-
-    /**
-     * @return The RGB color corresponding to this role
-     */
-    public int getColor() {
-        return color;
-    }
-
-    /**
-     * @param color The RGB color corresponding to this role
-     */
-    public void setColor(int color) {
-        this.color = color;
-    }
-
-    /**
-     * @param name The display name of this Role
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return The display name of this Role
-     */
-    public String getName() {
-        return name;
-    }
+public class PermissionOverride extends AbstractEntity {
+    // @todo
 }

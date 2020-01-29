@@ -45,7 +45,7 @@ import chat.squirrel.core.DatabaseManager.SquirrelCollection;
  */
 public class Member extends AbstractEntity {
     private ObjectId userId, guildId;
-    private String nickmame;
+    private String nickname;
     private Collection<ObjectId> roles;
 
     /**
@@ -65,7 +65,7 @@ public class Member extends AbstractEntity {
 
     /**
      * Async because DB request
-     * 
+     *
      * @return Future that will return the {@link User} corresponding to this
      *         Member.
      */
@@ -90,10 +90,11 @@ public class Member extends AbstractEntity {
     }
 
     /**
-     * @return The {@link Guild} that this Member is appart of
+     * @return The {@link Guild} that this Member is a part of
      */
     @BsonIgnore
     public Future<Guild> getGuild() {
+        // @todo: use an aggregation at query-time
         return new FutureTask<>(() -> (Guild) Squirrel.getInstance().getDatabaseManager().findFirstEntity(Guild.class,
                 SquirrelCollection.GUILDS, Filters.eq(getGuildId())));
     }
@@ -103,6 +104,7 @@ public class Member extends AbstractEntity {
      */
     @BsonIgnore
     public Future<Collection<Role>> getRoles() {
+        // @todo: use an aggregation at query-time
         return new FutureTask<>(() -> { // XXX this is ugly
             final Guild guild = getGuild().get();
             final Collection<ObjectId> ids = getRolesIds();
@@ -116,18 +118,18 @@ public class Member extends AbstractEntity {
     }
 
     /**
-     * 
+     *
      * @return This user's nickname for this Guild
      */
-    public String getNickmame() {
-        return nickmame;
+    public String getNickname() {
+        return nickname;
     }
 
     /**
-     * @param nickmame The user's nickname for this Guild
+     * @param nickname The user's nickname for this Guild
      */
-    public void setNickmame(String nickmame) {
-        this.nickmame = nickmame;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     /**
@@ -138,7 +140,7 @@ public class Member extends AbstractEntity {
     }
 
     /**
-     * 
+     *
      * @param guildId The ID corresponding to the Guild this Member is apart of.
      */
     public void setGuildId(ObjectId guildId) {

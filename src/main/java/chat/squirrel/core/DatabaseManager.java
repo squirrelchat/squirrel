@@ -27,16 +27,13 @@
 
 package chat.squirrel.core;
 
-import java.util.Random;
-
-import org.bson.Document;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.PojoCodecProvider;
-import org.bson.conversions.Bson;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import chat.squirrel.SquirrelConfig;
+import chat.squirrel.Version;
+import chat.squirrel.entities.Guild;
+import chat.squirrel.entities.IEntity;
+import chat.squirrel.entities.IMessage;
+import chat.squirrel.entities.User;
+import chat.squirrel.entities.channels.IChannel;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.FindIterable;
@@ -45,10 +42,15 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
+import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
+import org.bson.conversions.Bson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import chat.squirrel.Version;
-import chat.squirrel.entities.IEntity;
-import chat.squirrel.entities.User;
+import java.util.Random;
 
 /**
  * A DatabaseManager manages the interactions with MongoDB
@@ -61,7 +63,7 @@ public class DatabaseManager {
     private final CodecRegistry pojoCodecRegistry;
 
     /**
-     * 
+     *
      * @param connectionString MongoDB Connection String
      * @param dbName           The database to use
      */
@@ -137,7 +139,7 @@ public class DatabaseManager {
     }
 
     /**
-     * 
+     *
      * @param username The username string to check
      * @param dis      The discriminator integer to check
      * @return {@link true} if the discriminator is already used for this username,
@@ -184,7 +186,7 @@ public class DatabaseManager {
 
         private String mongoName;
 
-        private SquirrelCollection(String mongoName) {
+        SquirrelCollection(String mongoName) {
             this.mongoName = mongoName;
         }
 
