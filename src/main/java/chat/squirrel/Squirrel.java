@@ -45,8 +45,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.SessionHandler;
-import io.vertx.ext.web.sstore.SessionStore;
+import xyz.bowser65.tokenize.Tokenize;
 
 /**
  * The main Squirrel Class.
@@ -66,12 +65,12 @@ public final class Squirrel {
     private final ModuleManager moduleManager;
     private final DatabaseManager dbManager;
     private final AuthHandler authHandler;
+    private final Tokenize tokenize;
 
     // Vert.x
     private final HttpServer server;
     private final Router rootRouter;
     private final Router apiRouter;
-    private final SessionStore sessionStore;
     private final Handler<RoutingContext> apiAuthHandler;
 
     /**
@@ -113,6 +112,8 @@ public final class Squirrel {
             config = new SquirrelConfig();
 
         authHandler = new MongoAuthHandler(); // TODO: make customizable when there'll be more
+        
+        tokenize = new Tokenize(config.getTokenSecret());
 
         LOG.info("Loading modules");
         moduleManager.scanPackage("chat.squirrel.modules");
@@ -124,10 +125,6 @@ public final class Squirrel {
         apiRouter = Router.router(vertx);
         server.requestHandler(rootRouter);
         rootRouter.mountSubRouter("/api/v1", apiRouter);
-
-        sessionStore = SessionStore.create(vertx);
-        final SessionHandler sessionHandler = SessionHandler.create(sessionStore);
-        rootRouter.route().handler(sessionHandler);
 
         apiAuthHandler = new WebAuthHandler();
 
@@ -222,6 +219,10 @@ public final class Squirrel {
         if (dis < 0 || dis > 9999)
             throw new IllegalArgumentException("Discriminator to be formatted is out of bounds");
         return String.format("%04d", dis);
+    }
+    
+    public Tokenize getTokenize() {
+        return tokenize;
     }
 
 }

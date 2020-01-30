@@ -32,6 +32,7 @@ import chat.squirrel.entities.User;
 public class AuthResult {
     private User user;
     private FailureReason reason = FailureReason.UNKNOWN;
+    private String token;
 
     public FailureReason getReason() {
         return reason;
@@ -54,6 +55,14 @@ public class AuthResult {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override

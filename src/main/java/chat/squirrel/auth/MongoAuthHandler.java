@@ -95,9 +95,11 @@ public class MongoAuthHandler implements AuthHandler {
         if (doc != null) {
             final String hash = doc.getString("password");
             if (argon.verify(hash, password)) {
-                res.setUser((User) Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
-                        SquirrelCollection.USERS, Filters.eq(doc.get("_id"))));
+                final User user = (User) Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
+                        SquirrelCollection.USERS, Filters.eq(doc.get("_id")));
+                res.setUser(user);
                 res.setReason(null);
+                res.setToken(Squirrel.getInstance().getTokenize().generate(user.getId().toHexString()));
             } else {
                 res.setReason(FailureReason.INVALID_PASSWORD);
             }
@@ -151,7 +153,7 @@ public class MongoAuthHandler implements AuthHandler {
         argon.wipeArray(password);
 
         if (pwdUp.getModifiedCount() != 1) {
-            throw new IllegalStateException("Password settings at registration didn't success: "
+            throw new IllegalStateException("Password settings at registration didn't succeed: "
                     + pwdUp.getModifiedCount() + " passwords have been changed");
         }
 

@@ -39,6 +39,7 @@ import com.mongodb.client.model.Filters;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.entities.Guild.Permissions;
 
 /**
  * Member of a guild
@@ -47,6 +48,8 @@ public class Member extends AbstractEntity {
     private ObjectId userId, guildId;
     private String nickname;
     private Collection<ObjectId> roles;
+    private Collection<Permissions> permissions;
+    private boolean owner;
 
     /**
      * @return The ID corresponding to the {@link User} associated with this Member
@@ -145,6 +148,26 @@ public class Member extends AbstractEntity {
      */
     public void setGuildId(ObjectId guildId) {
         this.guildId = guildId;
+    }
+
+    public Collection<Permissions> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Collection<Permissions> permissions) {
+        this.permissions = permissions;
+    }
+
+    /**
+     * Sets whether this members is the owner of the server
+     * @return if the member is the owner of the guild
+     */
+    public boolean isOwner() {
+        return owner;
+    }
+
+    public void setOwner(boolean owner) {
+        this.owner = owner;
     }
 
 }

@@ -29,6 +29,8 @@ package chat.squirrel.entities;
 
 import java.util.Collection;
 
+import org.bson.types.ObjectId;
+
 /**
  * A basic Guild
  */
@@ -80,6 +82,19 @@ public class Guild extends AbstractEntity {
     }
 
     /**
+     * 
+     * @param user
+     * @return The member corresponding to this user or null otherwise
+     */
+    public Member getMemberForUser(ObjectId user) {
+        for (Member m : getMembers()) {
+            if (m.getUserId().equals(user))
+                return m;
+        }
+        return null;
+    }
+
+    /**
      * Permissions
      */
     public enum Permissions {
@@ -88,11 +103,9 @@ public class Guild extends AbstractEntity {
          */
         ADMINISTRATOR,
         /**
-         * Can manage settings of the guild
-         * <b>Implicitly grants:
-         * GUILD_MANAGE_ROLES, GUILD_MANAGE_PERMISSIONS, GUILD_MANAGE_WEBHOOKS,
-         * GUILD_MANAGE_INTEGRATIONS, GUILD_MANAGE_CHANNELS, GUILD_MANAGE_INVITES,
-         * GUILD_AUDITS, CHANNEL_ACCESS</b>
+         * Can manage settings of the guild <b>Implicitly grants: GUILD_MANAGE_ROLES,
+         * GUILD_MANAGE_PERMISSIONS, GUILD_MANAGE_WEBHOOKS, GUILD_MANAGE_INTEGRATIONS,
+         * GUILD_MANAGE_CHANNELS, GUILD_MANAGE_INVITES, GUILD_AUDITS, CHANNEL_ACCESS</b>
          */
         GUILD_MANAGE,
         /**
@@ -112,8 +125,8 @@ public class Guild extends AbstractEntity {
          */
         GUILD_MANAGE_INTEGRATIONS,
         /**
-         * Ability to add, edit and delete channels
-         * <b>Bypasses automated text channels moderation</b>
+         * Ability to add, edit and delete channels <b>Bypasses automated text channels
+         * moderation</b>
          */
         GUILD_MANAGE_CHANNELS,
         /**
@@ -129,11 +142,9 @@ public class Guild extends AbstractEntity {
          */
         GUILD_AUDITS,
         /**
-         * Can manage moderation-related settings of the guild
-         * <b>Implicitly grants:
-         * GUILD_MANAGE_NICKNAMES, GUILD_AUDITS, MEMBER_BAN,
-         * MEMBER_TEMP_BAN, MEMBER_KICK, MEMBER_MUTE,
-         * TEXT_MANAGE_MESSAGES</b>
+         * Can manage moderation-related settings of the guild <b>Implicitly grants:
+         * GUILD_MANAGE_NICKNAMES, GUILD_AUDITS, MEMBER_BAN, MEMBER_TEMP_BAN,
+         * MEMBER_KICK, MEMBER_MUTE, TEXT_MANAGE_MESSAGES</b>
          */
         GUILD_MANAGE_MODERATION,
         /**
@@ -157,8 +168,8 @@ public class Guild extends AbstractEntity {
          */
         GUILD_MANAGE_NICKNAMES,
         /**
-         * Ability to delete messages and/or reactions
-         * <b>Bypasses automated text channels moderation</b>
+         * Ability to delete messages and/or reactions <b>Bypasses automated text
+         * channels moderation</b>
          */
         TEXT_MANAGE_MESSAGES,
         /**
@@ -172,9 +183,8 @@ public class Guild extends AbstractEntity {
         /**
          * Allows viewing and accessing a channel.
          *
-         * If not granted guild-wide, members will only be able to see
-         * channels they're explicitly allowed to through permission
-         * overrides.
+         * If not granted guild-wide, members will only be able to see channels they're
+         * explicitly allowed to through permission overrides.
          *
          * <b>Implicitly revokes ALL permissions on the channel if missing</b>
          */
@@ -190,8 +200,8 @@ public class Guild extends AbstractEntity {
         /**
          * Allows adding reactions to messages
          *
-         * <b>Note: People without reactions can add their own reaction
-         * on already existing reactions.</b>
+         * <b>Note: People without reactions can add their own reaction on already
+         * existing reactions.</b>
          */
         TEXT_ADD_REACTIONS,
         /**

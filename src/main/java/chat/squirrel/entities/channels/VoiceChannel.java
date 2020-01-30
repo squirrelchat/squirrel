@@ -28,6 +28,7 @@
 package chat.squirrel.entities.channels;
 
 import java.util.Collection;
+import java.util.concurrent.Future;
 
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
@@ -49,7 +50,7 @@ public class VoiceChannel extends AbstractEntity implements IChannel {
 
     @Override
     @BsonIgnore
-    public Collection<ObjectId> getParticipants() { // TODO
+    public Future<Collection<ObjectId>> getParticipants() { // TODO
         return null;
     }
 

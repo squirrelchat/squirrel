@@ -29,13 +29,15 @@ package chat.squirrel.entities;
 
 import java.util.Collection;
 
+import xyz.bowser65.tokenize.IAccount;
+
 /**
  * Server wide user account
  */
-public class User extends AbstractEntity {
+public class User extends AbstractEntity implements IAccount {
     private String username, email, customEmail;
     private int discriminator, flag;
-    private boolean disabled, banned, deleted;
+    private boolean disabled, banned, deleted, mfa;
     private Collection<String> ips;
 
     public String getUsername() {
@@ -113,5 +115,16 @@ public class User extends AbstractEntity {
     @Override
     public String toString() {
         return getUsername() + "#" + getDiscriminator() + "(" + getId().toHexString() + ")";
+    }
+
+    @Override
+    public boolean hasMfa() {
+        return mfa;
+    }
+
+    @Override
+    public long tokensValidSince() {
+        // TODO Auto-generated method stub
+        return 0;
     }
 }

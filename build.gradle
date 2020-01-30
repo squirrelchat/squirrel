@@ -61,6 +61,7 @@ dependencies {
     implementation 'io.vertx:vertx-web:3.8.4'
     implementation 'org.reflections:reflections:0.9.12'
     implementation 'de.mkammerer:argon2-jvm:2.6'
+    implementation 'xyz.bowser65:Tokenize:9cddf7451c'
 
     // Logging
     implementation 'io.sentry:sentry-logback:1.7.22'

@@ -27,11 +27,14 @@
 
 package chat.squirrel;
 
+import java.security.SecureRandom;
+
 import chat.squirrel.entities.AbstractEntity;
 
 public class SquirrelConfig extends AbstractEntity {
-    private String orgName = "Squirrel Chat", srvDescription = "Default Squirrel Server";
+    private String orgName = "Squirrel Chat", srvDescription = "Default Squirrel Server", secret;
     private int maximumUsernameCount = -1;
+    private long sessionTimeout = -1;
     private boolean allowRegister = false;
 
     public String getOrgName() {
@@ -68,5 +71,27 @@ public class SquirrelConfig extends AbstractEntity {
 
     public void setMaximumUsernameCount(int maximumUsernameCount) {
         this.maximumUsernameCount = maximumUsernameCount;
+    }
+
+    public String getTokenSecret() {
+        if (secret == null) {
+            final SecureRandom rng = new SecureRandom();
+            final byte[] raw = new byte[128];
+            rng.nextBytes(raw);
+            secret = new String(raw);
+        }
+        return secret;
+    }
+    
+    public void setTokenSecret(String secret) {
+        this.secret = secret;
+    }
+
+    public long getSessionTimeout() {
+        return sessionTimeout;
+    }
+
+    public void setSessionTimeout(long sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
     }
 }

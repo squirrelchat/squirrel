@@ -36,13 +36,16 @@ public class ModuleLogin extends AbstractModule {
         ctx.response().setStatusCode(200).end(
                 new JsonObject()
                         .put("mfa_required", false)
-                        .put("token", "btw.have.i.told.you.i.use.arch")
+                        .put("token", res.getToken())
                         .encode()
         );
-
     }
 
     private void handleRegister(RoutingContext ctx) {
+        if (!Squirrel.getInstance().getConfig().isAllowRegister()) {
+            ctx.fail(402);
+            return;
+        }
         final JsonObject obj = ctx.getBodyAsJson();
         if (obj == null) {
             ctx.fail(400);
@@ -57,7 +60,6 @@ public class ModuleLogin extends AbstractModule {
             return;
         }
 
-        // @todo: Immediately return a valid token?
         ctx.response().setStatusCode(201).end();
     }
 }

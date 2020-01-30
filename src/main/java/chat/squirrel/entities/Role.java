@@ -64,4 +64,12 @@ public class Role extends AbstractEntity {
     public String getName() {
         return name;
     }
+
+    public Collection<String> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Collection<String> permissions) {
+        this.permissions = permissions;
+    }
 }

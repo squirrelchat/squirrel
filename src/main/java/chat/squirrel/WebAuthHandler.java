@@ -27,10 +27,20 @@
 
 package chat.squirrel;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
+
+import org.bson.types.ObjectId;
+
+import com.mongodb.client.model.Filters;
+
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.User;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.Session;
+import xyz.bowser65.tokenize.IAccount;
+import xyz.bowser65.tokenize.Tokenize;
 
 /**
  * Vert.x handler to handle sessions before continuing down a chain
@@ -40,13 +50,19 @@ public class WebAuthHandler implements Handler<RoutingContext> {
 
     @Override
     public void handle(RoutingContext event) {
-        final Session session = event.session();
-        if (session == null || session.isDestroyed() || session.isEmpty()) {
+        if (event.request().getHeader("Authorization") != null) {
             event.fail(401);
             return;
         }
 
-        final User user = session.get(SQUIRREL_SESSION_KEY);
+        final User user;
+        try {
+            user = (User) Squirrel.getInstance().getTokenize()
+                    .validate(event.request().getHeader("Authorization"), this::fetchAccount).get();
+        } catch (InterruptedException | ExecutionException e) {
+            event.fail(500);
+            return;
+        }
 
         if (user == null) {
             event.fail(401);
@@ -57,7 +73,29 @@ public class WebAuthHandler implements Handler<RoutingContext> {
             event.fail(403);
             return;
         }
+        
+        final long timeout = Squirrel.getInstance().getConfig().getSessionTimeout();
+
+        if (timeout != -1 && Tokenize.hasTokenExpired(event.request().getHeader("Authorization"),
+                timeout)) {
+            event.fail(401);
+            return;
+        }
+
+        event.put(SQUIRREL_SESSION_KEY, user);
+
         event.next();
+    }
+
+    private CompletableFuture<IAccount> fetchAccount(final String id) {
+        return CompletableFuture.supplyAsync(new Supplier<IAccount>() {
+
+            @Override
+            public IAccount get() {
+                return (User) Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
+                        SquirrelCollection.USERS, Filters.eq(new ObjectId(id)));
+            }
+        });
     }
 
 }
