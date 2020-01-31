@@ -86,7 +86,8 @@ public class Member extends AbstractEntity {
     }
 
     /**
-     * @param roles The IDs corresponding to the Guild roles that the Member possesses.
+     * @param roles The IDs corresponding to the Guild roles that the Member
+     *              possesses.
      */
     public void setRolesIds(Collection<ObjectId> roles) {
         this.roles = roles;
@@ -160,6 +161,7 @@ public class Member extends AbstractEntity {
 
     /**
      * Sets whether this members is the owner of the server
+     * 
      * @return if the member is the owner of the guild
      */
     public boolean isOwner() {
@@ -168,6 +170,16 @@ public class Member extends AbstractEntity {
 
     public void setOwner(boolean owner) {
         this.owner = owner;
+    }
+
+    public boolean hasEffectivePermission(Permissions perm) {
+        if (getPermissions() == null)
+            return false;
+
+        if (perm.name().startsWith("GUILD_MANAGE_") && getPermissions().contains(Permissions.GUILD_MANAGE))
+            return true;
+
+        return getPermissions().contains(perm) || getPermissions().contains(Permissions.ADMINISTRATOR);
     }
 
 }

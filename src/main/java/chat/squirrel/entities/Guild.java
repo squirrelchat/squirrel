@@ -27,9 +27,22 @@
 
 package chat.squirrel.entities;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
+
+import com.mongodb.client.model.Filters;
+
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.entities.channels.IChannel;
+import io.netty.channel.Channel;
 
 /**
  * A basic Guild
@@ -38,6 +51,7 @@ public class Guild extends AbstractEntity {
     private String name;
     private Collection<Member> members;
     private Collection<Role> roles;
+    private Collection<ObjectId> channels;
 
     /**
      * @return The display name of the Guild
@@ -92,6 +106,33 @@ public class Guild extends AbstractEntity {
                 return m;
         }
         return null;
+    }
+
+    public Collection<ObjectId> getChannels() {
+        return channels;
+    }
+
+    public void setChannels(Collection<ObjectId> channels) {
+        this.channels = channels;
+    }
+
+    @BsonIgnore
+    public Future<Collection<IChannel>> getRealChannels() {
+        return CompletableFuture.supplyAsync((Supplier<Collection<IChannel>>) () -> {
+            
+            if (getChannels() == null)
+                return Collections.emptyList();
+            
+            final ArrayList<IChannel> list = new ArrayList<>();
+            
+            for (ObjectId id : getChannels()) {
+                final IChannel chan = (IChannel) Squirrel.getInstance().getDatabaseManager()
+                        .findFirstEntity(IChannel.class, SquirrelCollection.CHANNELS, Filters.eq(id));
+                list.add(chan);
+            }
+            return list;
+        });
+
     }
 
     /**
