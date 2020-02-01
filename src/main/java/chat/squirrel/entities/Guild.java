@@ -42,7 +42,6 @@ import com.mongodb.client.model.Filters;
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.channels.IChannel;
-import io.netty.channel.Channel;
 
 /**
  * A basic Guild

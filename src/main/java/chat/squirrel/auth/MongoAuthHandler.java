@@ -49,9 +49,12 @@ import de.mkammerer.argon2.Argon2Factory.Argon2Types;
  * This {@link AuthHandler} manages authentication against the MongoDB database.
  */
 public class MongoAuthHandler implements AuthHandler {
-    private static Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
             Pattern.CASE_INSENSITIVE),
-            USERNAME_PATTERN = Pattern.compile("^\\S[^#\\e\\p{Cntrl}}\\R]+\\S$", Pattern.CASE_INSENSITIVE);
+            /**
+             * Does not allow escapes, line breaks, apple logo (F8FF)
+             */
+            USERNAME_PATTERN = Pattern.compile("^\\S[^\\e\\R\\p{Cntrl}}\\v\\xF8FF#]+\\S$", Pattern.CASE_INSENSITIVE);
     private final Argon2 argon;
     @SuppressWarnings("FieldCanBeLocal")
     private final int ARGON_ITERATION = 3, ARGON_MEMORY = 128000, ARGON_PARALLELISM = 4;
@@ -66,7 +69,7 @@ public class MongoAuthHandler implements AuthHandler {
     @Override
     public AuthResult attemptLogin(final String credential, final char[] password) {
         final AuthResult res = new AuthResult();
-        FindIterable<Document> it;
+        final FindIterable<Document> it;
         final boolean shouldDistinguish = Squirrel.getInstance().getConfig().isAllowRegister();
 
         if (credential.contains("#")) { // Contains discriminator separator so interpret as username
@@ -161,16 +164,7 @@ public class MongoAuthHandler implements AuthHandler {
         res.setReason(null);
         return res;
     }
-
-    private boolean isValidUsername(final String username) {
-        // @todo: Sanitize some Unicode stuff (zws, shit like private apple logo)
-        return !(username.length() < 2 || username.length() > 32) && USERNAME_PATTERN.matcher(username).matches();
-    }
-
-    private boolean isValidEmail(final String email) {
-        // @todo: Disallow emails handled by Squirrel's mail server (if configured)
-        return EMAIL_PATTERN.matcher(email).matches();
-    }
+   
 
     private boolean isEmailTaken(final String email) {
         return Squirrel.getInstance().getDatabaseManager().countDocuments(SquirrelCollection.USERS,
@@ -186,5 +180,15 @@ public class MongoAuthHandler implements AuthHandler {
 
     private FindIterable<Document> fetchUsers(final Bson filters) {
         return Squirrel.getInstance().getDatabaseManager().rawRequest(SquirrelCollection.USERS, filters);
+    }
+    
+    public static boolean isValidUsername(final String username) { // XXX should we move that to Squirrel?
+        // @todo: Sanitize some Unicode stuff (zws, shit like private apple logo)
+        return !(username.length() < 2 || username.length() > 32) && USERNAME_PATTERN.matcher(username).matches();
+    }
+
+    public static boolean isValidEmail(final String email) { // XXX should we move that to Squirrel?
+        // @todo: Disallow emails handled by Squirrel's mail server (if configured)
+        return EMAIL_PATTERN.matcher(email).matches();
     }
 }
