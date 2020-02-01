@@ -54,7 +54,7 @@ public class MongoAuthHandler implements AuthHandler {
             /**
              * Does not allow escapes, line breaks, apple logo (F8FF)
              */
-            USERNAME_PATTERN = Pattern.compile("^\\S[^\\e\\R\\p{Cntrl}}\\v\\xF8FF#]+\\S$", Pattern.CASE_INSENSITIVE);
+            USERNAME_PATTERN = Pattern.compile("^\\S[^#\\e\\p{Cntrl}}\\v\\xF8FF]+\\R+\\S$", Pattern.CASE_INSENSITIVE);
     private final Argon2 argon;
     @SuppressWarnings("FieldCanBeLocal")
     private final int ARGON_ITERATION = 3, ARGON_MEMORY = 128000, ARGON_PARALLELISM = 4;
