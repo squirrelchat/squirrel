@@ -71,7 +71,7 @@ public final class Squirrel {
     private final HttpServer server;
     private final Router rootRouter;
     private final Router apiRouter;
-    private final Handler<RoutingContext> apiAuthHandler;
+    private final Handler<RoutingContext> apiAuthHandler, webJsonHandler;
 
     /**
      * Call this if you want stuff to break
@@ -108,11 +108,13 @@ public final class Squirrel {
 
         config = (SquirrelConfig) dbManager.findFirstEntity(SquirrelConfig.class, SquirrelCollection.CONFIG,
                 new BsonDocument());
-        if (config == null)
+        if (config == null) {
             config = new SquirrelConfig();
+//            saveConfig();
+        }
 
         authHandler = new MongoAuthHandler(); // TODO: make customizable when there'll be more
-        
+
         tokenize = new Tokenize(config.getTokenSecret());
 
         LOG.info("Loading modules");
@@ -126,6 +128,7 @@ public final class Squirrel {
         server.requestHandler(rootRouter);
         rootRouter.mountSubRouter("/api/v1", apiRouter);
 
+        webJsonHandler = new WebJsonHandler();
         apiAuthHandler = new WebAuthHandler();
 
         webExceptionHandler = new WebExceptionHandler();
@@ -220,9 +223,13 @@ public final class Squirrel {
             throw new IllegalArgumentException("Discriminator to be formatted is out of bounds");
         return String.format("%04d", dis);
     }
-    
+
     public Tokenize getTokenize() {
         return tokenize;
+    }
+
+    public Handler<RoutingContext> getWebJsonHandler() {
+        return webJsonHandler;
     }
 
 }

@@ -58,7 +58,7 @@ public class ModuleGuilds extends AbstractModule {
         final JsonArray out = new JsonArray();
 
         try {
-            for (IChannel chan : guild.getRealChannels().get()) {
+            for (IChannel chan : guild.getRealChannels().get()) { // Channel-chan (#^.^#)
                 final JsonObject jsonChan = new JsonObject();
                 jsonChan.put("name", chan.getName());
                 jsonChan.put("id", chan.getId().toHexString());

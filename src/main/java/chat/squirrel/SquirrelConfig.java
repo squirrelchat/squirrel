@@ -35,7 +35,7 @@ public class SquirrelConfig extends AbstractEntity {
     private String orgName = "Squirrel Chat", srvDescription = "Default Squirrel Server", secret;
     private int maximumUsernameCount = -1;
     private long sessionTimeout = -1;
-    private boolean allowRegister = false;
+    private boolean allowRegister = true;
 
     public String getOrgName() {
         return orgName;

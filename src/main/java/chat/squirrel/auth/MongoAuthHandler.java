@@ -54,7 +54,7 @@ public class MongoAuthHandler implements AuthHandler {
             /**
              * Does not allow escapes, line breaks, apple logo (F8FF)
              */
-            USERNAME_PATTERN = Pattern.compile("^\\S[^#\\e\\p{Cntrl}}\\v\\xF8FF]+\\R+\\S$", Pattern.CASE_INSENSITIVE);
+            USERNAME_PATTERN = Pattern.compile("^\\S[^#\\e\\p{Cntrl}}\\v\\xF8FF]+\\S$", Pattern.CASE_INSENSITIVE);
     private final Argon2 argon;
     @SuppressWarnings("FieldCanBeLocal")
     private final int ARGON_ITERATION = 3, ARGON_MEMORY = 128000, ARGON_PARALLELISM = 4;
@@ -164,7 +164,6 @@ public class MongoAuthHandler implements AuthHandler {
         res.setReason(null);
         return res;
     }
-   
 
     private boolean isEmailTaken(final String email) {
         return Squirrel.getInstance().getDatabaseManager().countDocuments(SquirrelCollection.USERS,
@@ -181,14 +180,18 @@ public class MongoAuthHandler implements AuthHandler {
     private FindIterable<Document> fetchUsers(final Bson filters) {
         return Squirrel.getInstance().getDatabaseManager().rawRequest(SquirrelCollection.USERS, filters);
     }
-    
+
     public static boolean isValidUsername(final String username) { // XXX should we move that to Squirrel?
         // @todo: Sanitize some Unicode stuff (zws, shit like private apple logo)
+        if (username == null)
+            return false;
         return !(username.length() < 2 || username.length() > 32) && USERNAME_PATTERN.matcher(username).matches();
     }
 
     public static boolean isValidEmail(final String email) { // XXX should we move that to Squirrel?
         // @todo: Disallow emails handled by Squirrel's mail server (if configured)
+        if (email == null)
+            return false;
         return EMAIL_PATTERN.matcher(email).matches();
     }
 }

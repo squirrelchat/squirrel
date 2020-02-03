@@ -48,7 +48,7 @@ import chat.squirrel.entities.channels.IChannel;
  */
 public class Guild extends AbstractEntity {
     private String name;
-    private Collection<Member> members;
+    private Collection<Member> members; // FIXME maybe move to own collection?
     private Collection<Role> roles;
     private Collection<ObjectId> channels;
 

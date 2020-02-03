@@ -29,6 +29,8 @@ package chat.squirrel.entities;
 
 import java.util.Collection;
 
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+
 import xyz.bowser65.tokenize.IAccount;
 
 /**
@@ -38,6 +40,8 @@ public class User extends AbstractEntity implements IAccount {
     private String username, email, customEmail;
     private int discriminator, flag;
     private boolean disabled, banned, deleted, mfa;
+    @BsonIgnore
+    private long tokenValidSince;
     private Collection<String> ips;
 
     public String getUsername() {
@@ -60,12 +64,40 @@ public class User extends AbstractEntity implements IAccount {
         this.customEmail = customEmail;
     }
 
+    /**
+     * <table summary="">
+     * <tr>
+     * <td>Bit 0</td>
+     * <td>Bit 1</td>
+     * <td>Bit 2</td>
+     * <td>Bit 3</td>
+     * <td>Bit 4</td>
+     * <td>Bit 5</td>
+     * <td>Bit 6</td>
+     * </tr>
+     * <tr>
+     * <td>TBD</td>
+     * <td>boolean - server admin</td>
+     * <td>TBD</td>
+     * <td>TBD</td>
+     * <td>TBD</td>
+     * <td>TBD</td>
+     * <td>TBD</td>
+     * </tr>
+     * </table>
+     * 
+     * @return The flags integer of this user
+     */
     public int getFlag() {
         return flag;
     }
 
     public void setFlag(int flag) {
         this.flag = flag;
+    }
+
+    public boolean isServerAdmin() {
+        return (0b10 & flag) == 2;
     }
 
     public boolean isDisabled() {
@@ -123,8 +155,12 @@ public class User extends AbstractEntity implements IAccount {
     }
 
     @Override
+    @BsonIgnore
     public long tokensValidSince() {
-        // TODO Auto-generated method stub
-        return 0;
+        return tokenValidSince;
+    }
+
+    public void setTokenValidSince(long tokenValidSince) {
+        this.tokenValidSince = tokenValidSince;
     }
 }

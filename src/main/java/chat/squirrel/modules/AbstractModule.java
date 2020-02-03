@@ -27,16 +27,15 @@
 
 package chat.squirrel.modules;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import chat.squirrel.Squirrel;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.impl.BodyHandlerImpl;
-
-import java.util.ArrayList;
-import java.util.List;
+import io.vertx.ext.web.handler.BodyHandler;
 
 public abstract class AbstractModule {
     private final List<Route> routes = new ArrayList<>();
@@ -51,8 +50,8 @@ public abstract class AbstractModule {
      * @return The new route to be slick :sunglasses:
      */
     protected Route registerRoute(HttpMethod method, String path, Handler<RoutingContext> handler) {
-        final Route rt = Squirrel.getInstance().getRouter().route(method, path).handler(new BodyHandlerImpl(false))
-                .handler(handler).disable();
+        final Route rt = Squirrel.getInstance().getRouter().route(method, path).handler(BodyHandler.create())
+                .handler(Squirrel.getInstance().getWebJsonHandler()).blockingHandler(handler).disable();
         routes.add(rt);
         return rt;
     }
@@ -86,8 +85,7 @@ public abstract class AbstractModule {
     }
 
     protected void notImplemented(RoutingContext ctx) {
-        ctx.response().setStatusCode(501)
-                .end(new JsonObject().put("code", 501).put("message", "Not Implemented").encode());
+        ctx.fail(501);
     }
 
     public abstract void initialize();

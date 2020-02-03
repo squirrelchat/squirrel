@@ -50,15 +50,15 @@ public class WebAuthHandler implements Handler<RoutingContext> {
 
     @Override
     public void handle(RoutingContext event) {
-        if (event.request().getHeader("Authorization") != null) {
+        final String token = event.request().getHeader("Authorization");
+        if (token == null) {
             event.fail(401);
             return;
         }
 
         final User user;
         try {
-            user = (User) Squirrel.getInstance().getTokenize()
-                    .validate(event.request().getHeader("Authorization"), this::fetchAccount).get();
+            user = (User) Squirrel.getInstance().getTokenize().validate(token, this::fetchAccount).get();
         } catch (InterruptedException | ExecutionException e) {
             event.fail(500);
             return;
@@ -73,11 +73,10 @@ public class WebAuthHandler implements Handler<RoutingContext> {
             event.fail(403);
             return;
         }
-        
+
         final long timeout = Squirrel.getInstance().getConfig().getSessionTimeout();
 
-        if (timeout != -1 && Tokenize.hasTokenExpired(event.request().getHeader("Authorization"),
-                timeout)) {
+        if (timeout != -1 && Tokenize.hasTokenExpired(token, timeout)) {
             event.fail(401);
             return;
         }
