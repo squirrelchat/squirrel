@@ -47,6 +47,11 @@ public abstract class AbstractEntity implements IEntity {
     }
 
     @Override
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
+    @Override
     public JsonObject toJson() {
         return JsonObject.mapFrom(this);
     }

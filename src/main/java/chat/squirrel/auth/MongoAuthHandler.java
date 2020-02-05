@@ -102,7 +102,7 @@ public class MongoAuthHandler implements AuthHandler {
                         SquirrelCollection.USERS, Filters.eq(doc.get("_id")));
                 res.setUser(user);
                 res.setReason(null);
-                res.setToken(Squirrel.getInstance().getTokenize().generate(user.getId().toHexString()));
+                res.setToken(Squirrel.getInstance().getTokenize().generateToken(user).toString());
             } else {
                 res.setReason(FailureReason.INVALID_PASSWORD);
             }

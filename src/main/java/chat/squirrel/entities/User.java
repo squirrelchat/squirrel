@@ -149,7 +149,6 @@ public class User extends AbstractEntity implements IAccount {
         return getUsername() + "#" + getDiscriminator() + "(" + getId().toHexString() + ")";
     }
 
-    @Override
     public boolean hasMfa() {
         return mfa;
     }
@@ -162,5 +161,10 @@ public class User extends AbstractEntity implements IAccount {
 
     public void setTokenValidSince(long tokenValidSince) {
         this.tokenValidSince = tokenValidSince;
+    }
+
+    @Override
+    public String getTokenId() {
+        return getId().toHexString();
     }
 }

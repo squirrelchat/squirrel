@@ -29,15 +29,19 @@ package chat.squirrel;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import org.bson.BsonDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mongodb.client.model.Filters;
+
 import chat.squirrel.auth.AuthHandler;
 import chat.squirrel.auth.MongoAuthHandler;
 import chat.squirrel.core.DatabaseManager;
+import chat.squirrel.core.MetricsManager;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.core.ModuleManager;
 import io.vertx.core.Handler;
@@ -110,12 +114,12 @@ public final class Squirrel {
                 new BsonDocument());
         if (config == null) {
             config = new SquirrelConfig();
-//            saveConfig();
+            saveConfig();
         }
 
         authHandler = new MongoAuthHandler(); // TODO: make customizable when there'll be more
 
-        tokenize = new Tokenize(config.getTokenSecret());
+        tokenize = new Tokenize(config.getTokenSecret().getBytes(StandardCharsets.UTF_16));
 
         LOG.info("Loading modules");
         moduleManager.scanPackage("chat.squirrel.modules");
@@ -156,7 +160,13 @@ public final class Squirrel {
         server.close();
         moduleManager.disableModules();
         dbManager.shutdown();
-        LOG.info("Shutdown successful");
+        MetricsManager.getMetrics().stop();
+        LOG.info("Shutdown successful, the process should end");
+    }
+
+    public void saveConfig() { // TODO make better
+        getDatabaseManager().deleteEntity(SquirrelCollection.CONFIG, Filters.eq(getConfig().getId()));
+        getDatabaseManager().insertEntity(SquirrelCollection.CONFIG, getConfig());
     }
 
     /**

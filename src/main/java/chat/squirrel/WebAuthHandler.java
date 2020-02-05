@@ -27,9 +27,7 @@
 
 package chat.squirrel;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Supplier;
+import java.security.SignatureException;
 
 import org.bson.types.ObjectId;
 
@@ -40,29 +38,43 @@ import chat.squirrel.entities.User;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 import xyz.bowser65.tokenize.IAccount;
-import xyz.bowser65.tokenize.Tokenize;
+import xyz.bowser65.tokenize.Token;
 
 /**
  * Vert.x handler to handle sessions before continuing down a chain
  */
 public class WebAuthHandler implements Handler<RoutingContext> {
-    public static final String SQUIRREL_SESSION_KEY = "chat.squirrel.user";
+    public static final String SQUIRREL_SESSION_KEY = "chat.squirrel.user", SQUIRREL_TOKEN_KEY = "chat.squirrel.token";
 
     @Override
     public void handle(RoutingContext event) {
-        final String token = event.request().getHeader("Authorization");
+        final String stringToken = event.request().getHeader("Authorization");
+        if (stringToken == null) {
+            event.fail(401);
+            return;
+        }
+
+        final Token token;
+
+        try {
+            token = Squirrel.getInstance().getTokenize().validateToken(stringToken, this::fetchAccount);
+        } catch (Exception e) {
+            e.printStackTrace();
+            event.fail(403);
+            return;
+        }
+
         if (token == null) {
             event.fail(401);
             return;
         }
 
-        final User user;
-        try {
-            user = (User) Squirrel.getInstance().getTokenize().validate(token, this::fetchAccount).get();
-        } catch (InterruptedException | ExecutionException e) {
-            event.fail(500);
+        if (token.getPrefix() != null) {
+            event.fail(401);
             return;
         }
+
+        final User user = (User) token.getAccount();
 
         if (user == null) {
             event.fail(401);
@@ -74,27 +86,23 @@ public class WebAuthHandler implements Handler<RoutingContext> {
             return;
         }
 
-        final long timeout = Squirrel.getInstance().getConfig().getSessionTimeout();
+//        final long timeout = Squirrel.getInstance().getConfig().getSessionTimeout();
+//
+//        if (timeout != -1 && Tokenize.hasTokenExpired(token, timeout)) {
+//            event.fail(401);
+//            return;
+//        }
 
-        if (timeout != -1 && Tokenize.hasTokenExpired(token, timeout)) {
-            event.fail(401);
-            return;
-        }
-
+//        user.setTokenValidSince(Tokenize.currentTokenTime());
+        event.put(SQUIRREL_TOKEN_KEY, token);
         event.put(SQUIRREL_SESSION_KEY, user);
 
         event.next();
     }
 
-    private CompletableFuture<IAccount> fetchAccount(final String id) {
-        return CompletableFuture.supplyAsync(new Supplier<IAccount>() {
-
-            @Override
-            public IAccount get() {
-                return (User) Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
-                        SquirrelCollection.USERS, Filters.eq(new ObjectId(id)));
-            }
-        });
+    private IAccount fetchAccount(String id) {
+        return (User) Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class, SquirrelCollection.USERS,
+                Filters.eq(new ObjectId(id)));
     }
 
 }

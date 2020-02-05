@@ -30,12 +30,15 @@ package chat.squirrel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import chat.squirrel.core.MetricsManager;
+import de.mxro.metrics.jre.Metrics;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
 /**
- * This route handler handles various exceptions including server side Java Exceptions
+ * This route handler handles various exceptions including server side Java
+ * Exceptions
  */
 public class WebExceptionHandler implements Handler<RoutingContext> {
     private static final Logger LOG = LoggerFactory.getLogger(WebExceptionHandler.class);
@@ -43,11 +46,13 @@ public class WebExceptionHandler implements Handler<RoutingContext> {
 
     @Override
     public void handle(RoutingContext event) {
+        System.out.println(event.data());
         final JsonObject obj = new JsonObject().put("error", event.response().getStatusCode());
         if (shouldPrintError) {
             obj.put("path", event.normalisedPath());
             obj.put("body", event.getBody());
         }
+        MetricsManager.record(Metrics.happened("error.statuscode." + event.response().getStatusCode()));
         LOG.error("An unknown error has been caught in routing: " + obj.encode());
         event.response().end(obj.toBuffer());
     }

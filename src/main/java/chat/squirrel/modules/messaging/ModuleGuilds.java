@@ -10,14 +10,16 @@ import com.mongodb.client.model.Filters;
 import chat.squirrel.Squirrel;
 import chat.squirrel.WebAuthHandler;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.core.MetricsManager;
 import chat.squirrel.entities.Guild;
 import chat.squirrel.entities.Guild.Permissions;
-import chat.squirrel.modules.AbstractModule;
 import chat.squirrel.entities.Member;
 import chat.squirrel.entities.User;
 import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.entities.channels.TextChannel;
 import chat.squirrel.entities.channels.VoiceChannel;
+import chat.squirrel.modules.AbstractModule;
+import de.mxro.metrics.jre.Metrics;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -68,7 +70,7 @@ public class ModuleGuilds extends AbstractModule {
         } catch (InterruptedException | ExecutionException e) { // Shouldn't be called
             e.printStackTrace();
         }
-
+        
         ctx.response().end(new JsonObject().put("channels", out).put("guild", guild.getId().toHexString()).encode());
     }
 
@@ -158,6 +160,7 @@ public class ModuleGuilds extends AbstractModule {
 
         Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.GUILDS, newGuild);
 
+        MetricsManager.record(Metrics.happened("guild.create"));
         ctx.response().end(newGuild.toJson().encode());
     }
 

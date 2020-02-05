@@ -115,6 +115,10 @@ public class DatabaseManager {
         return db.getCollection(col.getMongoName()).countDocuments(filters);
     }
 
+    public void deleteEntity(SquirrelCollection col, Bson filters) {
+        db.getCollection(col.getMongoName()).findOneAndDelete(filters);
+    }
+
     public IEntity convertDocument(Document doc, Class<? extends IEntity> cls) {
         if (doc == null)
             throw new NullPointerException();
@@ -138,7 +142,8 @@ public class DatabaseManager {
                 .forEach((Consumer<User>) u -> used.add(u.getDiscriminator()));
 
         // noinspection StatementWithEmptyBody
-        while (used.indexOf(dis = random.nextInt(10000)) != -1);
+        while (used.indexOf(dis = random.nextInt(10000)) != -1)
+            ;
         return dis;
     }
 
@@ -146,7 +151,7 @@ public class DatabaseManager {
      * @param username The username string to check
      * @param dis      The discriminator integer to check
      * @return {@code true} if the discriminator is already used for this username,
-     * {@code false} otherwise
+     *         {@code false} otherwise
      */
     public boolean isDiscriminatorTaken(final String username, final int dis) {
         return findFirstEntity(User.class, SquirrelCollection.USERS,
@@ -195,7 +200,7 @@ public class DatabaseManager {
 
         /**
          * @return the name of the MongoDB collection to use because we try to comply
-         * with BSON naming standards.
+         *         with BSON naming standards.
          */
         public String getMongoName() {
             return mongoName;

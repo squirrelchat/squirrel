@@ -39,6 +39,8 @@ public interface IEntity {
      * @return The Mongo ID of this entity
      */
     public ObjectId getId();
+    
+    public void setId(ObjectId id);
     /**
      * @return Vert.x {@link JsonObject} generated from this POJO
      */
