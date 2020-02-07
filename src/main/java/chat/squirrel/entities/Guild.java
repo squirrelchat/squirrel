@@ -27,21 +27,19 @@
 
 package chat.squirrel.entities;
 
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.entities.channels.IChannel;
+import com.mongodb.client.model.Filters;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+import org.bson.types.ObjectId;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
-
-import org.bson.codecs.pojo.annotations.BsonIgnore;
-import org.bson.types.ObjectId;
-
-import com.mongodb.client.model.Filters;
-
-import chat.squirrel.Squirrel;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.channels.IChannel;
 
 /**
  * A basic Guild
@@ -95,8 +93,7 @@ public class Guild extends AbstractEntity {
     }
 
     /**
-     * 
-     * @param user
+     * @param user User ID
      * @return The member corresponding to this user or null otherwise
      */
     public Member getMemberForUser(ObjectId user) {
@@ -117,15 +114,14 @@ public class Guild extends AbstractEntity {
 
     @BsonIgnore
     public Future<Collection<IChannel>> getRealChannels() {
-        return CompletableFuture.supplyAsync((Supplier<Collection<IChannel>>) () -> {
-            
+        return CompletableFuture.supplyAsync(() -> {
             if (getChannels() == null)
                 return Collections.emptyList();
-            
+
             final ArrayList<IChannel> list = new ArrayList<>();
-            
+
             for (ObjectId id : getChannels()) {
-                final IChannel chan = (IChannel) Squirrel.getInstance().getDatabaseManager()
+                final IChannel chan = Squirrel.getInstance().getDatabaseManager()
                         .findFirstEntity(IChannel.class, SquirrelCollection.CHANNELS, Filters.eq(id));
                 list.add(chan);
             }
@@ -143,7 +139,7 @@ public class Guild extends AbstractEntity {
          */
         ADMINISTRATOR,
         /**
-         * Can manage settings of the guild <b>Implicitly grants: GUILD_MANAGE_ROLES,
+         * Can manage settings of the guild. <b>Implicitly grants: GUILD_MANAGE_ROLES,
          * GUILD_MANAGE_PERMISSIONS, GUILD_MANAGE_WEBHOOKS, GUILD_MANAGE_INTEGRATIONS,
          * GUILD_MANAGE_CHANNELS, GUILD_MANAGE_INVITES, GUILD_AUDITS, CHANNEL_ACCESS</b>
          */
@@ -182,7 +178,7 @@ public class Guild extends AbstractEntity {
          */
         GUILD_AUDITS,
         /**
-         * Can manage moderation-related settings of the guild <b>Implicitly grants:
+         * Can manage moderation-related settings of the guild. <b>Implicitly grants:
          * GUILD_MANAGE_NICKNAMES, GUILD_AUDITS, MEMBER_BAN, MEMBER_TEMP_BAN,
          * MEMBER_KICK, MEMBER_MUTE, TEXT_MANAGE_MESSAGES</b>
          */

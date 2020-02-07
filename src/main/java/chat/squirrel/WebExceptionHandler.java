@@ -27,14 +27,13 @@
 
 package chat.squirrel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import chat.squirrel.core.MetricsManager;
 import de.mxro.metrics.jre.Metrics;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This route handler handles various exceptions including server side Java

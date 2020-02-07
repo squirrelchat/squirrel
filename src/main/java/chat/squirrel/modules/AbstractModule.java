@@ -27,15 +27,15 @@
 
 package chat.squirrel.modules;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import chat.squirrel.Squirrel;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractModule {
     private final List<Route> routes = new ArrayList<>();

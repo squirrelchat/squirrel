@@ -27,9 +27,8 @@
 
 package chat.squirrel.entities;
 
-import org.bson.types.ObjectId;
-
 import chat.squirrel.entities.channels.IChannel;
+import org.bson.types.ObjectId;
 
 /**
  * A general message in a {@link IChannel} or Group (TODO)

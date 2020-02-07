@@ -27,9 +27,8 @@
 
 package chat.squirrel.entities;
 
-import org.bson.types.ObjectId;
-
 import io.vertx.core.json.JsonObject;
+import org.bson.types.ObjectId;
 
 public abstract class AbstractEntity implements IEntity {
     protected ObjectId id;

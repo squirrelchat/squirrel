@@ -27,13 +27,12 @@
 
 package chat.squirrel.entities.channels;
 
-import java.util.Collection;
-import java.util.concurrent.Future;
-
+import chat.squirrel.entities.AbstractEntity;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
-import chat.squirrel.entities.AbstractEntity;
+import java.util.Collection;
+import java.util.concurrent.Future;
 
 public class VoiceChannel extends AbstractEntity implements IChannel {
     private String name;

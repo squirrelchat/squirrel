@@ -27,19 +27,13 @@
 
 package chat.squirrel.core;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.function.Consumer;
-
-import org.bson.Document;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.PojoCodecProvider;
-import org.bson.conversions.Bson;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import chat.squirrel.SquirrelConfig;
+import chat.squirrel.Version;
+import chat.squirrel.entities.Guild;
+import chat.squirrel.entities.IEntity;
+import chat.squirrel.entities.IMessage;
+import chat.squirrel.entities.User;
+import chat.squirrel.entities.channels.IChannel;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.FindIterable;
@@ -48,14 +42,18 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
+import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
+import org.bson.conversions.Bson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import chat.squirrel.SquirrelConfig;
-import chat.squirrel.Version;
-import chat.squirrel.entities.Guild;
-import chat.squirrel.entities.IEntity;
-import chat.squirrel.entities.IMessage;
-import chat.squirrel.entities.User;
-import chat.squirrel.entities.channels.IChannel;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Consumer;
 
 /**
  * A DatabaseManager manages the interactions with MongoDB
@@ -99,7 +97,7 @@ public class DatabaseManager {
         db.getCollection(col.getMongoName(), IEntity.class).insertOne(ent);
     }
 
-    public IEntity findFirstEntity(Class<? extends IEntity> type, SquirrelCollection col, Bson filters) {
+    public <T extends IEntity> T findFirstEntity(Class<T> type, SquirrelCollection col, Bson filters) {
         return findEntities(type, col, filters).first();
     }
 

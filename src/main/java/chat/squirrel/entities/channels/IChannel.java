@@ -27,25 +27,24 @@
 
 package chat.squirrel.entities.channels;
 
-import java.util.Collection;
-import java.util.concurrent.Future;
-
+import chat.squirrel.entities.IEntity;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
-import chat.squirrel.entities.IEntity;
+import java.util.Collection;
+import java.util.concurrent.Future;
 
 public interface IChannel extends IEntity {
     String getName();
 
     void setName(String name);
 
-    
+
     /**
      * Gets the participants dynamically
      * @return The collection of ids of the members that are able to interact with this channel
      */
     @BsonIgnore
     Future<Collection<ObjectId>> getParticipants();
-    
+
 }
