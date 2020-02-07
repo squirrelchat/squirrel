@@ -27,16 +27,12 @@
 
 package chat.squirrel;
 
-import java.security.SignatureException;
-
-import org.bson.types.ObjectId;
-
-import com.mongodb.client.model.Filters;
-
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.User;
+import com.mongodb.client.model.Filters;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
+import org.bson.types.ObjectId;
 import xyz.bowser65.tokenize.IAccount;
 import xyz.bowser65.tokenize.Token;
 
@@ -76,11 +72,6 @@ public class WebAuthHandler implements Handler<RoutingContext> {
 
         final User user = (User) token.getAccount();
 
-        if (user == null) {
-            event.fail(401);
-            return;
-        }
-
         if (user.isBanned()) {
             event.fail(403);
             return;
@@ -100,8 +91,8 @@ public class WebAuthHandler implements Handler<RoutingContext> {
         event.next();
     }
 
-    private IAccount fetchAccount(String id) {
-        return (User) Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class, SquirrelCollection.USERS,
+    private User fetchAccount(String id) {
+        return Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class, SquirrelCollection.USERS,
                 Filters.eq(new ObjectId(id)));
     }
 

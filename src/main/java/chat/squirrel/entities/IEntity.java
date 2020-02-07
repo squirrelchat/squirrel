@@ -27,9 +27,8 @@
 
 package chat.squirrel.entities;
 
-import org.bson.types.ObjectId;
-
 import io.vertx.core.json.JsonObject;
+import org.bson.types.ObjectId;
 
 /**
  * A basic Squirrel Entity.
@@ -38,11 +37,11 @@ public interface IEntity {
     /**
      * @return The Mongo ID of this entity
      */
-    public ObjectId getId();
-    
-    public void setId(ObjectId id);
+    ObjectId getId();
+
+    void setId(ObjectId id);
     /**
      * @return Vert.x {@link JsonObject} generated from this POJO
      */
-    public JsonObject toJson();
+    JsonObject toJson();
 }

@@ -27,9 +27,9 @@
 
 package chat.squirrel;
 
-import java.security.SecureRandom;
-
 import chat.squirrel.entities.AbstractEntity;
+
+import java.security.SecureRandom;
 
 public class SquirrelConfig extends AbstractEntity {
     private String orgName = "Squirrel Chat", srvDescription = "Default Squirrel Server", secret;
@@ -82,7 +82,7 @@ public class SquirrelConfig extends AbstractEntity {
         }
         return secret;
     }
-    
+
     public void setTokenSecret(String secret) {
         this.secret = secret;
     }

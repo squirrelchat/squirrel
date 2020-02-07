@@ -27,23 +27,21 @@
 
 package chat.squirrel.auth;
 
-import java.util.regex.Pattern;
-
-import org.bson.Document;
-import org.bson.conversions.Bson;
-
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Updates;
-import com.mongodb.client.result.UpdateResult;
-
 import chat.squirrel.Squirrel;
 import chat.squirrel.auth.AuthResult.FailureReason;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.User;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import de.mkammerer.argon2.Argon2Factory.Argon2Types;
+import org.bson.Document;
+import org.bson.conversions.Bson;
+
+import java.util.regex.Pattern;
 
 /**
  * This {@link AuthHandler} manages authentication against the MongoDB database.
@@ -98,7 +96,7 @@ public class MongoAuthHandler implements AuthHandler {
         if (doc != null) {
             final String hash = doc.getString("password");
             if (argon.verify(hash, password)) {
-                final User user = (User) Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
+                final User user = Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
                         SquirrelCollection.USERS, Filters.eq(doc.get("_id")));
                 res.setUser(user);
                 res.setReason(null);

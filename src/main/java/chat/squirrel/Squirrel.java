@@ -27,29 +27,27 @@
 
 package chat.squirrel;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
-
-import org.bson.BsonDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.mongodb.client.model.Filters;
-
 import chat.squirrel.auth.AuthHandler;
 import chat.squirrel.auth.MongoAuthHandler;
 import chat.squirrel.core.DatabaseManager;
-import chat.squirrel.core.MetricsManager;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.core.MetricsManager;
 import chat.squirrel.core.ModuleManager;
+import com.mongodb.client.model.Filters;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import org.bson.BsonDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.bowser65.tokenize.Tokenize;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 
 /**
  * The main Squirrel Class.
@@ -80,7 +78,7 @@ public final class Squirrel {
     /**
      * Call this if you want stuff to break
      *
-     * @param args
+     * @param args Command line arguments
      */
     public static void main(String[] args) {
         instance = new Squirrel();
@@ -110,8 +108,7 @@ public final class Squirrel {
         moduleManager = new ModuleManager();
         dbManager = new DatabaseManager(getProperty("mongo.con-string"), getProperty("mongo.db-name", "squirrel"));
 
-        config = (SquirrelConfig) dbManager.findFirstEntity(SquirrelConfig.class, SquirrelCollection.CONFIG,
-                new BsonDocument());
+        config = dbManager.findFirstEntity(SquirrelConfig.class, SquirrelCollection.CONFIG, new BsonDocument());
         if (config == null) {
             config = new SquirrelConfig();
             saveConfig();

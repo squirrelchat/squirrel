@@ -27,11 +27,10 @@
 
 package chat.squirrel.entities;
 
-import java.util.Collection;
-
 import org.bson.codecs.pojo.annotations.BsonIgnore;
-
 import xyz.bowser65.tokenize.IAccount;
+
+import java.util.Collection;
 
 /**
  * Server wide user account
@@ -77,7 +76,7 @@ public class User extends AbstractEntity implements IAccount {
      * </tr>
      * <tr>
      * <td>TBD</td>
-     * <td>boolean - server admin</td>
+     * <td>boolean - server (instance) admin</td>
      * <td>TBD</td>
      * <td>TBD</td>
      * <td>TBD</td>
@@ -85,7 +84,7 @@ public class User extends AbstractEntity implements IAccount {
      * <td>TBD</td>
      * </tr>
      * </table>
-     * 
+     *
      * @return The flags integer of this user
      */
     public int getFlag() {

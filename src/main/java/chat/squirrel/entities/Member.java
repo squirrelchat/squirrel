@@ -27,19 +27,17 @@
 
 package chat.squirrel.entities;
 
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.entities.Guild.Permissions;
+import com.mongodb.client.model.Filters;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+import org.bson.types.ObjectId;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-
-import org.bson.codecs.pojo.annotations.BsonIgnore;
-import org.bson.types.ObjectId;
-
-import com.mongodb.client.model.Filters;
-
-import chat.squirrel.Squirrel;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.Guild.Permissions;
 
 /**
  * Member of a guild
@@ -48,6 +46,8 @@ public class Member extends AbstractEntity {
     private ObjectId userId, guildId;
     private String nickname;
     private Collection<ObjectId> roles;
+
+    // @todo: Wipe this and fetch them from roles
     private Collection<Permissions> permissions;
     private boolean owner;
 
@@ -74,7 +74,7 @@ public class Member extends AbstractEntity {
      */
     @BsonIgnore
     public Future<User> getUser() {
-        return new FutureTask<>(() -> (User) Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
+        return new FutureTask<>(() -> Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
                 SquirrelCollection.USERS, Filters.eq(getUserId())));
     }
 
@@ -99,7 +99,7 @@ public class Member extends AbstractEntity {
     @BsonIgnore
     public Future<Guild> getGuild() {
         // @todo: use an aggregation at query-time
-        return new FutureTask<>(() -> (Guild) Squirrel.getInstance().getDatabaseManager().findFirstEntity(Guild.class,
+        return new FutureTask<>(() -> Squirrel.getInstance().getDatabaseManager().findFirstEntity(Guild.class,
                 SquirrelCollection.GUILDS, Filters.eq(getGuildId())));
     }
 
@@ -151,17 +151,19 @@ public class Member extends AbstractEntity {
         this.guildId = guildId;
     }
 
+    // @todo: Fetch them from roles
     public Collection<Permissions> getPermissions() {
         return permissions;
     }
 
+    // @todo: Fetch them from roles
     public void setPermissions(Collection<Permissions> permissions) {
         this.permissions = permissions;
     }
 
     /**
      * Sets whether this members is the owner of the server
-     * 
+     *
      * @return if the member is the owner of the guild
      */
     public boolean isOwner() {
@@ -173,6 +175,9 @@ public class Member extends AbstractEntity {
     }
 
     public boolean hasEffectivePermission(Permissions perm) {
+        if (isOwner())
+            return true;
+
         if (getPermissions() == null)
             return false;
 
