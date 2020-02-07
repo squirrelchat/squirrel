@@ -58,7 +58,7 @@ public class WebAuthHandler implements Handler<RoutingContext> {
 
         try {
             token = Squirrel.getInstance().getTokenize().validateToken(stringToken, this::fetchAccount);
-        } catch (Exception e) {
+        } catch (SignatureException e) {
             e.printStackTrace();
             event.fail(403);
             return;
@@ -75,11 +75,6 @@ public class WebAuthHandler implements Handler<RoutingContext> {
         }
 
         final User user = (User) token.getAccount();
-
-        if (user == null) {
-            event.fail(401);
-            return;
-        }
 
         if (user.isBanned()) {
             event.fail(403);
