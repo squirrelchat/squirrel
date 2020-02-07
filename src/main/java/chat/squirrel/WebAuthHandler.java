@@ -43,7 +43,7 @@ import xyz.bowser65.tokenize.Token;
  * Vert.x handler to handle sessions before continuing down a chain
  */
 public class WebAuthHandler implements Handler<RoutingContext> {
-    public static final String SQUIRREL_SESSION_KEY = "chat.squirrel.user", SQUIRREL_TOKEN_KEY = "chat.squirrel.token";
+    public static final String SQUIRREL_TOKEN_KEY = "chat.squirrel.token";
 
     @Override
     public void handle(RoutingContext event) {
@@ -89,7 +89,6 @@ public class WebAuthHandler implements Handler<RoutingContext> {
 
 //        user.setTokenValidSince(Tokenize.currentTokenTime());
         event.put(SQUIRREL_TOKEN_KEY, token);
-        event.put(SQUIRREL_SESSION_KEY, user);
 
         event.next();
     }

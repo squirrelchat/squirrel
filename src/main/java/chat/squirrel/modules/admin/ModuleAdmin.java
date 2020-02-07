@@ -27,18 +27,19 @@
 
 package chat.squirrel.modules.admin;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.codahale.metrics.Snapshot;
+
 import chat.squirrel.Squirrel;
-import chat.squirrel.WebAuthHandler;
 import chat.squirrel.core.MetricsManager;
 import chat.squirrel.entities.User;
 import chat.squirrel.modules.AbstractModule;
-import com.codahale.metrics.Snapshot;
 import de.mxro.metrics.jre.Metrics;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 // @todo: Make this be "ModuleMetrics"
 public class ModuleAdmin extends AbstractModule {
@@ -53,7 +54,7 @@ public class ModuleAdmin extends AbstractModule {
     }
 
     private void handleHistogram(RoutingContext ctx) {
-        final User user = ctx.get(WebAuthHandler.SQUIRREL_SESSION_KEY);
+        final User user = getRequester(ctx);
 
         if (!user.isServerAdmin()) {
             ctx.fail(401);
@@ -68,7 +69,7 @@ public class ModuleAdmin extends AbstractModule {
     }
 
     private void handleMetrics(RoutingContext ctx) {
-        final User user = ctx.get(WebAuthHandler.SQUIRREL_SESSION_KEY);
+        final User user = getRequester(ctx);
 
         if (!user.isServerAdmin()) {
             ctx.fail(401);
@@ -79,7 +80,7 @@ public class ModuleAdmin extends AbstractModule {
     }
 
     private void handleShutdown(RoutingContext ctx) {
-        final User user = ctx.get(WebAuthHandler.SQUIRREL_SESSION_KEY);
+        final User user = getRequester(ctx);
 
         if (!user.isServerAdmin()) {
             ctx.fail(401);

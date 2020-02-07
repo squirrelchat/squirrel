@@ -5,7 +5,6 @@ import org.bson.types.ObjectId;
 import com.mongodb.client.model.Filters;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.WebAuthHandler;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.User;
 import chat.squirrel.modules.AbstractModule;
@@ -22,7 +21,7 @@ public class ModuleAccounts extends AbstractModule {
     }
 
     private void handleMe(RoutingContext ctx) {
-        final User user = ctx.get(WebAuthHandler.SQUIRREL_SESSION_KEY);
+        final User user = getRequester(ctx);
 
         if (user.isServerAdmin()) {
             ctx.response().end(user.toJson().encode());
@@ -36,7 +35,7 @@ public class ModuleAccounts extends AbstractModule {
     }
 
     private void handleGetAccount(RoutingContext ctx) {
-        final User requester = ctx.get(WebAuthHandler.SQUIRREL_SESSION_KEY);
+        final User requester = getRequester(ctx);
 
         final User target = (User) Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
                 SquirrelCollection.USERS, Filters.eq(new ObjectId(ctx.pathParam("id"))));

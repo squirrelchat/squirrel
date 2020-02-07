@@ -27,15 +27,18 @@
 
 package chat.squirrel.modules;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import chat.squirrel.Squirrel;
+import chat.squirrel.WebAuthHandler;
+import chat.squirrel.entities.User;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
-
-import java.util.ArrayList;
-import java.util.List;
+import xyz.bowser65.tokenize.Token;
 
 public abstract class AbstractModule {
     private final List<Route> routes = new ArrayList<>();
@@ -82,6 +85,14 @@ public abstract class AbstractModule {
 
     public boolean shouldEnable() {
         return true;
+    }
+
+    public Token getToken(RoutingContext ctx) {
+        return ctx.get(WebAuthHandler.SQUIRREL_TOKEN_KEY);
+    }
+
+    public User getRequester(RoutingContext ctx) {
+        return (User) getToken(ctx).getAccount();
     }
 
     protected void notImplemented(RoutingContext ctx) {

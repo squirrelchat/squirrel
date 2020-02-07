@@ -68,7 +68,7 @@ public class ModuleGuilds extends AbstractModule {
             return;
         }
 
-        final User user = ctx.get(WebAuthHandler.SQUIRREL_SESSION_KEY);
+        final User user = getRequester(ctx);
         final Guild guild = Squirrel.getInstance().getDatabaseManager().findFirstEntity(Guild.class,
                 SquirrelCollection.GUILDS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
