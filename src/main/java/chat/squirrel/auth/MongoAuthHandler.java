@@ -49,10 +49,10 @@ import java.util.regex.Pattern;
 public class MongoAuthHandler implements AuthHandler {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
             Pattern.CASE_INSENSITIVE),
-            /**
-             * Does not allow escapes, line breaks, apple logo (F8FF)
-             */
-            USERNAME_PATTERN = Pattern.compile("^\\S[^#\\e\\p{Cntrl}}\\v\\xF8FF]+\\S$", Pattern.CASE_INSENSITIVE);
+    /**
+     * Does not allow escapes, line breaks, apple logo (F8FF)
+     */
+    USERNAME_PATTERN = Pattern.compile("^\\S[^#\\e\\p{Cntrl}}\\v\\xF8FF]+\\S$", Pattern.CASE_INSENSITIVE);
     private final Argon2 argon;
     @SuppressWarnings("FieldCanBeLocal")
     private final int ARGON_ITERATION = 3, ARGON_MEMORY = 128000, ARGON_PARALLELISM = 4;

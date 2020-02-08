@@ -25,15 +25,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.idp.identities;
+package chat.squirrel.modules.guilds;
 
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager;
+import chat.squirrel.entities.Guild;
+import chat.squirrel.entities.Member;
 import chat.squirrel.entities.User;
+import chat.squirrel.modules.AbstractModule;
+import com.mongodb.client.model.Filters;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.RoutingContext;
+import org.bson.types.ObjectId;
 
-import java.util.concurrent.Future;
+public abstract class AbstractGuildModule extends AbstractModule {
+    protected Guild getGuild(RoutingContext ctx, User user, Guild.Permissions permission) {
+        final Guild guild = Squirrel.getInstance().getDatabaseManager().findFirstEntity(Guild.class,
+                DatabaseManager.SquirrelCollection.GUILDS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
-public class Google implements IIdentity {
-    @Override
-    public Future<User> getSquirrelAccount() {
-        return null;
+        if (guild == null) {
+            ctx.fail(404);
+            return null;
+        }
+
+        final Member member = guild.getMemberForUser(user.getId());
+        if (member == null || (permission != null && !member.hasEffectivePermission(permission))) {
+            ctx.response().setStatusCode(403).end(new JsonObject().put("message", "Missing Permissions").encode());
+            return null;
+        }
+
+        // @todo: MFA requirement
+        return guild;
     }
 }

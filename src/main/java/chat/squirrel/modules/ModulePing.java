@@ -47,6 +47,6 @@ public class ModulePing extends AbstractModule {
 
     private void authPing(RoutingContext ctx) {
         MetricsManager.record(Metrics.happened("ping.authed"));
-        ctx.response().end("Squirrel " + Version.VERSION);
+        ctx.response().end("Squirrel " + Version.VERSION + " as " + getRequester(ctx).toString());
     }
 }

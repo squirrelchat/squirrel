@@ -70,7 +70,7 @@ public class Member extends AbstractEntity {
      * Async because DB request
      *
      * @return Future that will return the {@link User} corresponding to this
-     *         Member.
+     * Member.
      */
     @BsonIgnore
     public Future<User> getUser() {
@@ -122,7 +122,6 @@ public class Member extends AbstractEntity {
     }
 
     /**
-     *
      * @return This user's nickname for this Guild
      */
     public String getNickname() {
@@ -144,7 +143,6 @@ public class Member extends AbstractEntity {
     }
 
     /**
-     *
      * @param guildId The ID corresponding to the Guild this Member is apart of.
      */
     public void setGuildId(ObjectId guildId) {

@@ -27,9 +27,9 @@
 
 package chat.squirrel.idp.identities;
 
-import java.util.concurrent.Future;
-
 import chat.squirrel.entities.User;
+
+import java.util.concurrent.Future;
 
 public class Discord implements IIdentity {
     @Override

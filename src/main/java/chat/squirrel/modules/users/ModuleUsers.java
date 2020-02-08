@@ -25,15 +25,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.idp.identities;
+package chat.squirrel.modules.users;
 
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.User;
+import chat.squirrel.modules.AbstractModule;
+import com.mongodb.client.model.Filters;
+import io.vertx.core.http.HttpMethod;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.RoutingContext;
+import org.bson.types.ObjectId;
 
-import java.util.concurrent.Future;
-
-public class Google implements IIdentity {
+public class ModuleUsers extends AbstractModule {
     @Override
-    public Future<User> getSquirrelAccount() {
-        return null;
+    public void initialize() {
+        registerAuthedRoute(HttpMethod.GET, "/users/:id", this::handleGetAccount);
+        registerAuthedRoute(HttpMethod.GET, "/users/:id/profile", this::notImplemented);
+    }
+
+    private void handleGetAccount(RoutingContext ctx) {
+        final User target = Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
+                SquirrelCollection.USERS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
+
+        ctx.response().end(
+                new JsonObject()
+                        .put("id", target.getId().toHexString())
+                        .put("username", target.getUsername())
+                        .put("discriminator", target.getDiscriminator())
+                        // .put("avatar", target.get())
+                        .encode()
+        );
     }
 }

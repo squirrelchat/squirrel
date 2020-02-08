@@ -32,7 +32,6 @@ import org.bson.types.ObjectId;
 
 /**
  * A general message in a {@link IChannel} or Group (TODO)
- *
  */
 public interface IMessage extends IEntity {
     /**

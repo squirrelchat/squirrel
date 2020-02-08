@@ -51,7 +51,7 @@ import java.util.Properties;
 
 /**
  * The main Squirrel Class.
- *
+ * <p>
  * This class is the core of the server, it supervises all of the managers and
  * api.
  */
@@ -198,7 +198,6 @@ public final class Squirrel {
     }
 
     /**
-     *
      * @return The SquirrelConfig object for this instance
      */
     public SquirrelConfig getConfig() {
@@ -206,7 +205,6 @@ public final class Squirrel {
     }
 
     /**
-     *
      * @return The AuthHandler that manages authentication to the database
      */
     public AuthHandler getAuthHandler() {
@@ -221,7 +219,6 @@ public final class Squirrel {
     }
 
     /**
-     *
      * @param dis The discriminator integer to format
      * @return String format of integer with up to 4 leading zeros
      */

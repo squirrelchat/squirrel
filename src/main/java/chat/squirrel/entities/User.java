@@ -37,7 +37,7 @@ import java.util.Collection;
  */
 public class User extends AbstractEntity implements IAccount {
     private String username, email, customEmail;
-    private int discriminator, flag;
+    private int discriminator, flags;
     private boolean disabled, banned, deleted, mfa;
     @BsonIgnore
     private long tokenValidSince;
@@ -66,37 +66,58 @@ public class User extends AbstractEntity implements IAccount {
     /**
      * <table summary="">
      * <tr>
-     * <td>Bit 0</td>
-     * <td>Bit 1</td>
-     * <td>Bit 2</td>
-     * <td>Bit 3</td>
-     * <td>Bit 4</td>
-     * <td>Bit 5</td>
      * <td>Bit 6</td>
+     * <td>Bit 5</td>
+     * <td>Bit 4</td>
+     * <td>Bit 3</td>
+     * <td>Bit 2</td>
+     * <td>Bit 1</td>
+     * <td>Bit 0</td>
      * </tr>
      * <tr>
      * <td>TBD</td>
-     * <td>boolean - server (instance) admin</td>
-     * <td>TBD</td>
-     * <td>TBD</td>
-     * <td>TBD</td>
-     * <td>TBD</td>
-     * <td>TBD</td>
+     * <td>Bug Hunter</td>
+     * <td>Translator</td>
+     * <td>Contributor</td>
+     * <td>Squirrel Developer</td>
+     * <td>Instance Moderator</td>
+     * <td>Instance Admin</td>
      * </tr>
      * </table>
      *
      * @return The flags integer of this user
      */
-    public int getFlag() {
-        return flag;
+    public int getFlags() {
+        return flags;
     }
 
-    public void setFlag(int flag) {
-        this.flag = flag;
+    public void setFlags(int flags) {
+        this.flags = flags;
     }
 
-    public boolean isServerAdmin() {
-        return (0b10 & flag) == 2;
+    // Flags
+    public boolean isInstanceAdmin() {
+        return (0b1 & flags) != 0;
+    }
+
+    public boolean isInstanceModerator() {
+        return (0b10 & flags) != 0;
+    }
+
+    public boolean isSquirrelDeveloper() {
+        return (0b100 & flags) != 0;
+    }
+
+    public boolean isContributor() {
+        return (0b1000 & flags) != 0;
+    }
+
+    public boolean isTranslator() {
+        return (0b10000 & flags) != 0;
+    }
+
+    public boolean isBugHunter() {
+        return (0b100000 & flags) != 0;
     }
 
     public boolean isDisabled() {
@@ -145,7 +166,7 @@ public class User extends AbstractEntity implements IAccount {
 
     @Override
     public String toString() {
-        return getUsername() + "#" + getDiscriminator() + "(" + getId().toHexString() + ")";
+        return getUsername() + "#" + getDiscriminator() + " (" + getId().toHexString() + ")";
     }
 
     public boolean hasMfa() {

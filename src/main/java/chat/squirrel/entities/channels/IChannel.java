@@ -42,6 +42,7 @@ public interface IChannel extends IEntity {
 
     /**
      * Gets the participants dynamically
+     *
      * @return The collection of ids of the members that are able to interact with this channel
      */
     @BsonIgnore

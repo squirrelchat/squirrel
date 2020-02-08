@@ -25,15 +25,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.idp.identities;
+package chat.squirrel.modules.guilds;
 
-import chat.squirrel.entities.User;
+import io.vertx.core.http.HttpMethod;
 
-import java.util.concurrent.Future;
-
-public class Google implements IIdentity {
+// @todo: CRUDs are common in REST APIs, we should consider making an abstract layer that handles most of the stuff
+public class ModuleGuildRoles extends AbstractGuildModule {
     @Override
-    public Future<User> getSquirrelAccount() {
-        return null;
+    public void initialize() {
+        this.registerAuthedRoute(HttpMethod.POST, "/guilds/:id/roles", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.GET, "/guilds/:id/roles", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id/roles", this::notImplemented); // Channel order
+        this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id/roles/:id", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.DELETE, "/guilds/:id/roles/:id", this::notImplemented);
     }
 }

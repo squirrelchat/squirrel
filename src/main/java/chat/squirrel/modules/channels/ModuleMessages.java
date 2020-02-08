@@ -25,15 +25,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.idp.identities;
+package chat.squirrel.modules.channels;
 
-import chat.squirrel.entities.User;
-
-import java.util.concurrent.Future;
-
-public class Google implements IIdentity {
+public class ModuleMessages extends AbstractChannelModule {
     @Override
-    public Future<User> getSquirrelAccount() {
-        return null;
+    public void initialize() {
     }
 }

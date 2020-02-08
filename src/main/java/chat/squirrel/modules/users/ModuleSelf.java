@@ -25,15 +25,39 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.idp.identities;
+package chat.squirrel.modules.users;
 
 import chat.squirrel.entities.User;
+import chat.squirrel.modules.AbstractModule;
+import io.vertx.core.http.HttpMethod;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.RoutingContext;
 
-import java.util.concurrent.Future;
-
-public class Google implements IIdentity {
+public class ModuleSelf extends AbstractModule {
     @Override
-    public Future<User> getSquirrelAccount() {
-        return null;
+    public void initialize() {
+        registerAuthedRoute(HttpMethod.GET, "/users/self", this::handleMe);
+        registerAuthedRoute(HttpMethod.PATCH, "/users/self", this::notImplemented);
+        // { disable: true } as payload to just disable the account
+        registerAuthedRoute(HttpMethod.DELETE, "/users/self", this::notImplemented);
+    }
+
+    private void handleMe(RoutingContext ctx) {
+        final User user = getRequester(ctx);
+        ctx.response().end(
+                new JsonObject()
+                        .put("id", user.getId().toHexString())
+                        .put("username", user.getUsername())
+                        .put("discriminator", user.getDiscriminator())
+                        // .put("avatar", user.get())
+                        .put("bot", false)
+                        .put("email", user.getEmail())
+                        .put("custom_email", user.getCustomEmail())
+                        .put("verified", true)
+                        .put("mfa_enabled", false)
+                        .put("locale", "en-GB")
+                        .put("flags", user.getFlags())
+                        .encode()
+        );
     }
 }

@@ -27,9 +27,6 @@
 
 package chat.squirrel.modules;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import chat.squirrel.Squirrel;
 import chat.squirrel.WebAuthHandler;
 import chat.squirrel.entities.User;
@@ -39,6 +36,9 @@ import io.vertx.ext.web.Route;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import xyz.bowser65.tokenize.Token;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractModule {
     private final List<Route> routes = new ArrayList<>();

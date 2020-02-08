@@ -39,14 +39,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.function.Supplier;
 
 /**
  * A basic Guild
  */
 public class Guild extends AbstractEntity {
     private String name;
-    private Collection<Member> members; // FIXME maybe move to own collection?
+    private Collection<Member> members; // FIXME maybe move to own collection? (yes)
     private Collection<Role> roles;
     private Collection<ObjectId> channels;
 
@@ -218,7 +217,7 @@ public class Guild extends AbstractEntity {
         MEMBER_CHANGE_NICKNAME,
         /**
          * Allows viewing and accessing a channel.
-         *
+         * <p>
          * If not granted guild-wide, members will only be able to see channels they're
          * explicitly allowed to through permission overrides.
          *

@@ -25,77 +25,60 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel;
+package chat.squirrel.modules.guilds;
 
+import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.core.MetricsManager;
+import chat.squirrel.entities.Guild;
+import chat.squirrel.entities.Member;
 import chat.squirrel.entities.User;
-import com.mongodb.client.model.Filters;
-import io.vertx.core.Handler;
+import de.mxro.metrics.jre.Metrics;
+import io.vertx.core.http.HttpMethod;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-import org.bson.types.ObjectId;
-import xyz.bowser65.tokenize.Token;
 
-import java.security.SignatureException;
+import java.util.Collections;
 
-/**
- * Vert.x handler to handle sessions before continuing down a chain
- */
-public class WebAuthHandler implements Handler<RoutingContext> {
-    public static final String SQUIRREL_TOKEN_KEY = "chat.squirrel.token";
-
+public class ModuleGuilds extends AbstractGuildModule {
     @Override
-    public void handle(RoutingContext event) {
-        final String stringToken = event.request().getHeader("authorization");
-        if (stringToken == null) {
-            event.fail(401);
-            return;
-        }
-
-        // @todo: Bot tokens
-        // @todo: OAuth tokens
-        final Token token;
-
-        try {
-            token = Squirrel.getInstance().getTokenize().validateToken(stringToken, this::fetchAccount);
-        } catch (SignatureException e) {
-            e.printStackTrace();
-            event.fail(403);
-            return;
-        }
-
-        if (token == null) {
-            event.fail(401);
-            return;
-        }
-
-        if (token.getPrefix() != null) {
-            event.fail(401);
-            return;
-        }
-
-        final User user = (User) token.getAccount();
-
-        if (user.isBanned()) {
-            event.fail(403);
-            return;
-        }
-
-//        final long timeout = Squirrel.getInstance().getConfig().getSessionTimeout();
-//
-//        if (timeout != -1 && Tokenize.hasTokenExpired(token, timeout)) {
-//            event.fail(401);
-//            return;
-//        }
-
-//        user.setTokenValidSince(Tokenize.currentTokenTime());
-        event.put(SQUIRREL_TOKEN_KEY, token);
-
-        event.next();
+    public void initialize() {
+        this.registerAuthedRoute(HttpMethod.POST, "/guilds", this::handleCreate);
+        this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.DELETE, "/guilds/:id", this::notImplemented);
     }
 
-    private User fetchAccount(String id) {
-        return Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class, SquirrelCollection.USERS,
-                Filters.eq(new ObjectId(id)));
-    }
+    private void handleCreate(RoutingContext ctx) {
+        final JsonObject obj = ctx.getBodyAsJson();
+        if (obj == null) {
+            ctx.fail(400); // @todo: Proper error payload
+            return;
+        }
 
+        if (!obj.containsKey("name")) {
+            ctx.fail(400); // @todo: Proper error payload
+            return;
+        }
+
+        final String name = obj.getString("name");
+        if (name.length() < 3 || name.length() > 32) {
+            ctx.fail(400); // @todo: Proper error payload
+            return;
+        }
+
+        final User user = getRequester(ctx);
+        final Guild newGuild = new Guild();
+        newGuild.setName(name);
+
+        final Member owner = new Member();
+        owner.setOwner(true);
+        owner.setUserId(user.getId());
+
+        newGuild.setMembers(Collections.singletonList(owner));
+
+        Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.GUILDS, newGuild);
+
+        MetricsManager.record(Metrics.happened("guild.create"));
+        ctx.response().setStatusCode(201).end(newGuild.toJson().encode());
+    }
 }

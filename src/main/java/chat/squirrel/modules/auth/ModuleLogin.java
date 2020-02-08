@@ -55,7 +55,7 @@ public class ModuleLogin extends AbstractModule {
     private void handleLogin(RoutingContext ctx) {
         final JsonObject obj = ctx.getBodyAsJson();
         if (obj == null) {
-            ctx.fail(400);
+            ctx.fail(400); // @todo: Proper error payload
             return;
         }
 
@@ -68,26 +68,28 @@ public class ModuleLogin extends AbstractModule {
             return;
         }
 
-        ctx.response().setStatusCode(200)
-                .end(new JsonObject().put("mfa_required", false).put("token", res.getToken()).encode());
+        ctx.response().setStatusCode(200).end(
+                new JsonObject()
+                        .put("mfa_required", false) // @todo: Consider 3fa support
+                        .put("token", res.getToken())
+                        .encode()
+        );
     }
 
     private void handleRegister(RoutingContext ctx) {
         if (!Squirrel.getInstance().getConfig().isAllowRegister()) {
-            ctx.fail(403);
+            ctx.fail(403); // @todo: Proper error payload
             return;
         }
         final JsonObject obj = ctx.getBodyAsJson();
         if (obj == null || !(obj.containsKey("email") && obj.containsKey("username") && obj.containsKey("password"))) {
-            ctx.fail(400);
+            ctx.fail(400); // @todo: Proper error payload
             return;
         }
 
-        // @todo: Is using a string a good idea for password
         final String password = obj.getString("password");
-
         if (password == null) {
-            ctx.fail(401);
+            ctx.fail(401); // @todo: Proper error payload
             return;
         }
 

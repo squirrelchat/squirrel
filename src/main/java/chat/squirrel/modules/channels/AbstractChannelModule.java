@@ -25,15 +25,35 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.idp.identities;
+package chat.squirrel.modules.channels;
 
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager;
+import chat.squirrel.entities.Guild;
 import chat.squirrel.entities.User;
+import chat.squirrel.entities.channels.IChannel;
+import chat.squirrel.modules.AbstractModule;
+import com.mongodb.client.model.Filters;
+import io.vertx.ext.web.RoutingContext;
+import org.bson.types.ObjectId;
 
-import java.util.concurrent.Future;
+public abstract class AbstractChannelModule extends AbstractModule {
+    protected IChannel getChannel(RoutingContext ctx, User user, Guild.Permissions permission) {
+        final IChannel channel = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IChannel.class,
+                DatabaseManager.SquirrelCollection.GUILDS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
-public class Google implements IIdentity {
-    @Override
-    public Future<User> getSquirrelAccount() {
-        return null;
+        if (channel == null) {
+            ctx.fail(404);
+            return null;
+        }
+
+        // @todo: fetch member and do perm checks
+        // final Member member = guild.getMemberForUser(user.getId());
+        // if (member == null || (permission != null && !member.hasEffectivePermission(permission))) {
+        //     ctx.response().setStatusCode(403).end(new JsonObject().put("message", "Missing Permissions").encode());
+        //     return null;
+        // }
+
+        return channel;
     }
 }

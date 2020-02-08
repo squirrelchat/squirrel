@@ -1,8 +1,8 @@
 package chat.squirrel.idp;
 
-import java.util.concurrent.Future;
-
 import chat.squirrel.idp.identities.Ldap;
+
+import java.util.concurrent.Future;
 
 public class LdapIdentityProvider implements IIdentityProvider {
 

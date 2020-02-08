@@ -40,6 +40,7 @@ public interface IEntity {
     ObjectId getId();
 
     void setId(ObjectId id);
+
     /**
      * @return Vert.x {@link JsonObject} generated from this POJO
      */

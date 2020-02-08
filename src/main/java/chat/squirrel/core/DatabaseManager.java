@@ -149,7 +149,7 @@ public class DatabaseManager {
      * @param username The username string to check
      * @param dis      The discriminator integer to check
      * @return {@code true} if the discriminator is already used for this username,
-     *         {@code false} otherwise
+     * {@code false} otherwise
      */
     public boolean isDiscriminatorTaken(final String username, final int dis) {
         return findFirstEntity(User.class, SquirrelCollection.USERS,
@@ -198,7 +198,7 @@ public class DatabaseManager {
 
         /**
          * @return the name of the MongoDB collection to use because we try to comply
-         *         with BSON naming standards.
+         * with BSON naming standards.
          */
         public String getMongoName() {
             return mongoName;

@@ -1,14 +1,12 @@
 package chat.squirrel.entities;
 
-import org.bson.Document;
-import org.bson.types.ObjectId;
-
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
-
-import chat.squirrel.Squirrel;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 
 public class UserSettings extends AbstractEntity {
     private String language;
@@ -29,7 +27,6 @@ public class UserSettings extends AbstractEntity {
     }
 
     /**
-     * 
      * @param id The Mongo ID of the user to get the settings for
      * @return the UserSettings object for this user
      */
