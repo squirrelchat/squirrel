@@ -51,7 +51,6 @@ import java.util.Properties;
 
 /**
  * The main Squirrel Class.
- * <p>
  * This class is the core of the server, it supervises all of the managers and
  * api.
  */

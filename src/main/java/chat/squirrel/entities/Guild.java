@@ -217,7 +217,6 @@ public class Guild extends AbstractEntity {
         MEMBER_CHANGE_NICKNAME,
         /**
          * Allows viewing and accessing a channel.
-         * <p>
          * If not granted guild-wide, members will only be able to see channels they're
          * explicitly allowed to through permission overrides.
          *
