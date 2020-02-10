@@ -27,6 +27,12 @@
 
 package chat.squirrel.modules.guilds;
 
+import java.util.concurrent.ExecutionException;
+
+import org.bson.types.ObjectId;
+
+import com.mongodb.client.model.Filters;
+
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.Guild;
@@ -36,14 +42,10 @@ import chat.squirrel.entities.User;
 import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.entities.channels.TextChannel;
 import chat.squirrel.entities.channels.VoiceChannel;
-import com.mongodb.client.model.Filters;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-import org.bson.types.ObjectId;
-
-import java.util.concurrent.ExecutionException;
 
 public class ModuleGuildChannels extends AbstractGuildModule {
     @Override
@@ -55,9 +57,9 @@ public class ModuleGuildChannels extends AbstractGuildModule {
         this.registerAuthedRoute(HttpMethod.DELETE, "/guilds/:id/channels/:id", this::notImplemented);
     }
 
-    private void handleCreateChannel(RoutingContext ctx) {
-        final User user = getRequester(ctx);
-        final Guild guild = getGuild(ctx, user, Permissions.GUILD_MANAGE_CHANNELS);
+    private void handleCreateChannel(final RoutingContext ctx) {
+        final User user = this.getRequester(ctx);
+        final Guild guild = this.getGuild(ctx, user, Permissions.GUILD_MANAGE_CHANNELS);
         if (guild == null) {
             return; // Payload already handled; No extra processing required
         }
@@ -91,14 +93,14 @@ public class ModuleGuildChannels extends AbstractGuildModule {
         ctx.response().end(channel.toJson().encode());
     }
 
-    private void handleListChannels(RoutingContext ctx) {
+    private void handleListChannels(final RoutingContext ctx) {
         final JsonObject obj = ctx.getBodyAsJson();
         if (obj == null) {
             ctx.fail(400);
             return;
         }
 
-        final User user = getRequester(ctx);
+        final User user = this.getRequester(ctx);
         final Guild guild = Squirrel.getInstance().getDatabaseManager().findFirstEntity(Guild.class,
                 SquirrelCollection.GUILDS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
@@ -116,7 +118,7 @@ public class ModuleGuildChannels extends AbstractGuildModule {
         final JsonArray out = new JsonArray();
 
         try {
-            for (IChannel chan : guild.getRealChannels().get()) { // Channel-chan (#^.^#)
+            for (final IChannel chan : guild.getRealChannels().get()) { // Channel-chan (#^.^#)
                 final JsonObject jsonChan = new JsonObject();
                 // @todo: Add all of the fields we'll have
                 jsonChan.put("name", chan.getName());

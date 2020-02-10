@@ -27,6 +27,9 @@
 
 package chat.squirrel.modules;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import chat.squirrel.Squirrel;
 import chat.squirrel.WebAuthHandler;
 import chat.squirrel.entities.User;
@@ -37,26 +40,33 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import xyz.bowser65.tokenize.Token;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class AbstractModule {
     private final List<Route> routes = new ArrayList<>();
 
-    /**
-     * Registers a new and disabled route. The Route will be enabled on server
-     * startup, so this should be called only when your module initializes.
-     *
-     * @param method  The HTTP Method
-     * @param path    The absolute path
-     * @param handler The handler (preferably use a lambda pwease)
-     * @return The new route to be slick :sunglasses:
-     */
-    protected Route registerRoute(HttpMethod method, String path, Handler<RoutingContext> handler) {
-        final Route rt = Squirrel.getInstance().getRouter().route(method, path).handler(BodyHandler.create())
-                .handler(Squirrel.getInstance().getWebJsonHandler()).blockingHandler(handler).disable();
-        routes.add(rt);
-        return rt;
+    public void disable() {
+        this.routes.forEach(Route::disable);
+    }
+
+    public void enable() {
+        this.routes.forEach(Route::enable);
+    }
+
+    public User getRequester(final RoutingContext ctx) {
+        return (User) this.getToken(ctx).getAccount();
+    }
+
+    public Token getToken(final RoutingContext ctx) {
+        return ctx.get(WebAuthHandler.SQUIRREL_TOKEN_KEY);
+    }
+
+    public abstract void initialize();
+
+    public boolean shouldEnable() {
+        return true;
+    }
+
+    protected void notImplemented(final RoutingContext ctx) {
+        ctx.fail(501);
     }
 
     /**
@@ -69,35 +79,26 @@ public abstract class AbstractModule {
      * @param handler The handler
      * @return The new route to be slick :sunglasses:
      */
-    protected Route registerAuthedRoute(HttpMethod method, String path, Handler<RoutingContext> handler) {
-        final Route rt = registerRoute(method, path, Squirrel.getInstance().getApiAuthHandler());
+    protected Route registerAuthedRoute(final HttpMethod method, final String path,
+            final Handler<RoutingContext> handler) {
+        final Route rt = this.registerRoute(method, path, Squirrel.getInstance().getApiAuthHandler());
         rt.handler(handler);
         return rt;
     }
 
-    public void enable() {
-        routes.forEach(Route::enable);
+    /**
+     * Registers a new and disabled route. The Route will be enabled on server
+     * startup, so this should be called only when your module initializes.
+     *
+     * @param method  The HTTP Method
+     * @param path    The absolute path
+     * @param handler The handler (preferably use a lambda pwease)
+     * @return The new route to be slick :sunglasses:
+     */
+    protected Route registerRoute(final HttpMethod method, final String path, final Handler<RoutingContext> handler) {
+        final Route rt = Squirrel.getInstance().getRouter().route(method, path).handler(BodyHandler.create())
+                .handler(Squirrel.getInstance().getWebJsonHandler()).blockingHandler(handler).disable();
+        this.routes.add(rt);
+        return rt;
     }
-
-    public void disable() {
-        routes.forEach(Route::disable);
-    }
-
-    public boolean shouldEnable() {
-        return true;
-    }
-
-    public Token getToken(RoutingContext ctx) {
-        return ctx.get(WebAuthHandler.SQUIRREL_TOKEN_KEY);
-    }
-
-    public User getRequester(RoutingContext ctx) {
-        return (User) getToken(ctx).getAccount();
-    }
-
-    protected void notImplemented(RoutingContext ctx) {
-        ctx.fail(501);
-    }
-
-    public abstract void initialize();
 }

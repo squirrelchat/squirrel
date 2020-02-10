@@ -27,8 +27,9 @@
 
 package chat.squirrel.entities;
 
-import io.vertx.core.json.JsonObject;
 import org.bson.types.ObjectId;
+
+import io.vertx.core.json.JsonObject;
 
 /**
  * A basic Squirrel Entity.

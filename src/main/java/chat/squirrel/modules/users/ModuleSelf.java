@@ -36,28 +36,20 @@ import io.vertx.ext.web.RoutingContext;
 public class ModuleSelf extends AbstractModule {
     @Override
     public void initialize() {
-        registerAuthedRoute(HttpMethod.GET, "/users/self", this::handleMe);
-        registerAuthedRoute(HttpMethod.PATCH, "/users/self", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.GET, "/users/self", this::handleMe);
+        this.registerAuthedRoute(HttpMethod.PATCH, "/users/self", this::notImplemented);
         // { disable: true } as payload to just disable the account
-        registerAuthedRoute(HttpMethod.DELETE, "/users/self", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.DELETE, "/users/self", this::notImplemented);
     }
 
-    private void handleMe(RoutingContext ctx) {
-        final User user = getRequester(ctx);
-        ctx.response().end(
-                new JsonObject()
-                        .put("id", user.getId().toHexString())
-                        .put("username", user.getUsername())
+    private void handleMe(final RoutingContext ctx) {
+        final User user = this.getRequester(ctx);
+        ctx.response()
+                .end(new JsonObject().put("id", user.getId().toHexString()).put("username", user.getUsername())
                         .put("discriminator", user.getDiscriminator())
                         // .put("avatar", user.get())
-                        .put("bot", false)
-                        .put("email", user.getEmail())
-                        .put("custom_email", user.getCustomEmail())
-                        .put("verified", true)
-                        .put("mfa_enabled", false)
-                        .put("locale", "en-GB")
-                        .put("flags", user.getFlags())
-                        .encode()
-        );
+                        .put("bot", false).put("email", user.getEmail()).put("custom_email", user.getCustomEmail())
+                        .put("verified", true).put("mfa_enabled", false).put("locale", "en-GB")
+                        .put("flags", user.getFlags()).encode());
     }
 }

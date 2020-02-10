@@ -27,9 +27,9 @@
 
 package chat.squirrel.idp;
 
-import chat.squirrel.idp.identities.IIdentity;
-
 import java.util.concurrent.Future;
+
+import chat.squirrel.idp.identities.IIdentity;
 
 interface IIdentityProvider {
     Future<? extends IIdentity> provide(Object props);

@@ -34,37 +34,31 @@ public class ModuleRelationship extends AbstractModule {
     @Override
     public void initialize() {
         /*
-         * @todo: Write actual docs
-         * Let 2 users, User A (id 1) and User B (id 2)
+         * @todo: Write actual docs Let 2 users, User A (id 1) and User B (id 2)
          *
-         * User A: POST /users/self/relationships with as body { username: 'User B', discriminator: '0001' }
-         *  - There is no type, so we assume it's a friend request.
-         *  - Type 0: Friend Request
-         *  - Type 1: Block member
+         * User A: POST /users/self/relationships with as body { username: 'User B',
+         * discriminator: '0001' } - There is no type, so we assume it's a friend
+         * request. - Type 0: Friend Request - Type 1: Block member
          *
-         * Blocking immediately returns 204 (overrides friend)
-         *  - 404 response code if target doesn't exist.
-         *  - 400 response code if malformed request/target is self
+         * Blocking immediately returns 204 (overrides friend) - 404 response code if
+         * target doesn't exist. - 400 response code if malformed request/target is self
          *
-         * User A is able to add User B as a friend according to privacy settings, aren't friend and one doesn't have
-         * the other one blocked:
-         *  - Gateway event to User B, 202 response code to User A.
-         *  - Else, 403 response code.
-         *  - 404 response code if target doesn't exist.
-         *  - 400 response code if malformed request/target is self or a bot.
+         * User A is able to add User B as a friend according to privacy settings,
+         * aren't friend and one doesn't have the other one blocked: - Gateway event to
+         * User B, 202 response code to User A. - Else, 403 response code. - 404
+         * response code if target doesn't exist. - 400 response code if malformed
+         * request/target is self or a bot.
          *
-         * User B: POST /users/self/relationships/1 (without body)
-         *  - If there is a pending friend request, it'll get accepted, User A will receive a gateway event and User B
-         * gets a 204 status code.
-         *  - Else, 400 status code.
+         * User B: POST /users/self/relationships/1 (without body) - If there is a
+         * pending friend request, it'll get accepted, User A will receive a gateway
+         * event and User B gets a 204 status code. - Else, 400 status code.
          *
-         * User A: DELETE /users/self/relationships/2
-         *  - If there is a pending request to User B, it'll be deleted.
-         *  - If User B is a friend of User A or is blocked by User A, relationship will be removed.
-         *  - Else, 400 status code.
+         * User A: DELETE /users/self/relationships/2 - If there is a pending request to
+         * User B, it'll be deleted. - If User B is a friend of User A or is blocked by
+         * User A, relationship will be removed. - Else, 400 status code.
          */
-        registerAuthedRoute(HttpMethod.POST, "/users/self/relationships", this::notImplemented);
-        registerAuthedRoute(HttpMethod.POST, "/users/self/relationships/:id", this::notImplemented);
-        registerAuthedRoute(HttpMethod.DELETE, "/users/self/relationships/:id", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.POST, "/users/self/relationships", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.POST, "/users/self/relationships/:id", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.DELETE, "/users/self/relationships/:id", this::notImplemented);
     }
 }

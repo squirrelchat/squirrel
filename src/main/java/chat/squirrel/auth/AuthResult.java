@@ -30,47 +30,6 @@ package chat.squirrel.auth;
 import chat.squirrel.entities.User;
 
 public class AuthResult {
-    private User user;
-    private FailureReason reason = FailureReason.UNKNOWN;
-    private String token;
-
-    public FailureReason getReason() {
-        return reason;
-    }
-
-    /**
-     * Set to null for success
-     */
-    public void setReason(FailureReason reason) {
-        this.reason = reason;
-    }
-
-    public boolean isSuccess() {
-        return reason == null;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    @Override
-    public String toString() {
-        return (isSuccess() ? "Success" : "Failure") + " " + user
-                + (isSuccess() ? "" : (": " + getReason().toString()));
-    }
-
     public enum FailureReason {
         UNKNOWN,
         /**
@@ -97,5 +56,47 @@ public class AuthResult {
         DISABLED_ACCOUNT,
         BANNED_ACCOUNT,
         DELETION_SCHEDULED
+    }
+
+    private User user;
+    private FailureReason reason = FailureReason.UNKNOWN;
+
+    private String token;
+
+    public FailureReason getReason() {
+        return this.reason;
+    }
+
+    public String getToken() {
+        return this.token;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public boolean isSuccess() {
+        return this.reason == null;
+    }
+
+    /**
+     * Set to null for success
+     */
+    public void setReason(final FailureReason reason) {
+        this.reason = reason;
+    }
+
+    public void setToken(final String token) {
+        this.token = token;
+    }
+
+    public void setUser(final User user) {
+        this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        return (this.isSuccess() ? "Success" : "Failure") + " " + this.user
+                + (this.isSuccess() ? "" : ": " + this.getReason().toString());
     }
 }

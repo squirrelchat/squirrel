@@ -27,21 +27,23 @@
 
 package chat.squirrel.auth;
 
-import chat.squirrel.Squirrel;
-import chat.squirrel.auth.AuthResult.FailureReason;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.User;
+import java.util.regex.Pattern;
+
+import org.bson.Document;
+import org.bson.conversions.Bson;
+
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
+
+import chat.squirrel.Squirrel;
+import chat.squirrel.auth.AuthResult.FailureReason;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.entities.User;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import de.mkammerer.argon2.Argon2Factory.Argon2Types;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-
-import java.util.regex.Pattern;
 
 /**
  * This {@link AuthHandler} manages authentication against the MongoDB database.
@@ -49,10 +51,10 @@ import java.util.regex.Pattern;
 public class MongoAuthHandler implements AuthHandler {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
             Pattern.CASE_INSENSITIVE),
-    /**
-     * Does not allow escapes, line breaks, apple logo (F8FF)
-     */
-    USERNAME_PATTERN = Pattern.compile("^\\S[^#\\e\\p{Cntrl}}\\v\\xF8FF]+\\S$", Pattern.CASE_INSENSITIVE);
+            /**
+             * Does not allow escapes, line breaks, apple logo (F8FF)
+             */
+            USERNAME_PATTERN = Pattern.compile("^\\S[^#\\e\\p{Cntrl}}\\v\\xF8FF]+\\S$", Pattern.CASE_INSENSITIVE);
     private final Argon2 argon;
     @SuppressWarnings("FieldCanBeLocal")
     private final int ARGON_ITERATION = 3, ARGON_MEMORY = 128000, ARGON_PARALLELISM = 4;
@@ -61,7 +63,7 @@ public class MongoAuthHandler implements AuthHandler {
      * Creates a basic {@link MongoAuthHandler}
      */
     public MongoAuthHandler() {
-        argon = Argon2Factory.create(Argon2Types.ARGON2d);
+        this.argon = Argon2Factory.create(Argon2Types.ARGON2d);
     }
 
     @Override
@@ -78,14 +80,14 @@ public class MongoAuthHandler implements AuthHandler {
             }
             final String username = parts[0], discriminator = parts[1];
             try {
-                it = fetchUsers(Filters.and(Filters.eq("username", username),
+                it = this.fetchUsers(Filters.and(Filters.eq("username", username),
                         Filters.eq("discriminator", Integer.parseInt(discriminator))));
-            } catch (NumberFormatException ex) {
+            } catch (final NumberFormatException ex) {
                 res.setReason(shouldDistinguish ? FailureReason.INVALID_USERNAME : FailureReason.INVALID_CREDENTIALS);
                 return res;
             }
         } else if (credential.contains("@")) { // Interpret as email
-            it = fetchUsers(Filters.eq("email", credential));
+            it = this.fetchUsers(Filters.eq("email", credential));
         } else {
             res.setReason(shouldDistinguish ? FailureReason.INVALID_USERNAME : FailureReason.INVALID_CREDENTIALS);
             return res;
@@ -95,7 +97,7 @@ public class MongoAuthHandler implements AuthHandler {
 
         if (doc != null) {
             final String hash = doc.getString("password");
-            if (argon.verify(hash, password)) {
+            if (this.argon.verify(hash, password)) {
                 final User user = Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
                         SquirrelCollection.USERS, Filters.eq(doc.get("_id")));
                 res.setUser(user);
@@ -108,10 +110,11 @@ public class MongoAuthHandler implements AuthHandler {
             res.setReason(FailureReason.INVALID_USERNAME);
         }
 
-        argon.wipeArray(password);
+        this.argon.wipeArray(password);
 
-        if (!shouldDistinguish && res.getReason() == null)
+        if (!shouldDistinguish && res.getReason() == null) {
             res.setReason(FailureReason.INVALID_CREDENTIALS);
+        }
 
         return res;
     }
@@ -127,16 +130,16 @@ public class MongoAuthHandler implements AuthHandler {
             res.setReason(FailureReason.INVALID_USERNAME);
             return res;
         }
-        if (hitMaxUsernameCount(username)) {
+        if (this.hitMaxUsernameCount(username)) {
             res.setReason(FailureReason.OVERUSED_USERNAME);
             return res;
         }
-        if (isEmailTaken(email)) {
+        if (this.isEmailTaken(email)) {
             res.setReason(FailureReason.EMAIL_TAKEN);
             return res;
         }
 
-        int discriminator = Squirrel.getInstance().getDatabaseManager().getFreeDiscriminator(username);
+        final int discriminator = Squirrel.getInstance().getDatabaseManager().getFreeDiscriminator(username);
         if (discriminator == -1) {
             res.setReason(FailureReason.OVERUSED_USERNAME);
             return res;
@@ -149,9 +152,9 @@ public class MongoAuthHandler implements AuthHandler {
 
         Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.USERS, user);
         final UpdateResult pwdUp = Squirrel.getInstance().getDatabaseManager().updateEntity(SquirrelCollection.USERS,
-                Filters.eq(user.getId()),
-                Updates.set("password", argon.hash(ARGON_ITERATION, ARGON_MEMORY, ARGON_PARALLELISM, password)));
-        argon.wipeArray(password);
+                Filters.eq(user.getId()), Updates.set("password",
+                        this.argon.hash(this.ARGON_ITERATION, this.ARGON_MEMORY, this.ARGON_PARALLELISM, password)));
+        this.argon.wipeArray(password);
 
         if (pwdUp.getModifiedCount() != 1) {
             throw new IllegalStateException("Password settings at registration didn't succeed: "
@@ -163,33 +166,35 @@ public class MongoAuthHandler implements AuthHandler {
         return res;
     }
 
-    private boolean isEmailTaken(final String email) {
-        return Squirrel.getInstance().getDatabaseManager().countDocuments(SquirrelCollection.USERS,
-                Filters.eq("email", email)) != 0;
+    private FindIterable<Document> fetchUsers(final Bson filters) {
+        return Squirrel.getInstance().getDatabaseManager().rawRequest(SquirrelCollection.USERS, filters);
     }
 
     private boolean hitMaxUsernameCount(final String username) {
         final int max = Squirrel.getInstance().getConfig().getMaximumUsernameCount();
         final long count = Squirrel.getInstance().getDatabaseManager().countDocuments(SquirrelCollection.USERS,
                 Filters.eq("username", username));
-        return count >= 5000 || (max != -1 && count >= max);
+        return count >= 5000 || max != -1 && count >= max;
     }
 
-    private FindIterable<Document> fetchUsers(final Bson filters) {
-        return Squirrel.getInstance().getDatabaseManager().rawRequest(SquirrelCollection.USERS, filters);
-    }
-
-    public static boolean isValidUsername(final String username) { // XXX should we move that to Squirrel?
-        // @todo: Sanitize some Unicode stuff (zws, shit like private apple logo)
-        if (username == null)
-            return false;
-        return !(username.length() < 2 || username.length() > 32) && USERNAME_PATTERN.matcher(username).matches();
+    private boolean isEmailTaken(final String email) {
+        return Squirrel.getInstance().getDatabaseManager().countDocuments(SquirrelCollection.USERS,
+                Filters.eq("email", email)) != 0;
     }
 
     public static boolean isValidEmail(final String email) { // XXX should we move that to Squirrel?
         // @todo: Disallow emails handled by Squirrel's mail server (if configured)
-        if (email == null)
+        if (email == null) {
             return false;
+        }
         return EMAIL_PATTERN.matcher(email).matches();
+    }
+
+    public static boolean isValidUsername(final String username) { // XXX should we move that to Squirrel?
+        // @todo: Sanitize some Unicode stuff (zws, shit like private apple logo)
+        if (username == null) {
+            return false;
+        }
+        return !(username.length() < 2 || username.length() > 32) && USERNAME_PATTERN.matcher(username).matches();
     }
 }

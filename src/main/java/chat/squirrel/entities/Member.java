@@ -27,17 +27,19 @@
 
 package chat.squirrel.entities;
 
-import chat.squirrel.Squirrel;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.Guild.Permissions;
-import com.mongodb.client.model.Filters;
-import org.bson.codecs.pojo.annotations.BsonIgnore;
-import org.bson.types.ObjectId;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+import org.bson.types.ObjectId;
+
+import com.mongodb.client.model.Filters;
+
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.entities.Guild.Permissions;
 
 /**
  * Member of a guild
@@ -52,55 +54,32 @@ public class Member extends AbstractEntity {
     private boolean owner;
 
     /**
-     * @return The ID corresponding to the {@link User} associated with this Member
-     */
-    public ObjectId getUserId() {
-        return userId;
-    }
-
-    /**
-     * @param userId The ID corresponding to the {@link User} associated with this
-     *               Member.
-     */
-    public void setUserId(ObjectId userId) {
-        this.userId = userId;
-    }
-
-    /**
-     * Async because DB request
-     *
-     * @return Future that will return the {@link User} corresponding to this
-     * Member.
-     */
-    @BsonIgnore
-    public Future<User> getUser() {
-        return new FutureTask<>(() -> Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
-                SquirrelCollection.USERS, Filters.eq(getUserId())));
-    }
-
-    /**
-     * @return The IDs corresponding to the Guild roles that the Member possesses.
-     */
-    public Collection<ObjectId> getRolesIds() {
-        return roles;
-    }
-
-    /**
-     * @param roles The IDs corresponding to the Guild roles that the Member
-     *              possesses.
-     */
-    public void setRolesIds(Collection<ObjectId> roles) {
-        this.roles = roles;
-    }
-
-    /**
      * @return The {@link Guild} that this Member is a part of
      */
     @BsonIgnore
     public Future<Guild> getGuild() {
         // @todo: use an aggregation at query-time
         return new FutureTask<>(() -> Squirrel.getInstance().getDatabaseManager().findFirstEntity(Guild.class,
-                SquirrelCollection.GUILDS, Filters.eq(getGuildId())));
+                SquirrelCollection.GUILDS, Filters.eq(this.getGuildId())));
+    }
+
+    /**
+     * @return The ID corresponding to the Guild this Member is apart of.
+     */
+    public ObjectId getGuildId() {
+        return this.guildId;
+    }
+
+    /**
+     * @return This user's nickname for this Guild
+     */
+    public String getNickname() {
+        return this.nickname;
+    }
+
+    // @todo: Fetch them from roles
+    public Collection<Permissions> getPermissions() {
+        return this.permissions;
     }
 
     /**
@@ -110,53 +89,58 @@ public class Member extends AbstractEntity {
     public Future<Collection<Role>> getRoles() {
         // @todo: use an aggregation at query-time
         return new FutureTask<>(() -> { // XXX this is ugly
-            final Guild guild = getGuild().get();
-            final Collection<ObjectId> ids = getRolesIds();
+            final Guild guild = this.getGuild().get();
+            final Collection<ObjectId> ids = this.getRolesIds();
             final Collection<Role> realRoles = new ArrayList<>();
             for (final Role role : guild.getRoles()) {
-                if (ids.contains(role.getId()))
+                if (ids.contains(role.getId())) {
                     realRoles.add(role);
+                }
             }
             return realRoles;
         });
     }
 
     /**
-     * @return This user's nickname for this Guild
+     * @return The IDs corresponding to the Guild roles that the Member possesses.
      */
-    public String getNickname() {
-        return nickname;
+    public Collection<ObjectId> getRolesIds() {
+        return this.roles;
     }
 
     /**
-     * @param nickname The user's nickname for this Guild
+     * Async because DB request
+     *
+     * @return Future that will return the {@link User} corresponding to this
+     *         Member.
      */
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    @BsonIgnore
+    public Future<User> getUser() {
+        return new FutureTask<>(() -> Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
+                SquirrelCollection.USERS, Filters.eq(this.getUserId())));
     }
 
     /**
-     * @return The ID corresponding to the Guild this Member is apart of.
+     * @return The ID corresponding to the {@link User} associated with this Member
      */
-    public ObjectId getGuildId() {
-        return guildId;
+    public ObjectId getUserId() {
+        return this.userId;
     }
 
-    /**
-     * @param guildId The ID corresponding to the Guild this Member is apart of.
-     */
-    public void setGuildId(ObjectId guildId) {
-        this.guildId = guildId;
-    }
+    public boolean hasEffectivePermission(final Permissions perm) {
+        if (this.isOwner()) {
+            return true;
+        }
 
-    // @todo: Fetch them from roles
-    public Collection<Permissions> getPermissions() {
-        return permissions;
-    }
+        if (this.getPermissions() == null) {
+            return false;
+        }
 
-    // @todo: Fetch them from roles
-    public void setPermissions(Collection<Permissions> permissions) {
-        this.permissions = permissions;
+        if (perm.name().startsWith("GUILD_MANAGE_") && this.getPermissions().contains(Permissions.GUILD_MANAGE)) {
+            return true;
+        }
+
+        return this.getPermissions().contains(perm) || this.getPermissions().contains(Permissions.ADMINISTRATOR);
     }
 
     /**
@@ -165,24 +149,46 @@ public class Member extends AbstractEntity {
      * @return if the member is the owner of the guild
      */
     public boolean isOwner() {
-        return owner;
+        return this.owner;
     }
 
-    public void setOwner(boolean owner) {
+    /**
+     * @param guildId The ID corresponding to the Guild this Member is apart of.
+     */
+    public void setGuildId(final ObjectId guildId) {
+        this.guildId = guildId;
+    }
+
+    /**
+     * @param nickname The user's nickname for this Guild
+     */
+    public void setNickname(final String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setOwner(final boolean owner) {
         this.owner = owner;
     }
 
-    public boolean hasEffectivePermission(Permissions perm) {
-        if (isOwner())
-            return true;
+    // @todo: Fetch them from roles
+    public void setPermissions(final Collection<Permissions> permissions) {
+        this.permissions = permissions;
+    }
 
-        if (getPermissions() == null)
-            return false;
+    /**
+     * @param roles The IDs corresponding to the Guild roles that the Member
+     *              possesses.
+     */
+    public void setRolesIds(final Collection<ObjectId> roles) {
+        this.roles = roles;
+    }
 
-        if (perm.name().startsWith("GUILD_MANAGE_") && getPermissions().contains(Permissions.GUILD_MANAGE))
-            return true;
-
-        return getPermissions().contains(perm) || getPermissions().contains(Permissions.ADMINISTRATOR);
+    /**
+     * @param userId The ID corresponding to the {@link User} associated with this
+     *               Member.
+     */
+    public void setUserId(final ObjectId userId) {
+        this.userId = userId;
     }
 
 }

@@ -27,15 +27,17 @@
 
 package chat.squirrel;
 
+import java.security.SignatureException;
+
+import org.bson.types.ObjectId;
+
+import com.mongodb.client.model.Filters;
+
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.User;
-import com.mongodb.client.model.Filters;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
-import org.bson.types.ObjectId;
 import xyz.bowser65.tokenize.Token;
-
-import java.security.SignatureException;
 
 /**
  * Vert.x handler to handle sessions before continuing down a chain
@@ -44,7 +46,7 @@ public class WebAuthHandler implements Handler<RoutingContext> {
     public static final String SQUIRREL_TOKEN_KEY = "chat.squirrel.token";
 
     @Override
-    public void handle(RoutingContext event) {
+    public void handle(final RoutingContext event) {
         final String stringToken = event.request().getHeader("authorization");
         if (stringToken == null) {
             event.fail(401);
@@ -57,7 +59,7 @@ public class WebAuthHandler implements Handler<RoutingContext> {
 
         try {
             token = Squirrel.getInstance().getTokenize().validateToken(stringToken, this::fetchAccount);
-        } catch (SignatureException e) {
+        } catch (final SignatureException e) {
             e.printStackTrace();
             event.fail(403);
             return;
@@ -93,7 +95,7 @@ public class WebAuthHandler implements Handler<RoutingContext> {
         event.next();
     }
 
-    private User fetchAccount(String id) {
+    private User fetchAccount(final String id) {
         return Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class, SquirrelCollection.USERS,
                 Filters.eq(new ObjectId(id)));
     }

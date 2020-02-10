@@ -27,32 +27,33 @@
 
 package chat.squirrel;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
+
+import org.bson.BsonDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mongodb.client.model.Filters;
+
 import chat.squirrel.auth.AuthHandler;
 import chat.squirrel.auth.MongoAuthHandler;
 import chat.squirrel.core.DatabaseManager;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.core.MetricsManager;
 import chat.squirrel.core.ModuleManager;
-import com.mongodb.client.model.Filters;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import org.bson.BsonDocument;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xyz.bowser65.tokenize.Tokenize;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
-
 /**
- * The main Squirrel Class.
- * This class is the core of the server, it supervises all of the managers and
- * api.
+ * The main Squirrel Class. This class is the core of the server, it supervises
+ * all of the managers and api.
  */
 public final class Squirrel {
     // Stuff
@@ -75,13 +76,150 @@ public final class Squirrel {
     private final Handler<RoutingContext> apiAuthHandler, webJsonHandler;
 
     /**
-     * Call this if you want stuff to break
-     *
-     * @param args Command line arguments
+     * Initialize various components for the server
      */
-    public static void main(String[] args) {
-        instance = new Squirrel();
-        instance.start();
+    private Squirrel() {
+        this.properties = new Properties();
+        try {
+            this.properties.load(new FileInputStream("./squirrel.properties"));
+        } catch (final IOException e) {
+            LOG.error("Error while loading settings from squirrel.properties", e);
+            LOG.error("Fatal error, exiting");
+            System.exit(-1);
+        }
+        LOG.info("Initializing managers");
+        this.moduleManager = new ModuleManager();
+        this.dbManager = new DatabaseManager(this.getProperty("mongo.con-string"),
+                this.getProperty("mongo.db-name", "squirrel"));
+
+        this.config = this.dbManager.findFirstEntity(SquirrelConfig.class, SquirrelCollection.CONFIG,
+                new BsonDocument());
+        if (this.config == null) {
+            this.config = new SquirrelConfig();
+            this.saveConfig();
+        }
+
+        this.authHandler = new MongoAuthHandler(); // TODO: make customizable when there'll be more
+
+        this.tokenize = new Tokenize(this.config.getTokenSecret().getBytes(StandardCharsets.UTF_16));
+
+        LOG.info("Loading modules");
+        this.moduleManager.scanPackage("chat.squirrel.modules");
+        LOG.info("Initializing vert.x");
+        final Vertx vertx = Vertx.vertx();
+        this.server = vertx.createHttpServer();
+
+        this.rootRouter = Router.router(vertx);
+        this.apiRouter = Router.router(vertx);
+        this.server.requestHandler(this.rootRouter);
+        this.rootRouter.mountSubRouter("/api/v1", this.apiRouter);
+
+        this.webJsonHandler = new WebJsonHandler();
+        this.apiAuthHandler = new WebAuthHandler();
+
+        this.webExceptionHandler = new WebExceptionHandler();
+        this.rootRouter.errorHandler(500, this.webExceptionHandler);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "squirrel-shutdown"));
+    }
+
+    /**
+     * @return The Vert.x authentication handler the precedes protected routes.
+     */
+    public Handler<RoutingContext> getApiAuthHandler() {
+        return this.apiAuthHandler;
+    }
+
+    /**
+     * @return The AuthHandler that manages authentication to the database
+     */
+    public AuthHandler getAuthHandler() {
+        return this.authHandler;
+    }
+
+    /**
+     * @return The SquirrelConfig object for this instance
+     */
+    public SquirrelConfig getConfig() {
+        return this.config;
+    }
+
+    /**
+     * @return The DatabaseManager used by this server
+     */
+    public DatabaseManager getDatabaseManager() {
+        return this.dbManager;
+    }
+
+    /**
+     * @param key The key representing the setting in the properties file to get
+     * @return The property content from the properties file
+     */
+    public String getProperty(final String key) {
+        return this.properties.getProperty(key);
+    }
+
+    /**
+     * @param key The key representing the setting in the properties file to get
+     * @param def The default value in case it's not defined
+     * @return The value of key or def
+     */
+    public String getProperty(final String key, final String def) {
+        return this.properties.getProperty(key, def);
+    }
+
+    /**
+     * @return The vert.x Router used by the server
+     */
+    public Router getRouter() {
+        return this.apiRouter;
+    }
+
+    public Tokenize getTokenize() {
+        return this.tokenize;
+    }
+
+    public Handler<RoutingContext> getWebJsonHandler() {
+        return this.webJsonHandler;
+    }
+
+    public void saveConfig() { // TODO make better
+        this.getDatabaseManager().deleteEntity(SquirrelCollection.CONFIG, Filters.eq(this.getConfig().getId()));
+        this.getDatabaseManager().insertEntity(SquirrelCollection.CONFIG, this.getConfig());
+    }
+
+    /**
+     * Stops the web server and gracefully shutdowns the managers
+     */
+    public void shutdown() {
+        LOG.info("Gracefully shutting down");
+        this.server.close();
+        this.moduleManager.disableModules();
+        this.dbManager.shutdown();
+        MetricsManager.getMetrics().stop();
+        LOG.info("Shutdown successful, the process should end");
+    }
+
+    /**
+     * Actually starts the server and other components
+     */
+    private void start() {
+        LOG.info("Loading routes");
+        this.moduleManager.loadModules();
+
+        LOG.info("Starting server");
+        this.server.listen(8080);
+    }
+
+    /**
+     * @param dis The discriminator integer to format
+     * @return String format of integer with up to 4 leading zeros
+     */
+    public static String formatDiscriminator(final int dis) {
+        if (dis < 0 || dis > 9999) {
+            throw new IllegalArgumentException("Discriminator to be formatted is out of bounds");
+        }
+        return String.format("%04d", dis);
     }
 
     /**
@@ -92,147 +230,13 @@ public final class Squirrel {
     }
 
     /**
-     * Initialize various components for the server
+     * Call this if you want stuff to break
+     *
+     * @param args Command line arguments
      */
-    private Squirrel() {
-        properties = new Properties();
-        try {
-            properties.load(new FileInputStream("./squirrel.properties"));
-        } catch (IOException e) {
-            LOG.error("Error while loading settings from squirrel.properties", e);
-            LOG.error("Fatal error, exiting");
-            System.exit(-1);
-        }
-        LOG.info("Initializing managers");
-        moduleManager = new ModuleManager();
-        dbManager = new DatabaseManager(getProperty("mongo.con-string"), getProperty("mongo.db-name", "squirrel"));
-
-        config = dbManager.findFirstEntity(SquirrelConfig.class, SquirrelCollection.CONFIG, new BsonDocument());
-        if (config == null) {
-            config = new SquirrelConfig();
-            saveConfig();
-        }
-
-        authHandler = new MongoAuthHandler(); // TODO: make customizable when there'll be more
-
-        tokenize = new Tokenize(config.getTokenSecret().getBytes(StandardCharsets.UTF_16));
-
-        LOG.info("Loading modules");
-        moduleManager.scanPackage("chat.squirrel.modules");
-        LOG.info("Initializing vert.x");
-        final Vertx vertx = Vertx.vertx();
-        server = vertx.createHttpServer();
-
-        rootRouter = Router.router(vertx);
-        apiRouter = Router.router(vertx);
-        server.requestHandler(rootRouter);
-        rootRouter.mountSubRouter("/api/v1", apiRouter);
-
-        webJsonHandler = new WebJsonHandler();
-        apiAuthHandler = new WebAuthHandler();
-
-        webExceptionHandler = new WebExceptionHandler();
-        rootRouter.errorHandler(500, webExceptionHandler);
-
-        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "squirrel-shutdown"));
-    }
-
-    /**
-     * Actually starts the server and other components
-     */
-    private void start() {
-        LOG.info("Loading routes");
-        moduleManager.loadModules();
-
-        LOG.info("Starting server");
-        server.listen(8080);
-    }
-
-    /**
-     * Stops the web server and gracefully shutdowns the managers
-     */
-    public void shutdown() {
-        LOG.info("Gracefully shutting down");
-        server.close();
-        moduleManager.disableModules();
-        dbManager.shutdown();
-        MetricsManager.getMetrics().stop();
-        LOG.info("Shutdown successful, the process should end");
-    }
-
-    public void saveConfig() { // TODO make better
-        getDatabaseManager().deleteEntity(SquirrelCollection.CONFIG, Filters.eq(getConfig().getId()));
-        getDatabaseManager().insertEntity(SquirrelCollection.CONFIG, getConfig());
-    }
-
-    /**
-     * @return The vert.x Router used by the server
-     */
-    public Router getRouter() {
-        return apiRouter;
-    }
-
-    /**
-     * @return The DatabaseManager used by this server
-     */
-    public DatabaseManager getDatabaseManager() {
-        return dbManager;
-    }
-
-    /**
-     * @param key The key representing the setting in the properties file to get
-     * @return The property content from the properties file
-     */
-    public String getProperty(String key) {
-        return properties.getProperty(key);
-    }
-
-    /**
-     * @param key The key representing the setting in the properties file to get
-     * @param def The default value in case it's not defined
-     * @return The value of key or def
-     */
-    public String getProperty(String key, String def) {
-        return properties.getProperty(key, def);
-    }
-
-    /**
-     * @return The SquirrelConfig object for this instance
-     */
-    public SquirrelConfig getConfig() {
-        return config;
-    }
-
-    /**
-     * @return The AuthHandler that manages authentication to the database
-     */
-    public AuthHandler getAuthHandler() {
-        return authHandler;
-    }
-
-    /**
-     * @return The Vert.x authentication handler the precedes protected routes.
-     */
-    public Handler<RoutingContext> getApiAuthHandler() {
-        return apiAuthHandler;
-    }
-
-    /**
-     * @param dis The discriminator integer to format
-     * @return String format of integer with up to 4 leading zeros
-     */
-    public static String formatDiscriminator(int dis) {
-        if (dis < 0 || dis > 9999)
-            throw new IllegalArgumentException("Discriminator to be formatted is out of bounds");
-        return String.format("%04d", dis);
-    }
-
-    public Tokenize getTokenize() {
-        return tokenize;
-    }
-
-    public Handler<RoutingContext> getWebJsonHandler() {
-        return webJsonHandler;
+    public static void main(final String[] args) {
+        instance = new Squirrel();
+        instance.start();
     }
 
 }

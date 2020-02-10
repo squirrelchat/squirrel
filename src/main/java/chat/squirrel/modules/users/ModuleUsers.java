@@ -27,34 +27,33 @@
 
 package chat.squirrel.modules.users;
 
+import org.bson.types.ObjectId;
+
+import com.mongodb.client.model.Filters;
+
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.User;
 import chat.squirrel.modules.AbstractModule;
-import com.mongodb.client.model.Filters;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-import org.bson.types.ObjectId;
 
 public class ModuleUsers extends AbstractModule {
     @Override
     public void initialize() {
-        registerAuthedRoute(HttpMethod.GET, "/users/:id", this::handleGetAccount);
-        registerAuthedRoute(HttpMethod.GET, "/users/:id/profile", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.GET, "/users/:id", this::handleGetAccount);
+        this.registerAuthedRoute(HttpMethod.GET, "/users/:id/profile", this::notImplemented);
     }
 
-    private void handleGetAccount(RoutingContext ctx) {
+    private void handleGetAccount(final RoutingContext ctx) {
         final User target = Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
                 SquirrelCollection.USERS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
-        ctx.response().end(
-                new JsonObject()
-                        .put("id", target.getId().toHexString())
-                        .put("username", target.getUsername())
+        ctx.response()
+                .end(new JsonObject().put("id", target.getId().toHexString()).put("username", target.getUsername())
                         .put("discriminator", target.getDiscriminator())
                         // .put("avatar", target.get())
-                        .encode()
-        );
+                        .encode());
     }
 }

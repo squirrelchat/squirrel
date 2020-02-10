@@ -27,31 +27,31 @@
 
 package chat.squirrel.entities.channels;
 
-import chat.squirrel.entities.AbstractEntity;
-import chat.squirrel.entities.IMessage;
+import java.util.Collection;
+import java.util.concurrent.Future;
+
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
-import java.util.Collection;
-import java.util.concurrent.Future;
+import chat.squirrel.entities.AbstractEntity;
+import chat.squirrel.entities.IMessage;
 
 public class TextChannel extends AbstractEntity implements IChannel {
     private String name;
     private ObjectId guildId;
 
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
+    public ObjectId getGuildId() {
+        return this.guildId;
     }
 
     @BsonIgnore
-    public Collection<IMessage> getMessages(int nbr) { // TODO
+    public Collection<IMessage> getMessages(final int nbr) { // TODO
         return null;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
     }
 
     @Override
@@ -60,12 +60,13 @@ public class TextChannel extends AbstractEntity implements IChannel {
         return null;
     }
 
-    public ObjectId getGuildId() {
-        return guildId;
+    public void setGuildId(final ObjectId guildId) {
+        this.guildId = guildId;
     }
 
-    public void setGuildId(ObjectId guildId) {
-        this.guildId = guildId;
+    @Override
+    public void setName(final String name) {
+        this.name = name;
     }
 
 }

@@ -27,14 +27,15 @@
 
 package chat.squirrel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import chat.squirrel.core.MetricsManager;
-import de.mxro.metrics.jre.Metrics;
+import de.mxro.metrics.MetricsCommon;
 import io.vertx.core.Handler;
 import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This handler catches invalid JSON
@@ -43,13 +44,13 @@ public class WebJsonHandler implements Handler<RoutingContext> {
     private static final Logger LOG = LoggerFactory.getLogger(WebJsonHandler.class);
 
     @Override
-    public void handle(RoutingContext event) {
+    public void handle(final RoutingContext event) {
         // @todo: Do we really care
-        MetricsManager.record(Metrics.value("network.payloadsize", event.request().bytesRead()));
+        MetricsManager.record(MetricsCommon.value("network.payloadsize", event.request().bytesRead()));
         final JsonObject obj;
         try {
             obj = event.getBodyAsJson();
-        } catch (DecodeException e) {
+        } catch (final DecodeException e) {
             LOG.info("Received invalid json from " + event.request().remoteAddress().toString());
             event.fail(400);
             return;

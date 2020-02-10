@@ -27,10 +27,11 @@
 
 package chat.squirrel.entities;
 
-import org.bson.codecs.pojo.annotations.BsonIgnore;
-import xyz.bowser65.tokenize.IAccount;
-
 import java.util.Collection;
+
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+
+import xyz.bowser65.tokenize.IAccount;
 
 /**
  * Server wide user account
@@ -43,24 +44,16 @@ public class User extends AbstractEntity implements IAccount {
     private long tokenValidSince;
     private Collection<String> ips;
 
-    public String getUsername() {
-        return username;
+    public String getCustomEmail() {
+        return this.customEmail;
+    }
+
+    public int getDiscriminator() {
+        return this.discriminator;
     }
 
     public String getEmail() {
-        return email;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getCustomEmail() {
-        return customEmail;
-    }
-
-    public void setCustomEmail(String customEmail) {
-        this.customEmail = customEmail;
+        return this.email;
     }
 
     /**
@@ -88,103 +81,111 @@ public class User extends AbstractEntity implements IAccount {
      * @return The flags integer of this user
      */
     public int getFlags() {
-        return flags;
+        return this.flags;
     }
 
-    public void setFlags(int flags) {
-        this.flags = flags;
+    public Collection<String> getIps() {
+        return this.ips;
+    }
+
+    @Override
+    public String getTokenId() {
+        return this.getId().toHexString();
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public boolean hasMfa() {
+        return this.mfa;
+    }
+
+    public boolean isBanned() {
+        return this.banned;
+    }
+
+    public boolean isBugHunter() {
+        return (0b100000 & this.flags) != 0;
+    }
+
+    public boolean isContributor() {
+        return (0b1000 & this.flags) != 0;
+    }
+
+    public boolean isDeleted() {
+        return this.deleted;
+    }
+
+    public boolean isDisabled() {
+        return this.disabled;
     }
 
     // Flags
     public boolean isInstanceAdmin() {
-        return (0b1 & flags) != 0;
+        return (0b1 & this.flags) != 0;
     }
 
     public boolean isInstanceModerator() {
-        return (0b10 & flags) != 0;
+        return (0b10 & this.flags) != 0;
     }
 
     public boolean isSquirrelDeveloper() {
-        return (0b100 & flags) != 0;
-    }
-
-    public boolean isContributor() {
-        return (0b1000 & flags) != 0;
+        return (0b100 & this.flags) != 0;
     }
 
     public boolean isTranslator() {
-        return (0b10000 & flags) != 0;
+        return (0b10000 & this.flags) != 0;
     }
 
-    public boolean isBugHunter() {
-        return (0b100000 & flags) != 0;
-    }
-
-    public boolean isDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
-
-    public boolean isBanned() {
-        return banned;
-    }
-
-    public void setBanned(boolean banned) {
+    public void setBanned(final boolean banned) {
         this.banned = banned;
     }
 
-    public boolean isDeleted() {
-        return deleted;
+    public void setCustomEmail(final String customEmail) {
+        this.customEmail = customEmail;
     }
 
-    public void setDeleted(boolean deleted) {
+    public void setDeleted(final boolean deleted) {
         this.deleted = deleted;
     }
 
-    public Collection<String> getIps() {
-        return ips;
+    public void setDisabled(final boolean disabled) {
+        this.disabled = disabled;
     }
 
-    public void setIps(Collection<String> ips) {
-        this.ips = ips;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public int getDiscriminator() {
-        return discriminator;
-    }
-
-    public void setDiscriminator(int discriminator) {
+    public void setDiscriminator(final int discriminator) {
         this.discriminator = discriminator;
     }
 
-    @Override
-    public String toString() {
-        return getUsername() + "#" + getDiscriminator() + " (" + getId().toHexString() + ")";
+    public void setEmail(final String email) {
+        this.email = email;
     }
 
-    public boolean hasMfa() {
-        return mfa;
+    public void setFlags(final int flags) {
+        this.flags = flags;
+    }
+
+    public void setIps(final Collection<String> ips) {
+        this.ips = ips;
+    }
+
+    public void setTokenValidSince(final long tokenValidSince) {
+        this.tokenValidSince = tokenValidSince;
+    }
+
+    public void setUsername(final String username) {
+        this.username = username;
     }
 
     @Override
     @BsonIgnore
     public long tokensValidSince() {
-        return tokenValidSince;
-    }
-
-    public void setTokenValidSince(long tokenValidSince) {
-        this.tokenValidSince = tokenValidSince;
+        return this.tokenValidSince;
     }
 
     @Override
-    public String getTokenId() {
-        return getId().toHexString();
+    public String toString() {
+        return this.getUsername() + "#" + this.getDiscriminator() + " (" + this.getId().toHexString() + ")";
     }
 }

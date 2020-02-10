@@ -27,18 +27,20 @@
 
 package chat.squirrel.modules.channels;
 
+import org.bson.types.ObjectId;
+
+import com.mongodb.client.model.Filters;
+
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager;
 import chat.squirrel.entities.Guild;
 import chat.squirrel.entities.User;
 import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.modules.AbstractModule;
-import com.mongodb.client.model.Filters;
 import io.vertx.ext.web.RoutingContext;
-import org.bson.types.ObjectId;
 
 public abstract class AbstractChannelModule extends AbstractModule {
-    protected IChannel getChannel(RoutingContext ctx, User user, Guild.Permissions permission) {
+    protected IChannel getChannel(final RoutingContext ctx, final User user, final Guild.Permissions permission) {
         final IChannel channel = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IChannel.class,
                 DatabaseManager.SquirrelCollection.GUILDS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
@@ -49,9 +51,11 @@ public abstract class AbstractChannelModule extends AbstractModule {
 
         // @todo: fetch member and do perm checks
         // final Member member = guild.getMemberForUser(user.getId());
-        // if (member == null || (permission != null && !member.hasEffectivePermission(permission))) {
-        //     ctx.response().setStatusCode(403).end(new JsonObject().put("message", "Missing Permissions").encode());
-        //     return null;
+        // if (member == null || (permission != null &&
+        // !member.hasEffectivePermission(permission))) {
+        // ctx.response().setStatusCode(403).end(new JsonObject().put("message",
+        // "Missing Permissions").encode());
+        // return null;
         // }
 
         return channel;

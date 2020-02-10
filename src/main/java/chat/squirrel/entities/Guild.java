@@ -27,108 +27,25 @@
 
 package chat.squirrel.entities;
 
-import chat.squirrel.Squirrel;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.channels.IChannel;
-import com.mongodb.client.model.Filters;
-import org.bson.codecs.pojo.annotations.BsonIgnore;
-import org.bson.types.ObjectId;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+import org.bson.types.ObjectId;
+
+import com.mongodb.client.model.Filters;
+
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.entities.channels.IChannel;
+
 /**
  * A basic Guild
  */
 public class Guild extends AbstractEntity {
-    private String name;
-    private Collection<Member> members; // FIXME maybe move to own collection? (yes)
-    private Collection<Role> roles;
-    private Collection<ObjectId> channels;
-
-    /**
-     * @return The display name of the Guild
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name The display name of the Guild
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return The {@link Member}s that are a part of this Guild
-     */
-    public Collection<Member> getMembers() {
-        return members;
-    }
-
-    /**
-     * @param members The {@link Member}s that are a part of this Guild
-     */
-    public void setMembers(Collection<Member> members) {
-        this.members = members;
-    }
-
-    /**
-     * @return The {@link Role}s that are created in this Guild
-     */
-    public Collection<Role> getRoles() {
-        return roles;
-    }
-
-    /**
-     * @param roles The {@link Role}s that are created in this Guild
-     */
-    public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
-    }
-
-    /**
-     * @param user User ID
-     * @return The member corresponding to this user or null otherwise
-     */
-    public Member getMemberForUser(ObjectId user) {
-        for (Member m : getMembers()) {
-            if (m.getUserId().equals(user))
-                return m;
-        }
-        return null;
-    }
-
-    public Collection<ObjectId> getChannels() {
-        return channels;
-    }
-
-    public void setChannels(Collection<ObjectId> channels) {
-        this.channels = channels;
-    }
-
-    @BsonIgnore
-    public Future<Collection<IChannel>> getRealChannels() {
-        return CompletableFuture.supplyAsync(() -> {
-            if (getChannels() == null)
-                return Collections.emptyList();
-
-            final ArrayList<IChannel> list = new ArrayList<>();
-
-            for (ObjectId id : getChannels()) {
-                final IChannel chan = Squirrel.getInstance().getDatabaseManager()
-                        .findFirstEntity(IChannel.class, SquirrelCollection.CHANNELS, Filters.eq(id));
-                list.add(chan);
-            }
-            return list;
-        });
-
-    }
-
     /**
      * Permissions
      */
@@ -216,9 +133,9 @@ public class Guild extends AbstractEntity {
          */
         MEMBER_CHANGE_NICKNAME,
         /**
-         * Allows viewing and accessing a channel.
-         * If not granted guild-wide, members will only be able to see channels they're
-         * explicitly allowed to through permission overrides.
+         * Allows viewing and accessing a channel. If not granted guild-wide, members
+         * will only be able to see channels they're explicitly allowed to through
+         * permission overrides.
          *
          * <b>Implicitly revokes ALL permissions on the channel if missing</b>
          */
@@ -243,5 +160,93 @@ public class Guild extends AbstractEntity {
          */
         TEXT_UPLOAD_FILES,
         // @todo: Voice chat perms
+    }
+
+    private String name;
+    private Collection<Member> members; // FIXME maybe move to own collection? (yes)
+    private Collection<Role> roles;
+
+    private Collection<ObjectId> channels;
+
+    public Collection<ObjectId> getChannels() {
+        return this.channels;
+    }
+
+    /**
+     * @param user User ID
+     * @return The member corresponding to this user or null otherwise
+     */
+    public Member getMemberForUser(final ObjectId user) {
+        for (final Member m : this.getMembers()) {
+            if (m.getUserId().equals(user)) {
+                return m;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return The {@link Member}s that are a part of this Guild
+     */
+    public Collection<Member> getMembers() {
+        return this.members;
+    }
+
+    /**
+     * @return The display name of the Guild
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    @BsonIgnore
+    public Future<Collection<IChannel>> getRealChannels() {
+        return CompletableFuture.supplyAsync(() -> {
+            if (this.getChannels() == null) {
+                return Collections.emptyList();
+            }
+
+            final ArrayList<IChannel> list = new ArrayList<>();
+
+            for (final ObjectId id : this.getChannels()) {
+                final IChannel chan = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IChannel.class,
+                        SquirrelCollection.CHANNELS, Filters.eq(id));
+                list.add(chan);
+            }
+            return list;
+        });
+
+    }
+
+    /**
+     * @return The {@link Role}s that are created in this Guild
+     */
+    public Collection<Role> getRoles() {
+        return this.roles;
+    }
+
+    public void setChannels(final Collection<ObjectId> channels) {
+        this.channels = channels;
+    }
+
+    /**
+     * @param members The {@link Member}s that are a part of this Guild
+     */
+    public void setMembers(final Collection<Member> members) {
+        this.members = members;
+    }
+
+    /**
+     * @param name The display name of the Guild
+     */
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    /**
+     * @param roles The {@link Role}s that are created in this Guild
+     */
+    public void setRoles(final Collection<Role> roles) {
+        this.roles = roles;
     }
 }

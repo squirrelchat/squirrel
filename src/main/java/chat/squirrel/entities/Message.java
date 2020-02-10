@@ -30,8 +30,7 @@ package chat.squirrel.entities;
 import org.bson.types.ObjectId;
 
 /**
- * A standard text message
- * TODO: Rename to TextMessage
+ * A standard text message TODO: Rename to TextMessage
  */
 public class Message extends AbstractEntity implements IMessage {
     private ObjectId author;
@@ -39,12 +38,12 @@ public class Message extends AbstractEntity implements IMessage {
 
     @Override
     public ObjectId getAuthor() {
-        return author;
+        return this.author;
     }
 
     @Override
     public String getContent() {
-        return content;
+        return this.content;
     }
 
 }

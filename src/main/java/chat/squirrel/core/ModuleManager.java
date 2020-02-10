@@ -27,19 +27,31 @@
 
 package chat.squirrel.core;
 
-import chat.squirrel.modules.AbstractModule;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.Map;
+import chat.squirrel.modules.AbstractModule;
 
 public class ModuleManager {
     private static final Logger LOG = LoggerFactory.getLogger(ModuleManager.class);
     private static final Map<String, AbstractModule> modules = new HashMap<>();
+
+    public void disableModules() {
+        LOG.info("Shutting down all modules");
+        for (final AbstractModule m : modules.values()) {
+            m.disable();
+        }
+    }
+
+    public void loadModule(final String mod) {
+        modules.get(mod).enable();
+    }
 
     public void loadModules() {
         modules.forEach((c, m) -> {
@@ -51,32 +63,21 @@ public class ModuleManager {
         });
     }
 
-    public void disableModules() {
-        LOG.info("Shutting down all modules");
-        for (AbstractModule m : modules.values()) {
-            m.disable();
-        }
-    }
-
-    public void loadModule(String mod) {
-        modules.get(mod).enable();
-    }
-
-    public void unloadModule(String mod) {
-        modules.get(mod).disable();
-    }
-
-    public void scanPackage(String pkg) {
+    public void scanPackage(final String pkg) {
         final Reflections reflections = new Reflections(pkg, new SubTypesScanner());
         reflections.getSubTypesOf(AbstractModule.class).forEach(cls -> {
             if (!cls.isInterface() && !Modifier.isAbstract(cls.getModifiers())) {
                 try {
                     modules.put(cls.getCanonicalName(),
                             (AbstractModule) cls.getDeclaredConstructors()[0].newInstance());
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOG.warn("Failed to load module \"" + cls.getSimpleName() + "\"", e);
                 }
             }
         });
+    }
+
+    public void unloadModule(final String mod) {
+        modules.get(mod).disable();
     }
 }

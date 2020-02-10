@@ -1,13 +1,13 @@
 package chat.squirrel.idp;
 
-import chat.squirrel.idp.identities.Ldap;
-
 import java.util.concurrent.Future;
+
+import chat.squirrel.idp.identities.Ldap;
 
 public class LdapIdentityProvider implements IIdentityProvider {
 
     @Override
-    public Future<Ldap> provide(Object props) {
+    public Future<Ldap> provide(final Object props) {
         return null;
     }
 

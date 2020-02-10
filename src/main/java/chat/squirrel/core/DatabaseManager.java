@@ -27,21 +27,11 @@
 
 package chat.squirrel.core;
 
-import chat.squirrel.SquirrelConfig;
-import chat.squirrel.Version;
-import chat.squirrel.entities.Guild;
-import chat.squirrel.entities.IEntity;
-import chat.squirrel.entities.IMessage;
-import chat.squirrel.entities.User;
-import chat.squirrel.entities.channels.IChannel;
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.result.UpdateResult;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Consumer;
+
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -50,120 +40,27 @@ import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.function.Consumer;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.UpdateResult;
+
+import chat.squirrel.SquirrelConfig;
+import chat.squirrel.Version;
+import chat.squirrel.entities.Guild;
+import chat.squirrel.entities.IEntity;
+import chat.squirrel.entities.IMessage;
+import chat.squirrel.entities.User;
+import chat.squirrel.entities.channels.IChannel;
 
 /**
  * A DatabaseManager manages the interactions with MongoDB
  */
 public class DatabaseManager {
-    private static final Logger LOG = LoggerFactory.getLogger(DatabaseManager.class);
-    private final MongoClient client;
-    private final MongoDatabase db;
-    private final Random random = new Random();
-    private final CodecRegistry pojoCodecRegistry;
-
-    /**
-     * @param connectionString MongoDB Connection String
-     * @param dbName           The database to use
-     */
-    public DatabaseManager(String connectionString, String dbName) {
-        pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
-                CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()));
-
-        final ConnectionString conStr = new ConnectionString(connectionString);
-
-        LOG.info("Connecting to MongoDB using con string: " + conStr.toString());
-
-        final MongoClientSettings set = MongoClientSettings.builder()
-                .applicationName("Squirrel (" + Version.VERSION + ")").applyConnectionString(conStr)
-                .codecRegistry(pojoCodecRegistry).build();
-
-        client = MongoClients.create(set);
-        db = client.getDatabase(dbName);
-    }
-
-    public FindIterable<Document> rawRequest(SquirrelCollection collection, Bson statement) {
-        return db.getCollection(collection.getMongoName()).find(statement);
-    }
-
-    public UpdateResult updateEntity(SquirrelCollection col, Bson filter, Bson update) {
-        return db.getCollection(col.getMongoName()).updateOne(filter, update);
-    }
-
-    public void insertEntity(SquirrelCollection col, IEntity ent) {
-        db.getCollection(col.getMongoName(), IEntity.class).insertOne(ent);
-    }
-
-    public <T extends IEntity> T findFirstEntity(Class<T> type, SquirrelCollection col, Bson filters) {
-        return findEntities(type, col, filters).first();
-    }
-
-    public <T extends IEntity> FindIterable<T> findEntities(Class<T> type, SquirrelCollection col, Bson filters) {
-        return db.getCollection(col.getMongoName(), type).find(filters);
-    }
-
-    public UpdateResult updateMany(SquirrelCollection col, Bson filter, Bson update) {
-        return db.getCollection(col.getMongoName()).updateMany(filter, update);
-    }
-
-    public long countDocuments(SquirrelCollection col, Bson filters) {
-        return db.getCollection(col.getMongoName()).countDocuments(filters);
-    }
-
-    public void deleteEntity(SquirrelCollection col, Bson filters) {
-        db.getCollection(col.getMongoName()).findOneAndDelete(filters);
-    }
-
-    public IEntity convertDocument(Document doc, Class<? extends IEntity> cls) {
-        if (doc == null)
-            throw new NullPointerException();
-        return (IEntity) doc.toBsonDocument(cls, pojoCodecRegistry);
-    }
-
-    /**
-     * Method used to get an available discriminator for the specified username
-     *
-     * @return A free discriminator, or -1 if none are available
-     */
-    public int getFreeDiscriminator(final String username) {
-        if (countDocuments(SquirrelCollection.USERS, Filters.eq("username", username)) >= 5000) {
-            LOG.warn("Username '" + username + "' is out of discriminators and one was just requested.");
-            return -1;
-        }
-
-        int dis;
-        final List<Integer> used = new ArrayList<>();
-        findEntities(User.class, SquirrelCollection.USERS, Filters.eq("username", username))
-                .forEach((Consumer<User>) u -> used.add(u.getDiscriminator()));
-
-        // noinspection StatementWithEmptyBody
-        while (used.indexOf(dis = random.nextInt(10000)) != -1)
-            ;
-        return dis;
-    }
-
-    /**
-     * @param username The username string to check
-     * @param dis      The discriminator integer to check
-     * @return {@code true} if the discriminator is already used for this username,
-     * {@code false} otherwise
-     */
-    public boolean isDiscriminatorTaken(final String username, final int dis) {
-        return findFirstEntity(User.class, SquirrelCollection.USERS,
-                Filters.and(Filters.eq("discriminator", dis), Filters.eq("username", username))) != null;
-    }
-
-    /**
-     * Shutdown the MongoDB Driver
-     */
-    public void shutdown() {
-        LOG.info("Shutting down MongoDB driver");
-        client.close();
-    }
-
     /**
      * The Mongo collections used by squirrel.
      */
@@ -192,17 +89,127 @@ public class DatabaseManager {
 
         private String mongoName;
 
-        SquirrelCollection(String mongoName) {
+        SquirrelCollection(final String mongoName) {
             this.mongoName = mongoName;
         }
 
         /**
          * @return the name of the MongoDB collection to use because we try to comply
-         * with BSON naming standards.
+         *         with BSON naming standards.
          */
         public String getMongoName() {
-            return mongoName;
+            return this.mongoName;
         }
+    }
+
+    private static final Logger LOG = LoggerFactory.getLogger(DatabaseManager.class);
+    private final MongoClient client;
+    private final MongoDatabase db;
+    private final Random random = new Random();
+
+    private final CodecRegistry pojoCodecRegistry;
+
+    /**
+     * @param connectionString MongoDB Connection String
+     * @param dbName           The database to use
+     */
+    public DatabaseManager(final String connectionString, final String dbName) {
+        this.pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+                CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+
+        final ConnectionString conStr = new ConnectionString(connectionString);
+
+        LOG.info("Connecting to MongoDB using con string: " + conStr.toString());
+
+        final MongoClientSettings set = MongoClientSettings.builder()
+                .applicationName("Squirrel (" + Version.VERSION + ")").applyConnectionString(conStr)
+                .codecRegistry(this.pojoCodecRegistry).build();
+
+        this.client = MongoClients.create(set);
+        this.db = this.client.getDatabase(dbName);
+    }
+
+    public IEntity convertDocument(final Document doc, final Class<? extends IEntity> cls) {
+        if (doc == null) {
+            throw new NullPointerException();
+        }
+        return (IEntity) doc.toBsonDocument(cls, this.pojoCodecRegistry);
+    }
+
+    public long countDocuments(final SquirrelCollection col, final Bson filters) {
+        return this.db.getCollection(col.getMongoName()).countDocuments(filters);
+    }
+
+    public void deleteEntity(final SquirrelCollection col, final Bson filters) {
+        this.db.getCollection(col.getMongoName()).findOneAndDelete(filters);
+    }
+
+    public <T extends IEntity> FindIterable<T> findEntities(final Class<T> type, final SquirrelCollection col,
+            final Bson filters) {
+        return this.db.getCollection(col.getMongoName(), type).find(filters);
+    }
+
+    public <T extends IEntity> T findFirstEntity(final Class<T> type, final SquirrelCollection col,
+            final Bson filters) {
+        return this.findEntities(type, col, filters).first();
+    }
+
+    /**
+     * Method used to get an available discriminator for the specified username
+     *
+     * @return A free discriminator, or -1 if none are available
+     */
+    public int getFreeDiscriminator(final String username) {
+        if (this.countDocuments(SquirrelCollection.USERS, Filters.eq("username", username)) >= 5000) {
+            LOG.warn("Username '" + username + "' is out of discriminators and one was just requested.");
+            return -1;
+        }
+
+        int dis;
+        final List<Integer> used = new ArrayList<>();
+        this.findEntities(User.class, SquirrelCollection.USERS, Filters.eq("username", username))
+                .forEach((Consumer<User>) u -> used.add(u.getDiscriminator()));
+
+        // noinspection StatementWithEmptyBody
+        while (used.indexOf(dis = this.random.nextInt(10000)) != -1) {
+            ;
+        }
+        return dis;
+    }
+
+    public void insertEntity(final SquirrelCollection col, final IEntity ent) {
+        this.db.getCollection(col.getMongoName(), IEntity.class).insertOne(ent);
+    }
+
+    /**
+     * @param username The username string to check
+     * @param dis      The discriminator integer to check
+     * @return {@code true} if the discriminator is already used for this username,
+     *         {@code false} otherwise
+     */
+    public boolean isDiscriminatorTaken(final String username, final int dis) {
+        return this.findFirstEntity(User.class, SquirrelCollection.USERS,
+                Filters.and(Filters.eq("discriminator", dis), Filters.eq("username", username))) != null;
+    }
+
+    public FindIterable<Document> rawRequest(final SquirrelCollection collection, final Bson statement) {
+        return this.db.getCollection(collection.getMongoName()).find(statement);
+    }
+
+    /**
+     * Shutdown the MongoDB Driver
+     */
+    public void shutdown() {
+        LOG.info("Shutting down MongoDB driver");
+        this.client.close();
+    }
+
+    public UpdateResult updateEntity(final SquirrelCollection col, final Bson filter, final Bson update) {
+        return this.db.getCollection(col.getMongoName()).updateOne(filter, update);
+    }
+
+    public UpdateResult updateMany(final SquirrelCollection col, final Bson filter, final Bson update) {
+        return this.db.getCollection(col.getMongoName()).updateMany(filter, update);
     }
 
 }

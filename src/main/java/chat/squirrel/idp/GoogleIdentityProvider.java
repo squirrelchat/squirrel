@@ -1,12 +1,12 @@
 package chat.squirrel.idp;
 
-import chat.squirrel.idp.identities.Google;
-
 import java.util.concurrent.Future;
+
+import chat.squirrel.idp.identities.Google;
 
 public class GoogleIdentityProvider implements IIdentityProvider {
     @Override
-    public Future<Google> provide(Object props) {
+    public Future<Google> provide(final Object props) {
         return null;
     }
 }

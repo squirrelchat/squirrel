@@ -27,18 +27,18 @@
 
 package chat.squirrel.modules.guilds;
 
+import java.util.Collections;
+
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.core.MetricsManager;
 import chat.squirrel.entities.Guild;
 import chat.squirrel.entities.Member;
 import chat.squirrel.entities.User;
-import de.mxro.metrics.jre.Metrics;
+import de.mxro.metrics.MetricsCommon;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-
-import java.util.Collections;
 
 public class ModuleGuilds extends AbstractGuildModule {
     @Override
@@ -48,7 +48,7 @@ public class ModuleGuilds extends AbstractGuildModule {
         this.registerAuthedRoute(HttpMethod.DELETE, "/guilds/:id", this::notImplemented);
     }
 
-    private void handleCreate(RoutingContext ctx) {
+    private void handleCreate(final RoutingContext ctx) {
         final JsonObject obj = ctx.getBodyAsJson();
         if (obj == null) {
             ctx.fail(400); // @todo: Proper error payload
@@ -66,7 +66,7 @@ public class ModuleGuilds extends AbstractGuildModule {
             return;
         }
 
-        final User user = getRequester(ctx);
+        final User user = this.getRequester(ctx);
         final Guild newGuild = new Guild();
         newGuild.setName(name);
 
@@ -78,7 +78,7 @@ public class ModuleGuilds extends AbstractGuildModule {
 
         Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.GUILDS, newGuild);
 
-        MetricsManager.record(Metrics.happened("guild.create"));
+        MetricsManager.record(MetricsCommon.happened("guild.create"));
         ctx.response().setStatusCode(201).end(newGuild.toJson().encode());
     }
 }

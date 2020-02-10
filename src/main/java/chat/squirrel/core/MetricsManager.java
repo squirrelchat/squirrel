@@ -27,13 +27,13 @@
 
 package chat.squirrel.core;
 
-import de.mxro.metrics.jre.Metrics;
-import delight.async.properties.PropertyNode;
-import delight.async.properties.PropertyOperation;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+
+import de.mxro.metrics.jre.Metrics;
+import delight.async.properties.PropertyNode;
+import delight.async.properties.PropertyOperation;
 
 public final class MetricsManager {
     private static MetricsManager instance = new MetricsManager();
@@ -41,11 +41,11 @@ public final class MetricsManager {
     private final PropertyNode metrics;
 
     public MetricsManager() {
-        metrics = Metrics.create();
+        this.metrics = Metrics.create();
     }
 
-    public void saveToStream(OutputStream out, Charset charset) throws IOException {
-        out.write(metrics.render().get().getBytes(charset));
+    public void saveToStream(final OutputStream out, final Charset charset) throws IOException {
+        out.write(this.metrics.render().get().getBytes(charset));
     }
 
     public static MetricsManager getInstance() {
@@ -56,7 +56,7 @@ public final class MetricsManager {
         return getInstance().metrics;
     }
 
-    public static void record(PropertyOperation<?> op) {
+    public static void record(final PropertyOperation<?> op) {
         getMetrics().record(op);
     }
 

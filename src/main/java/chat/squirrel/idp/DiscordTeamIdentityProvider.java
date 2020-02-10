@@ -1,12 +1,12 @@
 package chat.squirrel.idp;
 
-import chat.squirrel.idp.identities.Discord;
-
 import java.util.concurrent.Future;
+
+import chat.squirrel.idp.identities.Discord;
 
 public class DiscordTeamIdentityProvider implements IIdentityProvider {
     @Override
-    public Future<Discord> provide(Object props) {
+    public Future<Discord> provide(final Object props) {
         return null;
     }
 }

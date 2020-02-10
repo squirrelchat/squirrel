@@ -27,9 +27,9 @@
 
 package chat.squirrel;
 
-import chat.squirrel.entities.AbstractEntity;
-
 import java.security.SecureRandom;
+
+import chat.squirrel.entities.AbstractEntity;
 
 public class SquirrelConfig extends AbstractEntity {
     private String orgName = "Squirrel Chat", srvDescription = "Default Squirrel Server", secret;
@@ -37,61 +37,60 @@ public class SquirrelConfig extends AbstractEntity {
     private long sessionTimeout = -1;
     private boolean allowRegister = true;
 
-    public String getOrgName() {
-        return orgName;
-    }
-
-    public void setOrgName(String orgName) {
-        this.orgName = orgName;
-    }
-
-    public String getSrvDescription() {
-        return srvDescription;
-    }
-
-    public void setSrvDescription(String srvDescription) {
-        this.srvDescription = srvDescription;
-    }
-
-    public boolean isAllowRegister() {
-        return allowRegister;
-    }
-
-    public void setAllowRegister(boolean allowRegister) {
-        this.allowRegister = allowRegister;
-    }
-
     /**
-     * -1 for standard maximum (5000).
-     * Cannot be higher than 5000.
+     * -1 for standard maximum (5000). Cannot be higher than 5000.
      */
     public int getMaximumUsernameCount() {
-        return maximumUsernameCount;
+        return this.maximumUsernameCount;
     }
 
-    public void setMaximumUsernameCount(int maximumUsernameCount) {
-        this.maximumUsernameCount = maximumUsernameCount;
-    }
-
-    public String getTokenSecret() {
-        if (secret == null) {
-            final SecureRandom rng = new SecureRandom();
-            final byte[] raw = new byte[128];
-            rng.nextBytes(raw);
-            secret = new String(raw);
-        }
-        return secret;
-    }
-
-    public void setTokenSecret(String secret) {
-        this.secret = secret;
+    public String getOrgName() {
+        return this.orgName;
     }
 
     public long getSessionTimeout() {
-        return sessionTimeout;
+        return this.sessionTimeout;
     }
 
-    public void setSessionTimeout(long sessionTimeout) {
+    public String getSrvDescription() {
+        return this.srvDescription;
+    }
+
+    public String getTokenSecret() {
+        if (this.secret == null) {
+            final SecureRandom rng = new SecureRandom();
+            final byte[] raw = new byte[128];
+            rng.nextBytes(raw);
+            this.secret = new String(raw);
+        }
+        return this.secret;
+    }
+
+    public boolean isAllowRegister() {
+        return this.allowRegister;
+    }
+
+    public void setAllowRegister(final boolean allowRegister) {
+        this.allowRegister = allowRegister;
+    }
+
+    public void setMaximumUsernameCount(final int maximumUsernameCount) {
+        this.maximumUsernameCount = maximumUsernameCount;
+    }
+
+    public void setOrgName(final String orgName) {
+        this.orgName = orgName;
+    }
+
+    public void setSessionTimeout(final long sessionTimeout) {
         this.sessionTimeout = sessionTimeout;
+    }
+
+    public void setSrvDescription(final String srvDescription) {
+        this.srvDescription = srvDescription;
+    }
+
+    public void setTokenSecret(final String secret) {
+        this.secret = secret;
     }
 }

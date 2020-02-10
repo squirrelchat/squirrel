@@ -41,35 +41,35 @@ public class Role extends AbstractEntity {
      * @return The RGB color corresponding to this role
      */
     public int getColor() {
-        return color;
-    }
-
-    /**
-     * @param color The RGB color corresponding to this role
-     */
-    public void setColor(int color) {
-        this.color = color;
-    }
-
-    /**
-     * @param name The display name of this Role
-     */
-    public void setName(String name) {
-        this.name = name;
+        return this.color;
     }
 
     /**
      * @return The display name of this Role
      */
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public Collection<String> getPermissions() {
-        return permissions;
+        return this.permissions;
     }
 
-    public void setPermissions(Collection<String> permissions) {
+    /**
+     * @param color The RGB color corresponding to this role
+     */
+    public void setColor(final int color) {
+        this.color = color;
+    }
+
+    /**
+     * @param name The display name of this Role
+     */
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public void setPermissions(final Collection<String> permissions) {
         this.permissions = permissions;
     }
 }
