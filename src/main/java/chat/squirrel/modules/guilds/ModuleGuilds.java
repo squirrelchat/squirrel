@@ -27,8 +27,6 @@
 
 package chat.squirrel.modules.guilds;
 
-import java.util.Collections;
-
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.core.MetricsManager;
@@ -74,7 +72,7 @@ public class ModuleGuilds extends AbstractGuildModule {
         owner.setOwner(true);
         owner.setUserId(user.getId());
 
-        newGuild.setMembers(Collections.singletonList(owner));
+        newGuild.addMember(owner);
 
         Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.GUILDS, newGuild);
 

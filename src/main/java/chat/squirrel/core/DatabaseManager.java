@@ -61,47 +61,6 @@ import chat.squirrel.entities.channels.IChannel;
  * A DatabaseManager manages the interactions with MongoDB
  */
 public class DatabaseManager {
-    /**
-     * The Mongo collections used by squirrel.
-     */
-    public enum SquirrelCollection {
-
-        /**
-         * 'users' collection. Contains entity type {@link User}
-         */
-        USERS("users"),
-        /**
-         * 'guilds' collection. Contains entity type {@link Guild}
-         */
-        GUILDS("guilds"),
-        /**
-         * 'config' collection. Contains entity type {@link SquirrelConfig}
-         */
-        CONFIG("config"),
-        /**
-         * 'messages' collection. Contains entity type {@link IMessage}
-         */
-        MESSAGES("messages"),
-        /**
-         * 'channels' collection. Contains entity type {@link IChannel}
-         */
-        CHANNELS("channels");
-
-        private String mongoName;
-
-        SquirrelCollection(final String mongoName) {
-            this.mongoName = mongoName;
-        }
-
-        /**
-         * @return the name of the MongoDB collection to use because we try to comply
-         *         with BSON naming standards.
-         */
-        public String getMongoName() {
-            return this.mongoName;
-        }
-    }
-
     private static final Logger LOG = LoggerFactory.getLogger(DatabaseManager.class);
     private final MongoClient client;
     private final MongoDatabase db;
@@ -211,5 +170,49 @@ public class DatabaseManager {
     public UpdateResult updateMany(final SquirrelCollection col, final Bson filter, final Bson update) {
         return this.db.getCollection(col.getMongoName()).updateMany(filter, update);
     }
+    
+    /**
+     * The Mongo collections used by squirrel.
+     */
+    public enum SquirrelCollection {
 
+        /**
+         * 'users' collection. Contains entity type {@link User}
+         */
+        USERS("users"),
+        /**
+         * 'guilds' collection. Contains entity type {@link Guild}
+         */
+        GUILDS("guilds"),
+        /**
+         * 'config' collection. Contains entity type {@link SquirrelConfig}
+         */
+        CONFIG("config"),
+        /**
+         * 'messages' collection. Contains entity type {@link IMessage}
+         */
+        MESSAGES("messages"),
+        /**
+         * 'channels' collection. Contains entity type {@link IChannel}
+         */
+        CHANNELS("channels"),
+        /**
+         * 'members' collection. Contains entity type {@link chat.squirrel.entities.Member}
+         */
+        MEMBERS("members");
+
+        private String mongoName;
+
+        SquirrelCollection(final String mongoName) {
+            this.mongoName = mongoName;
+        }
+
+        /**
+         * @return the name of the MongoDB collection to use because we try to comply
+         *         with BSON naming standards.
+         */
+        public String getMongoName() {
+            return this.mongoName;
+        }
+    }
 }
