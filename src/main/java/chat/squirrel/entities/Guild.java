@@ -79,6 +79,7 @@ public class Guild extends AbstractEntity {
         Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.MEMBERS, m);
     }
 
+    @BsonIgnore
     public Future<Collection<Member>> getRealMembers() {
         return CompletableFuture.supplyAsync(() -> {
             if (this.getMembers() == null) {
