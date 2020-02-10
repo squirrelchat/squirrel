@@ -53,8 +53,8 @@ public class ModuleGuildChannels extends AbstractGuildModule {
         this.registerAuthedRoute(HttpMethod.POST, "/guilds/:id/channels", this::handleCreateChannel);
         this.registerAuthedRoute(HttpMethod.GET, "/guilds/:id/channels", this::handleListChannels);
         this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id/channels", this::notImplemented); // Channel order
-        this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id/channels/:id", this::notImplemented);
-        this.registerAuthedRoute(HttpMethod.DELETE, "/guilds/:id/channels/:id", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id/channels/:chanId", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.DELETE, "/guilds/:id/channels/:chanId", this::notImplemented);
     }
 
     private void handleCreateChannel(final RoutingContext ctx) {

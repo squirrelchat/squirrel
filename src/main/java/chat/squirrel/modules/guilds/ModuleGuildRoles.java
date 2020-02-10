@@ -36,7 +36,7 @@ public class ModuleGuildRoles extends AbstractGuildModule {
         this.registerAuthedRoute(HttpMethod.POST, "/guilds/:id/roles", this::notImplemented);
         this.registerAuthedRoute(HttpMethod.GET, "/guilds/:id/roles", this::notImplemented);
         this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id/roles", this::notImplemented); // Channel order
-        this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id/roles/:id", this::notImplemented);
-        this.registerAuthedRoute(HttpMethod.DELETE, "/guilds/:id/roles/:id", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id/roles/:roleId", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.DELETE, "/guilds/:id/roles/:roleId", this::notImplemented);
     }
 }
