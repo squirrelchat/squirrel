@@ -92,7 +92,7 @@ public class Member extends AbstractEntity {
             final Guild guild = this.getGuild().get();
             final Collection<ObjectId> ids = this.getRolesIds();
             final Collection<Role> realRoles = new ArrayList<>();
-            for (final Role role : guild.getRoles()) {
+            for (final Role role : guild.getRealRoles().get()) {
                 if (ids.contains(role.getId())) {
                     realRoles.add(role);
                 }
