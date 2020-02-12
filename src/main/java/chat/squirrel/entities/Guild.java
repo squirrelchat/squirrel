@@ -49,7 +49,7 @@ import chat.squirrel.entities.channels.IChannel;
 public class Guild extends AbstractEntity {
     private String name;
     private Collection<ObjectId> members;
-    private Collection<Role> roles;
+    private Collection<ObjectId> roles;
 
     private Collection<ObjectId> channels;
 
@@ -129,11 +129,30 @@ public class Guild extends AbstractEntity {
         });
 
     }
+    
+    @BsonIgnore
+    public Future<Collection<Role>> getRealRoles() {
+        return CompletableFuture.supplyAsync(() -> {
+            if (this.getRoles() == null) {
+                return Collections.emptyList();
+            }
+
+            final ArrayList<Role> list = new ArrayList<>();
+
+            for (final ObjectId id : this.getRoles()) {
+                final Role chan = Squirrel.getInstance().getDatabaseManager().findFirstEntity(Role.class,
+                        SquirrelCollection.ROLES, Filters.eq(id));
+                list.add(chan);
+            }
+            return list;
+        });
+
+    }
 
     /**
      * @return The {@link Role}s that are created in this Guild
      */
-    public Collection<Role> getRoles() {
+    public Collection<ObjectId> getRoles() {
         return this.roles;
     }
 
@@ -158,7 +177,7 @@ public class Guild extends AbstractEntity {
     /**
      * @param roles The {@link Role}s that are created in this Guild
      */
-    public void setRoles(final Collection<Role> roles) {
+    public void setRoles(final Collection<ObjectId> roles) {
         this.roles = roles;
     }
 
