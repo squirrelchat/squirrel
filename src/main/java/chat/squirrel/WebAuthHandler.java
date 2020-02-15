@@ -61,7 +61,7 @@ public class WebAuthHandler implements Handler<RoutingContext> {
             token = Squirrel.getInstance().getTokenize().validateToken(stringToken, this::fetchAccount);
         } catch (final SignatureException e) {
             e.printStackTrace();
-            event.fail(403);
+            event.fail(403); // TODO: user better error payloads from AbstractModule#fail
             return;
         }
 

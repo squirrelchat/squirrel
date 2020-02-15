@@ -46,7 +46,7 @@ public abstract class AbstractGuildModule extends AbstractModule {
                 DatabaseManager.SquirrelCollection.GUILDS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         if (guild == null) {
-            ctx.fail(404);
+            this.fail(ctx, 404, "Guild not found", null);
             return null;
         }
 

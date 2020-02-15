@@ -45,7 +45,7 @@ public abstract class AbstractChannelModule extends AbstractModule {
                 DatabaseManager.SquirrelCollection.GUILDS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         if (channel == null) {
-            ctx.fail(404);
+            this.fail(ctx, 404, "Channel not found", null);
             return null;
         }
 

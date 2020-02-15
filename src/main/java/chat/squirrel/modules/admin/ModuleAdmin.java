@@ -57,7 +57,7 @@ public class ModuleAdmin extends AbstractModule {
         final User user = this.getRequester(ctx);
 
         if (!user.isInstanceAdmin()) {
-            ctx.fail(401);
+            this.fail(ctx, 401, "Not server admin", null);
             return;
         }
 
@@ -73,7 +73,7 @@ public class ModuleAdmin extends AbstractModule {
         final User user = this.getRequester(ctx);
 
         if (!user.isInstanceAdmin()) {
-            ctx.fail(401);
+            this.fail(ctx, 401, "Not server admin", null);
             return;
         }
 
@@ -84,7 +84,7 @@ public class ModuleAdmin extends AbstractModule {
         final User user = this.getRequester(ctx);
 
         if (!user.isInstanceAdmin()) {
-            ctx.fail(401);
+            this.fail(ctx, 401, "Not server admin", null);
             return;
         }
 

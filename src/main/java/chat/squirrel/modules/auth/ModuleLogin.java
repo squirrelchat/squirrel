@@ -56,7 +56,7 @@ public class ModuleLogin extends AbstractModule {
     private void handleLogin(final RoutingContext ctx) {
         final JsonObject obj = ctx.getBodyAsJson();
         if (obj == null) {
-            ctx.fail(400); // @todo: Proper error payload
+            this.fail(ctx, 400, "Invalid JSON payload", null);
             return;
         }
 
@@ -75,18 +75,18 @@ public class ModuleLogin extends AbstractModule {
 
     private void handleRegister(final RoutingContext ctx) {
         if (!Squirrel.getInstance().getConfig().isAllowRegister()) {
-            ctx.fail(403); // @todo: Proper error payload
+            this.fail(ctx, 403, "Register is not allowed", null);
             return;
         }
         final JsonObject obj = ctx.getBodyAsJson();
         if (obj == null || !(obj.containsKey("email") && obj.containsKey("username") && obj.containsKey("password"))) {
-            ctx.fail(400); // @todo: Proper error payload
+            this.fail(ctx, 400, "Missing fields", null);
             return;
         }
 
         final String password = obj.getString("password");
         if (password == null) {
-            ctx.fail(401); // @todo: Proper error payload
+            this.fail(ctx, 401, "Missing password", null);
             return;
         }
 

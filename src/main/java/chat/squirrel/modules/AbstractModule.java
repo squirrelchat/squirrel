@@ -30,11 +30,14 @@ package chat.squirrel.modules;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import chat.squirrel.Squirrel;
 import chat.squirrel.WebAuthHandler;
 import chat.squirrel.entities.User;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -66,7 +69,25 @@ public abstract class AbstractModule {
     }
 
     protected void notImplemented(final RoutingContext ctx) {
-        ctx.fail(501);
+        this.fail(ctx, 501, "Not implemented", null);
+    }
+
+    /**
+     * Ends the context with a safe failure to the client.
+     *
+     * @param ctx    The RoutingContext to end
+     * @param status The HTTP status code
+     * @param desc   The error description
+     * @param extra  The extra informations to provide, may be null
+     */
+    protected void fail(final RoutingContext ctx, int status, final String desc, @Nullable final JsonObject extra) {
+        final JsonObject out = new JsonObject();
+        out.put("status", status);
+        out.put("desc", desc);
+        if (extra != null)
+            out.put("details", extra);
+
+        ctx.response().setStatusCode(status).end(out.encode());
     }
 
     /**
