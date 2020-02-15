@@ -76,6 +76,16 @@ public final class Squirrel {
     private final Handler<RoutingContext> apiAuthHandler, webJsonHandler;
 
     /**
+     * Call this if you want stuff to break
+     *
+     * @param args Command line arguments
+     */
+    public static void main(final String[] args) {
+        instance = new Squirrel();
+        instance.start();
+    }
+
+    /**
      * Initialize various components for the server
      */
     private Squirrel() {
@@ -198,6 +208,7 @@ public final class Squirrel {
         this.dbManager.shutdown();
         MetricsManager.getMetrics().stop();
         LOG.info("Shutdown successful, the process should end");
+        System.exit(0); // TODO is this a good idea?
     }
 
     /**
@@ -227,16 +238,6 @@ public final class Squirrel {
      */
     public static Squirrel getInstance() {
         return instance;
-    }
-
-    /**
-     * Call this if you want stuff to break
-     *
-     * @param args Command line arguments
-     */
-    public static void main(final String[] args) {
-        instance = new Squirrel();
-        instance.start();
     }
 
 }

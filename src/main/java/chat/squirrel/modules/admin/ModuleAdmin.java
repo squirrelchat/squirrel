@@ -88,6 +88,8 @@ public class ModuleAdmin extends AbstractModule {
             return;
         }
 
+        ctx.response().end(new JsonObject().put("shutdown", true).encode());
+
         LOG.info("Server shutdown was requested by " + user.toString());
         MetricsManager.record(MetricsCommon.happened("admin.shutdown"));
         Squirrel.getInstance().shutdown();

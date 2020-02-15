@@ -46,11 +46,13 @@ public class WebExceptionHandler implements Handler<RoutingContext> {
 
     @Override
     public void handle(final RoutingContext event) {
-        System.out.println(event.data());
         final JsonObject obj = new JsonObject().put("error", event.response().getStatusCode());
         if (this.shouldPrintError) {
             obj.put("path", event.normalisedPath());
             obj.put("body", event.getBody());
+        }
+        if (event.response().getStatusCode() == 200) {
+            event.response().setStatusCode(500);
         }
         MetricsManager.record(MetricsCommon.happened("error.statuscode." + event.response().getStatusCode()));
         LOG.error("An unknown error has been caught in routing: " + obj.encode());
