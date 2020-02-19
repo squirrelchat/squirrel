@@ -4,10 +4,17 @@ import java.util.concurrent.Future;
 
 import chat.squirrel.idp.identities.Ldap;
 
-public class LdapIdentityProvider implements IIdentityProvider {
+public class LdapIdentityProvider implements IIdentityProvider<Object, Object> {
 
     @Override
-    public Future<Ldap> provide(final Object props) {
+    public Object getPreAuth() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Future<Ldap> provide(String userId, Object props) {
+        // TODO Auto-generated method stub
         return null;
     }
 

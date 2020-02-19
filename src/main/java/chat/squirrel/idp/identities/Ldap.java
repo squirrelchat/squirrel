@@ -11,4 +11,10 @@ public class Ldap implements IIdentity {
         return null;
     }
 
+    @Override
+    public String getUserId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

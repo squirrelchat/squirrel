@@ -49,6 +49,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.client.WebClient;
 import xyz.bowser65.tokenize.Tokenize;
 
 /**
@@ -74,6 +75,7 @@ public final class Squirrel {
     private final Router rootRouter;
     private final Router apiRouter;
     private final Handler<RoutingContext> apiAuthHandler, webJsonHandler;
+    private final WebClient httpClient;
 
     /**
      * Call this if you want stuff to break
@@ -129,6 +131,8 @@ public final class Squirrel {
 
         this.webExceptionHandler = new WebExceptionHandler();
         this.rootRouter.errorHandler(500, this.webExceptionHandler);
+        
+        this.httpClient = WebClient.create(vertx);
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "squirrel-shutdown"));
     }
@@ -196,6 +200,10 @@ public final class Squirrel {
     public void saveConfig() { // TODO make better
         this.getDatabaseManager().deleteEntity(SquirrelCollection.CONFIG, Filters.eq(this.getConfig().getId()));
         this.getDatabaseManager().insertEntity(SquirrelCollection.CONFIG, this.getConfig());
+    }
+    
+    public WebClient getHttpClient() {
+        return httpClient;
     }
 
     /**

@@ -4,9 +4,17 @@ import java.util.concurrent.Future;
 
 import chat.squirrel.idp.identities.Discord;
 
-public class DiscordIdentityProvider implements IIdentityProvider {
+public class DiscordIdentityProvider implements IIdentityProvider<Object, Object> {
+
     @Override
-    public Future<Discord> provide(final Object props) {
+    public Object getPreAuth() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Future<Discord> provide(String userId, Object props) {
+        // TODO Auto-generated method stub
         return null;
     }
 }

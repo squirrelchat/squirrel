@@ -36,4 +36,10 @@ public class Firefox implements IIdentity {
     public Future<User> getSquirrelAccount() {
         return null;
     }
+
+    @Override
+    public String getUserId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

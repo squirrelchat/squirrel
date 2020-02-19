@@ -32,8 +32,44 @@ import java.util.concurrent.Future;
 import chat.squirrel.entities.User;
 
 public class Yandex implements IIdentity {
+    private String accessToken, refreshToken, userId;
+    private long expiery;
+
     @Override
     public Future<User> getSquirrelAccount() {
         return null;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public long getExpiery() {
+        return expiery;
+    }
+
+    public void setExpiery(long expiery) {
+        this.expiery = expiery;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public String getUserId() {
+        return userId;
     }
 }

@@ -170,7 +170,7 @@ public class DatabaseManager {
     public UpdateResult updateMany(final SquirrelCollection col, final Bson filter, final Bson update) {
         return this.db.getCollection(col.getMongoName()).updateMany(filter, update);
     }
-    
+
     /**
      * The Mongo collections used by squirrel.
      */
@@ -197,7 +197,8 @@ public class DatabaseManager {
          */
         CHANNELS("channels"),
         /**
-         * 'members' collection. Contains entity type {@link chat.squirrel.entities.Member}
+         * 'members' collection. Contains entity type
+         * {@link chat.squirrel.entities.Member}
          */
         MEMBERS("members"),
         /**

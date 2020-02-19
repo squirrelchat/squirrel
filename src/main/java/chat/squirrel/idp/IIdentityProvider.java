@@ -31,6 +31,7 @@ import java.util.concurrent.Future;
 
 import chat.squirrel.idp.identities.IIdentity;
 
-interface IIdentityProvider {
-    Future<? extends IIdentity> provide(Object props);
+interface IIdentityProvider<Pre, Auth> {
+    Pre getPreAuth();
+    Future<? extends IIdentity> provide(String userId, Auth props);
 }
