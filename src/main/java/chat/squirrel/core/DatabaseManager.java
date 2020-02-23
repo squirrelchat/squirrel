@@ -202,9 +202,13 @@ public class DatabaseManager {
          */
         MEMBERS("members"),
         /**
-         * 'roles' collection. Contains entity type {@link char.squirrel.entities.Role}
+         * 'roles' collection. Contains entity type {@link chat.squirrel.entities.Role}
          */
-        ROLES("roles");
+        ROLES("roles"),
+        /**
+         * 'assets'. Contains entity type {@link chat.squirrel.upload.Asset}
+         */
+        ASSETS("assets");
 
         private String mongoName;
 

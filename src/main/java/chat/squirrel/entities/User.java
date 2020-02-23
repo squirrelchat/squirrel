@@ -69,10 +69,10 @@ public class User extends AbstractEntity implements IAccount {
      * </tr>
      * <tr>
      * <td>TBD</td>
-     * <td>Bug Hunter</td>
-     * <td>Translator</td>
-     * <td>Contributor</td>
-     * <td>Squirrel Developer</td>
+     * <td>TBD</td>
+     * <td>TBD</td>
+     * <td>TBD</td>
+     * <td>TBD</td>
      * <td>Instance Moderator</td>
      * <td>Instance Admin</td>
      * </tr>
