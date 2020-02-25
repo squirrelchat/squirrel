@@ -28,6 +28,7 @@
 package chat.squirrel.entities;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
@@ -42,7 +43,7 @@ public class User extends AbstractEntity implements IAccount {
     private boolean disabled, banned, deleted, mfa;
     @BsonIgnore
     private long tokenValidSince;
-    private Collection<String> ips;
+    private Collection<String> ips = Collections.emptySet();
 
     public String getCustomEmail() {
         return this.customEmail;

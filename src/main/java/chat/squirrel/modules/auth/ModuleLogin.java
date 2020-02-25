@@ -27,13 +27,19 @@
 
 package chat.squirrel.modules.auth;
 
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.auth.AuthHandler;
 import chat.squirrel.auth.AuthResult;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.core.MetricsManager;
+import chat.squirrel.entities.User;
 import chat.squirrel.modules.AbstractModule;
 import de.mxro.metrics.MetricsCommon;
 import io.vertx.core.http.HttpMethod;
@@ -68,6 +74,14 @@ public class ModuleLogin extends AbstractModule {
             ctx.response().setStatusCode(401).end(new JsonObject().put("failure_reason", res.getReason()).encode());
             return;
         }
+        
+        final String ip = ctx.request().remoteAddress().host();
+
+        final User user = res.getUser();
+        if (user.getIps() != null && !user.getIps().contains(ip)) {
+            LOG.info("New IP for " + user.toString() + ": " + ip);
+            addNewIp(user.getId(), ip);
+        }
 
         ctx.response().setStatusCode(200).end(new JsonObject().put("mfa_required", false) // @todo: Consider 3fa support
                 .put("token", res.getToken()).encode());
@@ -100,6 +114,13 @@ public class ModuleLogin extends AbstractModule {
             return;
         }
 
+        addNewIp(res.getUser().getId(), ctx.request().remoteAddress().host());
+
         ctx.response().setStatusCode(204).end();
+    }
+
+    private void addNewIp(ObjectId user, String ip) {
+        Squirrel.getInstance().getDatabaseManager().updateEntity(SquirrelCollection.USERS, Filters.eq(user),
+                Updates.addToSet("ips", ip));
     }
 }
