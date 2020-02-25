@@ -14,6 +14,8 @@ import javax.annotation.Nonnull;
 
 import org.bson.types.ObjectId;
 
+import chat.squirrel.Squirrel;
+import chat.squirrel.config.TableUserConfig;
 import chat.squirrel.upload.AbstractUploadManager;
 import chat.squirrel.upload.ActionResult;
 import chat.squirrel.upload.Asset;
@@ -21,6 +23,10 @@ import chat.squirrel.upload.Bucket;
 
 public class LocalUploadManager extends AbstractUploadManager {
     private final File uploadFolder;
+
+    public LocalUploadManager() {
+        this(getDefaultUploadFolder());
+    }
 
     public LocalUploadManager(@Nonnull final File uploadFolder) {
         if (uploadFolder.isDirectory())
@@ -114,31 +120,31 @@ public class LocalUploadManager extends AbstractUploadManager {
         } catch (FileNotFoundException e) {
             return null;
         }
-        
+
         asset.setInput(input);
-        
+
         return asset;
     }
 
     @Override
     public ActionResult delete(Bucket bucket, String id, String hash) {
         final ActionResult res = new ActionResult();
-        
+
         final Asset asset = retrieveAsset(id);
-        
+
         if (asset == null) {
             res.setSuccess(false);
             return res;
         }
-        
+
         final File bucketFolder = getBucketFolder(bucket);
 
         final File target = new File(bucketFolder, id);
-        
+
         final boolean success = target.delete();
-        
+
         res.setSuccess(success);
-        
+
         if (success) {
             removeAsset(id);
         }
@@ -164,4 +170,16 @@ public class LocalUploadManager extends AbstractUploadManager {
         return f;
     }
 
+    private static File getDefaultUploadFolder() {
+        final TableUserConfig conf = (TableUserConfig) Squirrel.getInstance().getUserConfig(LocalUploadManager.class,
+                new TableUserConfig(LocalUploadManager.class));
+        final Object rawUp = conf.getTable().get("upload_folder");
+        if (!(rawUp instanceof String)) {
+            throw new IllegalStateException("upload folder not set as string in config");
+        }
+        
+        final String uploadFolder = (String) rawUp;
+
+        return new File(uploadFolder);
+    }
 }

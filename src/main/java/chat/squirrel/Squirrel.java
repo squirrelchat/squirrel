@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
-import org.bson.BsonDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,12 +103,7 @@ public final class Squirrel {
         this.dbManager = new DatabaseManager(this.getProperty("mongo.con-string"),
                 this.getProperty("mongo.db-name", "squirrel"));
 
-        this.config = this.dbManager.findFirstEntity(SquirrelConfig.class, SquirrelCollection.CONFIG,
-                new BsonDocument());
-        if (this.config == null) {
-            this.config = new SquirrelConfig();
-            this.saveConfig();
-        }
+        this.config = (SquirrelConfig) getUserConfig(Squirrel.class, new SquirrelConfig(getClass()));
 
         this.authHandler = new MongoAuthHandler(); // TODO: make customizable when there'll be more
 
@@ -131,7 +125,7 @@ public final class Squirrel {
 
         this.webExceptionHandler = new WebExceptionHandler();
         this.rootRouter.errorHandler(500, this.webExceptionHandler);
-        
+
         this.httpClient = WebClient.create(vertx);
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "squirrel-shutdown"));
@@ -197,13 +191,30 @@ public final class Squirrel {
         return this.webJsonHandler;
     }
 
-    public void saveConfig() { // TODO make better
-        this.getDatabaseManager().deleteEntity(SquirrelCollection.CONFIG, Filters.eq(this.getConfig().getId()));
-        this.getDatabaseManager().insertEntity(SquirrelCollection.CONFIG, this.getConfig());
-    }
-    
     public WebClient getHttpClient() {
         return httpClient;
+    }
+
+    public UserConfig getUserConfig(Class<?> owner) {
+        final UserConfig def = new UserConfig(owner);
+        final UserConfig retConf = getUserConfig(owner, def);
+        if (retConf == def) {
+            this.saveUserConfig(def);
+        }
+        return retConf;
+    }
+
+    public UserConfig getUserConfig(Class<?> owner, UserConfig def) {
+        final UserConfig conf = this.dbManager.findFirstEntity(UserConfig.class, SquirrelCollection.CONFIG,
+                Filters.eq("owner", owner.toString()));
+        if (conf == null) {
+            return def;
+        }
+        return conf;
+    }
+
+    public void saveUserConfig(UserConfig conf) {
+        this.dbManager.replaceOne(SquirrelCollection.CONFIG, conf, Filters.eq(conf.getId()));
     }
 
     /**

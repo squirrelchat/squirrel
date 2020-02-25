@@ -29,13 +29,15 @@ package chat.squirrel;
 
 import java.security.SecureRandom;
 
-import chat.squirrel.entities.AbstractEntity;
-
-public class SquirrelConfig extends AbstractEntity {
+public class SquirrelConfig extends UserConfig {
     private String orgName = "Squirrel Chat", srvDescription = "Default Squirrel Server", secret;
     private int maximumUsernameCount = -1;
     private long sessionTimeout = -1;
     private boolean allowRegister = true;
+
+    public SquirrelConfig(Class<?> owner) {
+        super(owner);
+    }
 
     /**
      * -1 for standard maximum (5000). Cannot be higher than 5000.

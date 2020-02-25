@@ -49,7 +49,6 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
 
-import chat.squirrel.SquirrelConfig;
 import chat.squirrel.Version;
 import chat.squirrel.entities.Guild;
 import chat.squirrel.entities.IEntity;
@@ -170,6 +169,10 @@ public class DatabaseManager {
     public UpdateResult updateMany(final SquirrelCollection col, final Bson filter, final Bson update) {
         return this.db.getCollection(col.getMongoName()).updateMany(filter, update);
     }
+    
+    public UpdateResult replaceOne(final SquirrelCollection col, IEntity entity, Bson filter) {
+        return this.db.getCollection(col.getMongoName(), IEntity.class).replaceOne(filter, entity);
+    }
 
     /**
      * The Mongo collections used by squirrel.
@@ -185,7 +188,7 @@ public class DatabaseManager {
          */
         GUILDS("guilds"),
         /**
-         * 'config' collection. Contains entity type {@link SquirrelConfig}
+         * 'config' collection. Contains entity type {@link chat.squirrel.UserConfig}
          */
         CONFIG("config"),
         /**
