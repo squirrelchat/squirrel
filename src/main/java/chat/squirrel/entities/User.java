@@ -37,7 +37,7 @@ import xyz.bowser65.tokenize.IAccount;
  * Server wide user account
  */
 public class User extends AbstractEntity implements IAccount {
-    private String username, email, customEmail;
+    private String username, email, customEmail, bio;
     private int discriminator, flags;
     private boolean disabled, banned, deleted, mfa;
     @BsonIgnore
@@ -105,14 +105,6 @@ public class User extends AbstractEntity implements IAccount {
         return this.banned;
     }
 
-    public boolean isBugHunter() {
-        return (0b100000 & this.flags) != 0;
-    }
-
-    public boolean isContributor() {
-        return (0b1000 & this.flags) != 0;
-    }
-
     public boolean isDeleted() {
         return this.deleted;
     }
@@ -128,14 +120,6 @@ public class User extends AbstractEntity implements IAccount {
 
     public boolean isInstanceModerator() {
         return (0b10 & this.flags) != 0;
-    }
-
-    public boolean isSquirrelDeveloper() {
-        return (0b100 & this.flags) != 0;
-    }
-
-    public boolean isTranslator() {
-        return (0b10000 & this.flags) != 0;
     }
 
     public void setBanned(final boolean banned) {
@@ -176,6 +160,14 @@ public class User extends AbstractEntity implements IAccount {
 
     public void setUsername(final String username) {
         this.username = username;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     @Override
