@@ -29,8 +29,11 @@ package chat.squirrel.entities;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+
+import javax.annotation.Nonnull;
 
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
@@ -47,10 +50,10 @@ import chat.squirrel.entities.Guild.Permissions;
 public class Member extends AbstractEntity {
     private ObjectId userId, guildId;
     private String nickname;
-    private Collection<ObjectId> roles;
+    private Collection<ObjectId> roles = Collections.emptySet();
 
     // @todo: Wipe this and fetch them from roles
-    private Collection<Permissions> permissions;
+    private Collection<Permissions> permissions = Collections.emptySet();
     private boolean owner;
 
     /**
@@ -78,6 +81,7 @@ public class Member extends AbstractEntity {
     }
 
     // @todo: Fetch them from roles
+    @Nonnull
     public Collection<Permissions> getPermissions() {
         return this.permissions;
     }
@@ -171,7 +175,7 @@ public class Member extends AbstractEntity {
     }
 
     // @todo: Fetch them from roles
-    public void setPermissions(final Collection<Permissions> permissions) {
+    public void setPermissions(@Nonnull final Collection<Permissions> permissions) {
         this.permissions = permissions;
     }
 
@@ -179,7 +183,7 @@ public class Member extends AbstractEntity {
      * @param roles The IDs corresponding to the Guild roles that the Member
      *              possesses.
      */
-    public void setRolesIds(final Collection<ObjectId> roles) {
+    public void setRolesIds(@Nonnull final Collection<ObjectId> roles) {
         this.roles = roles;
     }
 

@@ -28,6 +28,9 @@
 package chat.squirrel.entities;
 
 import java.util.Collection;
+import java.util.Collections;
+
+import javax.annotation.Nonnull;
 
 /**
  * A standard {@link Guild} Role
@@ -35,7 +38,7 @@ import java.util.Collection;
 public class Role extends AbstractEntity {
     private int color;
     private String name;
-    private Collection<String> permissions;
+    private Collection<String> permissions = Collections.emptySet();
 
     /**
      * @return The RGB color corresponding to this role
@@ -51,6 +54,7 @@ public class Role extends AbstractEntity {
         return this.name;
     }
 
+    @Nonnull
     public Collection<String> getPermissions() {
         return this.permissions;
     }
@@ -69,7 +73,7 @@ public class Role extends AbstractEntity {
         this.name = name;
     }
 
-    public void setPermissions(final Collection<String> permissions) {
+    public void setPermissions(@Nonnull final Collection<String> permissions) {
         this.permissions = permissions;
     }
 }

@@ -34,6 +34,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import javax.annotation.Nonnull;
+
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
@@ -48,11 +50,11 @@ import chat.squirrel.entities.channels.IChannel;
  */
 public class Guild extends AbstractEntity {
     private String name;
-    private Collection<ObjectId> members;
-    private Collection<ObjectId> roles;
+    private Collection<ObjectId> members = Collections.emptySet();
+    private Collection<ObjectId> roles = Collections.emptySet();
+    private Collection<ObjectId> channels = Collections.emptySet();
 
-    private Collection<ObjectId> channels;
-
+    @Nonnull
     public Collection<ObjectId> getChannels() {
         return this.channels;
     }
@@ -100,6 +102,7 @@ public class Guild extends AbstractEntity {
     /**
      * @return The {@link Member}s that are a part of this Guild
      */
+    @Nonnull
     public Collection<ObjectId> getMembers() {
         return this.members;
     }
@@ -129,7 +132,7 @@ public class Guild extends AbstractEntity {
         });
 
     }
-    
+
     @BsonIgnore
     public Future<Collection<Role>> getRealRoles() {
         return CompletableFuture.supplyAsync(() -> {
@@ -152,18 +155,19 @@ public class Guild extends AbstractEntity {
     /**
      * @return The {@link Role}s that are created in this Guild
      */
+    @Nonnull
     public Collection<ObjectId> getRoles() {
         return this.roles;
     }
 
-    public void setChannels(final Collection<ObjectId> channels) {
+    public void setChannels(@Nonnull final Collection<ObjectId> channels) {
         this.channels = channels;
     }
 
     /**
      * @param members The {@link Member}s that are a part of this Guild
      */
-    public void setMembers(final Collection<ObjectId> members) {
+    public void setMembers(@Nonnull final Collection<ObjectId> members) {
         this.members = members;
     }
 
@@ -177,7 +181,7 @@ public class Guild extends AbstractEntity {
     /**
      * @param roles The {@link Role}s that are created in this Guild
      */
-    public void setRoles(final Collection<ObjectId> roles) {
+    public void setRoles(@Nonnull final Collection<ObjectId> roles) {
         this.roles = roles;
     }
 
