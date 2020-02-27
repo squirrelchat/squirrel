@@ -1,4 +1,4 @@
-package chat.squirrel.tests;
+package chat.squirrel.test;
 
 import static org.junit.Assert.*;
 
@@ -17,7 +17,12 @@ public class TestFormatting {
         assertEquals("0000", Squirrel.formatDiscriminator(0));
         assertEquals("0001", Squirrel.formatDiscriminator(1));
     }
-    
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDiscriminatorFail() {
+        Squirrel.formatDiscriminator(99999);
+    }
+
     @Test
     public void testUsernames() {
         assertTrue(MongoAuthHandler.isValidUsername("Charles Hatant"));
