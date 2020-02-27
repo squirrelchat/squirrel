@@ -43,6 +43,7 @@ import chat.squirrel.core.DatabaseManager;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.core.MetricsManager;
 import chat.squirrel.core.ModuleManager;
+import chat.squirrel.mail.NotificationMailManager;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
@@ -68,6 +69,7 @@ public final class Squirrel {
     private final DatabaseManager dbManager;
     private final AuthHandler authHandler;
     private final Tokenize tokenize;
+    private final NotificationMailManager notifMail;
 
     // Vert.x
     private final HttpServer server;
@@ -127,6 +129,8 @@ public final class Squirrel {
         this.rootRouter.errorHandler(500, this.webExceptionHandler);
 
         this.httpClient = WebClient.create(vertx);
+
+        this.notifMail = new NotificationMailManager(vertx);
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "squirrel-shutdown"));
     }
@@ -193,6 +197,10 @@ public final class Squirrel {
 
     public WebClient getHttpClient() {
         return httpClient;
+    }
+
+    public NotificationMailManager getNotifMail() {
+        return notifMail;
     }
 
     public UserConfig getUserConfig(Class<?> owner) {
