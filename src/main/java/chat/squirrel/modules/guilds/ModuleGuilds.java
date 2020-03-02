@@ -65,10 +65,10 @@ public class ModuleGuilds extends AbstractGuildModule {
         }
 
         final User user = this.getRequester(ctx);
-        final Guild newGuild = new Guild();
+        final Guild newGuild = Guild.create();
         newGuild.setName(name);
 
-        final Member owner = new Member();
+        final Member owner = Member.create();
         owner.setOwner(true);
         owner.setUserId(user.getId());
 

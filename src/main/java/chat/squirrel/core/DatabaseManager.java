@@ -55,6 +55,7 @@ import chat.squirrel.entities.IEntity;
 import chat.squirrel.entities.IMessage;
 import chat.squirrel.entities.User;
 import chat.squirrel.entities.channels.IChannel;
+import chat.squirrel.entities.impl.UserImpl;
 
 /**
  * A DatabaseManager manages the interactions with MongoDB
@@ -146,7 +147,7 @@ public class DatabaseManager {
      *         {@code false} otherwise
      */
     public boolean isDiscriminatorTaken(final String username, final int dis) {
-        return this.findFirstEntity(User.class, SquirrelCollection.USERS,
+        return this.findFirstEntity(UserImpl.class, SquirrelCollection.USERS,
                 Filters.and(Filters.eq("discriminator", dis), Filters.eq("username", username))) != null;
     }
 

@@ -25,25 +25,59 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.entities;
+package chat.squirrel.entities.impl;
 
-import org.bson.types.ObjectId;
+import java.util.Collection;
+import java.util.Collections;
+
+import javax.annotation.Nonnull;
+
+import chat.squirrel.entities.AbstractEntity;
+import chat.squirrel.entities.Guild;
+import chat.squirrel.entities.Role;
 
 /**
- * A standard text message TODO: Rename to TextMessage
+ * A standard {@link Guild} Role
  */
-public class Message extends AbstractEntity implements IMessage {
-    private ObjectId author;
-    private String content;
+public class RoleImpl extends AbstractEntity implements Role {
+    private int color;
+    private String name;
+    private Collection<String> permissions = Collections.emptySet();
 
-    @Override
-    public ObjectId getAuthor() {
-        return this.author;
+    /**
+     * @return The RGB color corresponding to this role
+     */
+    public int getColor() {
+        return this.color;
     }
 
-    @Override
-    public String getContent() {
-        return this.content;
+    /**
+     * @return The display name of this Role
+     */
+    public String getName() {
+        return this.name;
     }
 
+    @Nonnull
+    public Collection<String> getPermissions() {
+        return this.permissions;
+    }
+
+    /**
+     * @param color The RGB color corresponding to this role
+     */
+    public void setColor(final int color) {
+        this.color = color;
+    }
+
+    /**
+     * @param name The display name of this Role
+     */
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public void setPermissions(@Nonnull final Collection<String> permissions) {
+        this.permissions = permissions;
+    }
 }

@@ -30,34 +30,6 @@ package chat.squirrel.auth;
 import chat.squirrel.entities.User;
 
 public class AuthResult {
-    public enum FailureReason {
-        UNKNOWN,
-        /**
-         * Only for registration
-         */
-        INVALID_EMAIL,
-        EMAIL_TAKEN,
-        /**
-         * For registration and login
-         */
-        INVALID_USERNAME,
-        INVALID_PASSWORD,
-        REGISTRATION_DISABLED,
-        /**
-         * Login only
-         */
-        INVALID_CREDENTIALS, // If registration is disabled
-        UNKNOWN_IP_ADDRESS, // IP never logged in on that account
-        /**
-         * If the limit for a username has been reached or if there are no free
-         * discriminators
-         */
-        OVERUSED_USERNAME,
-        DISABLED_ACCOUNT,
-        BANNED_ACCOUNT,
-        DELETION_SCHEDULED
-    }
-
     private User user;
     private FailureReason reason = FailureReason.UNKNOWN;
 
@@ -98,5 +70,33 @@ public class AuthResult {
     public String toString() {
         return (this.isSuccess() ? "Success" : "Failure") + " " + this.user
                 + (this.isSuccess() ? "" : ": " + this.getReason().toString());
+    }
+
+    public enum FailureReason {
+        UNKNOWN,
+        /**
+         * Only for registration
+         */
+        INVALID_EMAIL,
+        EMAIL_TAKEN,
+        /**
+         * For registration and login
+         */
+        INVALID_USERNAME,
+        INVALID_PASSWORD,
+        REGISTRATION_DISABLED,
+        /**
+         * Login only
+         */
+        INVALID_CREDENTIALS, // If registration is disabled
+        UNKNOWN_IP_ADDRESS, // IP never logged in on that account
+        /**
+         * If the limit for a username has been reached or if there are no free
+         * discriminators
+         */
+        OVERUSED_USERNAME,
+        DISABLED_ACCOUNT,
+        BANNED_ACCOUNT,
+        DELETION_SCHEDULED
     }
 }

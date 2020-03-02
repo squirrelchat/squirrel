@@ -145,7 +145,7 @@ public class MongoAuthHandler implements AuthHandler {
             return res;
         }
 
-        final User user = new User();
+        final User user = User.create();
         user.setEmail(email);
         user.setUsername(username);
         user.setDiscriminator(discriminator);
