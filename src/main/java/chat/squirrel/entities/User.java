@@ -28,6 +28,8 @@ package chat.squirrel.entities;
 
 import java.util.Collection;
 
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+
 import chat.squirrel.entities.impl.UserImpl;
 import xyz.bowser65.tokenize.IAccount;
 
@@ -57,8 +59,10 @@ public interface User extends IEntity, IAccount {
 
     boolean isDisabled();
 
+    @BsonIgnore
     boolean isInstanceAdmin();
 
+    @BsonIgnore
     boolean isInstanceModerator();
 
     void setBanned(boolean banned);
