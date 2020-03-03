@@ -47,6 +47,7 @@ public class RoleImpl extends AbstractEntity implements Role {
     /**
      * @return The RGB color corresponding to this role
      */
+    @Override
     public int getColor() {
         return this.color;
     }
@@ -54,10 +55,12 @@ public class RoleImpl extends AbstractEntity implements Role {
     /**
      * @return The display name of this Role
      */
+    @Override
     public String getName() {
         return this.name;
     }
 
+    @Override
     @Nonnull
     public Collection<String> getPermissions() {
         return this.permissions;
@@ -66,6 +69,7 @@ public class RoleImpl extends AbstractEntity implements Role {
     /**
      * @param color The RGB color corresponding to this role
      */
+    @Override
     public void setColor(final int color) {
         this.color = color;
     }
@@ -73,10 +77,12 @@ public class RoleImpl extends AbstractEntity implements Role {
     /**
      * @param name The display name of this Role
      */
+    @Override
     public void setName(final String name) {
         this.name = name;
     }
 
+    @Override
     public void setPermissions(@Nonnull final Collection<String> permissions) {
         this.permissions = permissions;
     }

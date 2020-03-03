@@ -18,7 +18,7 @@ public class YandexIdentityProvider implements IIdentityProvider<String, String>
      */
     @Override
     public Future<Yandex> provide(final String userId, final String code) {
-        final CompletableFuture<Yandex> future = new CompletableFuture<Yandex>();
+        final CompletableFuture<Yandex> future = new CompletableFuture<>();
         final Yandex iden = new Yandex();
         iden.setUserId(userId);
 
@@ -50,6 +50,6 @@ public class YandexIdentityProvider implements IIdentityProvider<String, String>
      */
     @Override
     public String getPreAuth() {
-        return "https://oauth.yandex.com/authorize?response_type=code&client_id=" + clientId;
+        return "https://oauth.yandex.com/authorize?response_type=code&client_id=" + this.clientId;
     }
 }

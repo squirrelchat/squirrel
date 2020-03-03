@@ -7,16 +7,16 @@ import chat.squirrel.UserConfig;
 public class TableUserConfig extends UserConfig {
     private Hashtable<String, Object> table;
 
-    public TableUserConfig(Class<?> owner) {
+    public TableUserConfig(final Class<?> owner) {
         super(owner);
-        table = new Hashtable<String, Object>();
+        this.table = new Hashtable<>();
     }
 
     public Hashtable<String, Object> getTable() {
-        return table;
+        return this.table;
     }
 
-    public void setTable(Hashtable<String, Object> table) {
+    public void setTable(final Hashtable<String, Object> table) {
         this.table = table;
     }
 

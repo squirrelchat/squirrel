@@ -36,7 +36,7 @@ public class NotificationMailManager {
             LOG.error("Mailing configuration not defined in DB");
             return;
         }
-        
+
         if (!this.dbConf.isEnabled()) {
             LOG.info("Notification mail manager is disabled");
             return;
@@ -47,42 +47,42 @@ public class NotificationMailManager {
             LOG.error("Mailing configuration not defined");
         }
 
-        client = MailClient.create(vertx, config);
-        enabled = true;
+        this.client = MailClient.create(vertx, config);
+        this.enabled = true;
     }
 
     public void sendMail(final String mailName, final String[] to, final Locale locale,
             final Map<String, Object> extras) {
-        if (!enabled) {
+        if (!this.enabled) {
             LOG.warn("Attempted to send email %s to %s but notification mail manager isn't enabled.");
             return;
         }
-        exec.submit(() -> {
+        this.exec.submit(() -> {
             LOG.info("Sending email %s in language %s to email %s", mailName, locale.getISO3Language(), to);
             final String raw;
             try {
-                raw = getRawEmail(mailName);
-            } catch (IOException e) {
+                raw = this.getRawEmail(mailName);
+            } catch (final IOException e) {
                 LOG.error("Failed to read email template", e);
                 return;
             }
             final Map<String, Object> arguments = new HashMap<>();
             try {
-                arguments.putAll(getTranslationsMap(mailName, locale));
-            } catch (IOException e) {
+                arguments.putAll(this.getTranslationsMap(mailName, locale));
+            } catch (final IOException e) {
                 LOG.error("Failed to read email translations for template " + mailName + " in language "
                         + locale.getISO3Language(), e);
                 return;
             }
             arguments.putAll(extras);
-            final String content = replaceValues(raw, arguments, locale);
+            final String content = this.replaceValues(raw, arguments, locale);
 
             final MailMessage mail = new MailMessage();
             mail.setTo(Arrays.asList(to));
-            mail.setFrom(dbConf.getFromEmail());
+            mail.setFrom(this.dbConf.getFromEmail());
             mail.setHtml(content);
             // mail.setText(JSoup.gettextthingy) TODO: extract plain text using jsoup
-            client.sendMail(mail, result -> {
+            this.client.sendMail(mail, result -> {
                 if (result.succeeded()) {
                     LOG.info("Successfully sent email " + result.result().getMessageID() + " to " + to);
                 } else {
@@ -95,8 +95,8 @@ public class NotificationMailManager {
     private Map<String, String> getTranslationsMap(final String mailName, final Locale locale) throws IOException {
         final Properties props = new Properties();
         props.load(new FileReader(
-                Paths.get(dbConf.getTemplateLookupFolder(), "i18n", locale.getISO3Language(), mailName).toFile()));
-        final Map<String, String> transMap = new HashMap<String, String>();
+                Paths.get(this.dbConf.getTemplateLookupFolder(), "i18n", locale.getISO3Language(), mailName).toFile()));
+        final Map<String, String> transMap = new HashMap<>();
         props.entrySet().forEach((entry) -> {
             transMap.put((String) entry.getKey(), (String) entry.getValue());
         });
@@ -105,7 +105,7 @@ public class NotificationMailManager {
 
     private String replaceValues(final String content, final Map<String, Object> arguments, final Locale loc) {
         return Pattern.compile("\\{\\{ ([a-z0-9_]+) }}").matcher(content).replaceAll((replacement) -> {
-            return getStringRepresentation(arguments.get(replacement.group()), loc);
+            return this.getStringRepresentation(arguments.get(replacement.group()), loc);
         });
     }
 
@@ -123,7 +123,7 @@ public class NotificationMailManager {
         }
     }
 
-    private String getRawEmail(String mailName) throws IOException {
-        return Files.readString(Paths.get(dbConf.getTemplateLookupFolder(), mailName + ".html"));
+    private String getRawEmail(final String mailName) throws IOException {
+        return Files.readString(Paths.get(this.dbConf.getTemplateLookupFolder(), mailName + ".html"));
     }
 }

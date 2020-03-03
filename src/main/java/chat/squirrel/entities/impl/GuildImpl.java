@@ -58,6 +58,7 @@ public class GuildImpl extends AbstractEntity implements Guild {
     private Collection<ObjectId> roles = Collections.emptySet();
     private Collection<ObjectId> channels = Collections.emptySet();
 
+    @Override
     @Nonnull
     public Collection<ObjectId> getChannels() {
         return this.channels;
@@ -67,6 +68,7 @@ public class GuildImpl extends AbstractEntity implements Guild {
      * @param user User ID
      * @return The member corresponding to this user or null otherwise
      */
+    @Override
     public Member getMemberForUser(final ObjectId user) {
         try {
             for (final Member m : this.getRealMembers().get()) {
@@ -80,11 +82,13 @@ public class GuildImpl extends AbstractEntity implements Guild {
         return null;
     }
 
-    public void addMember(Member m) {
-        m.setGuildId(getId());
+    @Override
+    public void addMember(final Member m) {
+        m.setGuildId(this.getId());
         Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.MEMBERS, m);
     }
 
+    @Override
     @BsonIgnore
     public Future<Collection<Member>> getRealMembers() {
         return CompletableFuture.supplyAsync(() -> {
@@ -106,6 +110,7 @@ public class GuildImpl extends AbstractEntity implements Guild {
     /**
      * @return The {@link Member}s that are a part of this Guild
      */
+    @Override
     @Nonnull
     public Collection<ObjectId> getMembers() {
         return this.members;
@@ -114,10 +119,12 @@ public class GuildImpl extends AbstractEntity implements Guild {
     /**
      * @return The display name of the Guild
      */
+    @Override
     public String getName() {
         return this.name;
     }
 
+    @Override
     @BsonIgnore
     public Future<Collection<IChannel>> getRealChannels() {
         return CompletableFuture.supplyAsync(() -> {
@@ -137,6 +144,7 @@ public class GuildImpl extends AbstractEntity implements Guild {
 
     }
 
+    @Override
     @BsonIgnore
     public Future<Collection<Role>> getRealRoles() {
         return CompletableFuture.supplyAsync(() -> {
@@ -159,11 +167,13 @@ public class GuildImpl extends AbstractEntity implements Guild {
     /**
      * @return The {@link Role}s that are created in this Guild
      */
+    @Override
     @Nonnull
     public Collection<ObjectId> getRoles() {
         return this.roles;
     }
 
+    @Override
     public void setChannels(@Nonnull final Collection<ObjectId> channels) {
         this.channels = channels;
     }
@@ -171,6 +181,7 @@ public class GuildImpl extends AbstractEntity implements Guild {
     /**
      * @param members The {@link Member}s that are a part of this Guild
      */
+    @Override
     public void setMembers(@Nonnull final Collection<ObjectId> members) {
         this.members = members;
     }
@@ -178,6 +189,7 @@ public class GuildImpl extends AbstractEntity implements Guild {
     /**
      * @param name The display name of the Guild
      */
+    @Override
     public void setName(final String name) {
         this.name = name;
     }
@@ -185,9 +197,9 @@ public class GuildImpl extends AbstractEntity implements Guild {
     /**
      * @param roles The {@link Role}s that are created in this Guild
      */
+    @Override
     public void setRoles(@Nonnull final Collection<ObjectId> roles) {
         this.roles = roles;
     }
 
-    
 }

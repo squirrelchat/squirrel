@@ -48,5 +48,5 @@ public interface IMessage extends IEntity {
      * @return The String content of the message
      */
     String getContent();
-    
+
 }

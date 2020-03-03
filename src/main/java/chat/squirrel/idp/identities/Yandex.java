@@ -41,35 +41,35 @@ public class Yandex implements IIdentity {
     }
 
     public String getAccessToken() {
-        return accessToken;
+        return this.accessToken;
     }
 
-    public void setAccessToken(String accessToken) {
+    public void setAccessToken(final String accessToken) {
         this.accessToken = accessToken;
     }
 
     public String getRefreshToken() {
-        return refreshToken;
+        return this.refreshToken;
     }
 
-    public void setRefreshToken(String refreshToken) {
+    public void setRefreshToken(final String refreshToken) {
         this.refreshToken = refreshToken;
     }
 
     public long getExpiery() {
-        return expiery;
+        return this.expiery;
     }
 
-    public void setExpiery(long expiery) {
+    public void setExpiery(final long expiery) {
         this.expiery = expiery;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(final String userId) {
         this.userId = userId;
     }
 
     @Override
     public String getUserId() {
-        return userId;
+        return this.userId;
     }
 }

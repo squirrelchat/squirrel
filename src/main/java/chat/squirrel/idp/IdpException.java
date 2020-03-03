@@ -9,7 +9,7 @@ public class IdpException extends IOException {
         super();
     }
 
-    public IdpException(String message) {
+    public IdpException(final String message) {
         super(message);
     }
 }

@@ -5,42 +5,42 @@ public class ActionResult {
     private String errorReason, assetId, assetHash, assetType;
 
     public String getAssetId() {
-        return assetId;
+        return this.assetId;
     }
 
-    public void setAssetId(String assetId) {
+    public void setAssetId(final String assetId) {
         this.assetId = assetId;
     }
 
     public String getAssetHash() {
-        return assetHash;
+        return this.assetHash;
     }
 
-    public void setAssetHash(String assetHash) {
+    public void setAssetHash(final String assetHash) {
         this.assetHash = assetHash;
     }
 
     public boolean isSuccess() {
-        return success;
+        return this.success;
     }
 
-    public void setSuccess(boolean success) {
+    public void setSuccess(final boolean success) {
         this.success = success;
     }
 
     public String getErrorReason() {
-        return errorReason;
+        return this.errorReason;
     }
 
-    public void setErrorReason(String errorReason) {
+    public void setErrorReason(final String errorReason) {
         this.errorReason = errorReason;
     }
 
     public String getAssetType() {
-        return assetType;
+        return this.assetType;
     }
 
-    public void setAssetType(String assetType) {
+    public void setAssetType(final String assetType) {
         this.assetType = assetType;
     }
 

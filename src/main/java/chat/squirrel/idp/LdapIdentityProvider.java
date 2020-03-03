@@ -13,7 +13,7 @@ public class LdapIdentityProvider implements IIdentityProvider<Object, Object> {
     }
 
     @Override
-    public Future<Ldap> provide(String userId, Object props) {
+    public Future<Ldap> provide(final String userId, final Object props) {
         // TODO Auto-generated method stub
         return null;
     }

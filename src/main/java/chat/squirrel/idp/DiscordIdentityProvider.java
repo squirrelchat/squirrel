@@ -13,7 +13,7 @@ public class DiscordIdentityProvider implements IIdentityProvider<Object, Object
     }
 
     @Override
-    public Future<Discord> provide(String userId, Object props) {
+    public Future<Discord> provide(final String userId, final Object props) {
         // TODO Auto-generated method stub
         return null;
     }

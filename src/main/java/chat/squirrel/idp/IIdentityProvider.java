@@ -33,5 +33,6 @@ import chat.squirrel.idp.identities.IIdentity;
 
 interface IIdentityProvider<Pre, Auth> {
     Pre getPreAuth();
+
     Future<? extends IIdentity> provide(String userId, Auth props);
 }

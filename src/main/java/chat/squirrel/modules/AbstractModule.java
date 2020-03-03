@@ -80,12 +80,14 @@ public abstract class AbstractModule {
      * @param desc   The error description
      * @param extra  The extra informations to provide, may be null
      */
-    protected void fail(final RoutingContext ctx, int status, final String desc, @Nullable final JsonObject extra) {
+    protected void fail(final RoutingContext ctx, final int status, final String desc,
+            @Nullable final JsonObject extra) {
         final JsonObject out = new JsonObject();
         out.put("status", status);
         out.put("desc", desc);
-        if (extra != null)
+        if (extra != null) {
             out.put("details", extra);
+        }
 
         ctx.response().setStatusCode(status).end(out.encode());
     }

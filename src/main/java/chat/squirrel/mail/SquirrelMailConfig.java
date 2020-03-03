@@ -9,38 +9,38 @@ public class SquirrelMailConfig extends UserConfig {
     private boolean enabled;
 
     public String getFromEmail() {
-        return fromEmail;
+        return this.fromEmail;
     }
 
-    public void setFromEmail(String fromEmail) {
+    public void setFromEmail(final String fromEmail) {
         this.fromEmail = fromEmail;
     }
 
-    public SquirrelMailConfig(Class<?> owner) {
+    public SquirrelMailConfig(final Class<?> owner) {
         super(owner);
     }
 
     public MailConfig getConfig() {
-        return config;
+        return this.config;
     }
 
-    public void setConfig(MailConfig config) {
+    public void setConfig(final MailConfig config) {
         this.config = config;
     }
 
     public String getTemplateLookupFolder() {
-        return templateLookupFolder;
+        return this.templateLookupFolder;
     }
 
-    public void setTemplateLookupFolder(String templateLookupFolder) {
+    public void setTemplateLookupFolder(final String templateLookupFolder) {
         this.templateLookupFolder = templateLookupFolder;
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return this.enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
     }
 

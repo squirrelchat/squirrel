@@ -13,7 +13,7 @@ public class GSuiteIdentityProvider implements IIdentityProvider<Object, Object>
     }
 
     @Override
-    public Future<Google> provide(String userId, Object props) {
+    public Future<Google> provide(final String userId, final Object props) {
         // TODO Auto-generated method stub
         return null;
     }

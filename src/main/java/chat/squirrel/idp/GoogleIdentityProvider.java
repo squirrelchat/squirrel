@@ -4,7 +4,7 @@ import java.util.concurrent.Future;
 
 import chat.squirrel.idp.identities.Google;
 
-public class GoogleIdentityProvider implements IIdentityProvider<Object, Object>{
+public class GoogleIdentityProvider implements IIdentityProvider<Object, Object> {
 
     @Override
     public Object getPreAuth() {
@@ -13,7 +13,7 @@ public class GoogleIdentityProvider implements IIdentityProvider<Object, Object>
     }
 
     @Override
-    public Future<Google> provide(String userId, Object props) {
+    public Future<Google> provide(final String userId, final Object props) {
         // TODO Auto-generated method stub
         return null;
     }

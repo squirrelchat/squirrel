@@ -63,7 +63,7 @@ public final class Squirrel {
     private static final Logger LOG = LoggerFactory.getLogger(Squirrel.class);
     private final WebExceptionHandler webExceptionHandler;
     private final Properties properties;
-    private SquirrelConfig config;
+    private final SquirrelConfig config;
 
     // Managers
     private final ModuleManager moduleManager;
@@ -106,7 +106,7 @@ public final class Squirrel {
         this.dbManager = new DatabaseManager(this.getProperty("mongo.con-string"),
                 this.getProperty("mongo.db-name", "squirrel"));
 
-        this.config = (SquirrelConfig) getUserConfig(Squirrel.class, new SquirrelConfig(getClass()));
+        this.config = (SquirrelConfig) this.getUserConfig(Squirrel.class, new SquirrelConfig(this.getClass()));
 
         this.authHandler = new MongoAuthHandler(); // TODO: make customizable when there'll be more
 
@@ -132,7 +132,7 @@ public final class Squirrel {
         this.httpClient = WebClient.create(vertx);
 
         this.notifMail = new NotificationMailManager(vertx,
-                (SquirrelMailConfig) getUserConfig(NotificationMailManager.class, null));
+                (SquirrelMailConfig) this.getUserConfig(NotificationMailManager.class, null));
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "squirrel-shutdown"));
     }
@@ -198,23 +198,23 @@ public final class Squirrel {
     }
 
     public WebClient getHttpClient() {
-        return httpClient;
+        return this.httpClient;
     }
 
     public NotificationMailManager getNotifMail() {
-        return notifMail;
+        return this.notifMail;
     }
 
-    public UserConfig getUserConfig(Class<?> owner) {
+    public UserConfig getUserConfig(final Class<?> owner) {
         final UserConfig def = new UserConfig(owner);
-        final UserConfig retConf = getUserConfig(owner, def);
+        final UserConfig retConf = this.getUserConfig(owner, def);
         if (retConf == def) {
             this.saveUserConfig(def);
         }
         return retConf;
     }
 
-    public UserConfig getUserConfig(Class<?> owner, UserConfig def) {
+    public UserConfig getUserConfig(final Class<?> owner, final UserConfig def) {
         final UserConfig conf = this.dbManager.findFirstEntity(UserConfig.class, SquirrelCollection.CONFIG,
                 Filters.eq("owner", owner.toString()));
         if (conf == null) {
@@ -223,7 +223,7 @@ public final class Squirrel {
         return conf;
     }
 
-    public void saveUserConfig(UserConfig conf) {
+    public void saveUserConfig(final UserConfig conf) {
         this.dbManager.replaceOne(SquirrelCollection.CONFIG, conf, Filters.eq(conf.getId()));
     }
 

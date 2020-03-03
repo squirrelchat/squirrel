@@ -33,5 +33,6 @@ import chat.squirrel.entities.User;
 
 public interface IIdentity {
     String getUserId();
+
     Future<User> getSquirrelAccount();
 }

@@ -68,5 +68,5 @@ public class TextChannel extends AbstractEntity implements IChannel {
     public void setName(final String name) {
         this.name = name;
     }
-    
+
 }

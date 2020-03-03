@@ -29,27 +29,28 @@ public class LocalUploadManager extends AbstractUploadManager {
     }
 
     public LocalUploadManager(@Nonnull final File uploadFolder) {
-        if (uploadFolder.isDirectory())
+        if (uploadFolder.isDirectory()) {
             throw new IllegalArgumentException("upload folder does not represent a directory");
+        }
 
         this.uploadFolder = uploadFolder;
     }
 
     @Override
-    public ActionResult upload(Bucket bucket, String type, InputStream input) {
+    public ActionResult upload(final Bucket bucket, final String type, final InputStream input) {
         final ActionResult res = new ActionResult();
 
         final ObjectId id = new ObjectId();
         res.setAssetId(id.toHexString());
 
-        final File bucketFile = getBucketFolder(bucket);
+        final File bucketFile = this.getBucketFolder(bucket);
 
         final File outFile = new File(bucketFile, id.toHexString());
 
         FileOutputStream out;
         try {
             out = new FileOutputStream(outFile);
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             res.setErrorReason("Failed to open output stream: " + e.toString());
             return res;
         }
@@ -58,7 +59,7 @@ public class LocalUploadManager extends AbstractUploadManager {
             final MessageDigest md;
             try {
                 md = MessageDigest.getInstance("SHA-1");
-            } catch (NoSuchAlgorithmException e1) {
+            } catch (final NoSuchAlgorithmException e1) {
                 throw new IllegalStateException("Should not be reached");
             }
 
@@ -68,7 +69,7 @@ public class LocalUploadManager extends AbstractUploadManager {
                     out.write(buffer);
                     md.update(buffer);
                 }
-            } catch (IOException e1) {
+            } catch (final IOException e1) {
                 res.setErrorReason("Could not write to output stream or digest: " + e1.toString());
                 return res;
             }
@@ -79,7 +80,7 @@ public class LocalUploadManager extends AbstractUploadManager {
         } finally {
             try {
                 out.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 res.setErrorReason("Failed to close output stream: " + e.toString());
                 return res;
             }
@@ -88,14 +89,14 @@ public class LocalUploadManager extends AbstractUploadManager {
         res.setSuccess(true);
 
         final Asset asset = new Asset(res.getAssetId(), res.getAssetHash(), res.getAssetType());
-        insertAsset(asset);
+        this.insertAsset(asset);
 
         return res;
     }
 
     @Override
-    public Asset retrieve(Bucket bucket, String id, String hash, String type) {
-        final Asset asset = retrieveAsset(id);
+    public Asset retrieve(final Bucket bucket, final String id, final String hash, final String type) {
+        final Asset asset = this.retrieveAsset(id);
 
         if (asset == null) {
             return null;
@@ -106,7 +107,7 @@ public class LocalUploadManager extends AbstractUploadManager {
             return null;
         }
 
-        final File bucketFolder = getBucketFolder(bucket);
+        final File bucketFolder = this.getBucketFolder(bucket);
 
         final File target = new File(bucketFolder, id);
 
@@ -117,7 +118,7 @@ public class LocalUploadManager extends AbstractUploadManager {
         FileInputStream input;
         try {
             input = new FileInputStream(target);
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             return null;
         }
 
@@ -127,17 +128,17 @@ public class LocalUploadManager extends AbstractUploadManager {
     }
 
     @Override
-    public ActionResult delete(Bucket bucket, String id, String hash) {
+    public ActionResult delete(final Bucket bucket, final String id, final String hash) {
         final ActionResult res = new ActionResult();
 
-        final Asset asset = retrieveAsset(id);
+        final Asset asset = this.retrieveAsset(id);
 
         if (asset == null) {
             res.setSuccess(false);
             return res;
         }
 
-        final File bucketFolder = getBucketFolder(bucket);
+        final File bucketFolder = this.getBucketFolder(bucket);
 
         final File target = new File(bucketFolder, id);
 
@@ -146,18 +147,18 @@ public class LocalUploadManager extends AbstractUploadManager {
         res.setSuccess(success);
 
         if (success) {
-            removeAsset(id);
+            this.removeAsset(id);
         }
 
         return res;
     }
 
     public File getUploadFolder() {
-        return uploadFolder;
+        return this.uploadFolder;
     }
 
-    public File getBucketFolder(Bucket bucket) {
-        final File f = new File(uploadFolder, bucket.toString().toLowerCase());
+    public File getBucketFolder(final Bucket bucket) {
+        final File f = new File(this.uploadFolder, bucket.toString().toLowerCase());
         if (f.isDirectory()) {
             throw new IllegalStateException(
                     "directory " + f.getAbsolutePath() + " is supposed to be a folder but found file");
@@ -177,7 +178,7 @@ public class LocalUploadManager extends AbstractUploadManager {
         if (!(rawUp instanceof String)) {
             throw new IllegalStateException("upload folder not set as string in config");
         }
-        
+
         final String uploadFolder = (String) rawUp;
 
         return new File(uploadFolder);

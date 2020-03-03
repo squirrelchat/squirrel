@@ -13,7 +13,7 @@ public class GitHubIdentityProvider implements IIdentityProvider<Object, Object>
     }
 
     @Override
-    public Future<GitHub> provide(String userId, Object props) {
+    public Future<GitHub> provide(final String userId, final Object props) {
         // TODO Auto-generated method stub
         return null;
     }

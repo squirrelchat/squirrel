@@ -64,6 +64,7 @@ public class MemberImpl extends AbstractEntity implements Member {
     /**
      * @return The {@link Guild} that this Member is a part of
      */
+    @Override
     @BsonIgnore
     public Future<Guild> getGuild() {
         // @todo: use an aggregation at query-time
@@ -74,6 +75,7 @@ public class MemberImpl extends AbstractEntity implements Member {
     /**
      * @return The ID corresponding to the Guild this Member is apart of.
      */
+    @Override
     public ObjectId getGuildId() {
         return this.guildId;
     }
@@ -81,11 +83,13 @@ public class MemberImpl extends AbstractEntity implements Member {
     /**
      * @return This user's nickname for this Guild
      */
+    @Override
     public String getNickname() {
         return this.nickname;
     }
 
     // @todo: Fetch them from roles
+    @Override
     @Nonnull
     public Collection<Permissions> getPermissions() {
         return this.permissions;
@@ -94,6 +98,7 @@ public class MemberImpl extends AbstractEntity implements Member {
     /**
      * @return Get the roles this Member possesses.
      */
+    @Override
     @BsonIgnore
     public Future<Collection<Role>> getRoles() {
         // @todo: use an aggregation at query-time
@@ -113,6 +118,7 @@ public class MemberImpl extends AbstractEntity implements Member {
     /**
      * @return The IDs corresponding to the Guild roles that the Member possesses.
      */
+    @Override
     public Collection<ObjectId> getRolesIds() {
         return this.roles;
     }
@@ -123,6 +129,7 @@ public class MemberImpl extends AbstractEntity implements Member {
      * @return Future that will return the {@link User} corresponding to this
      *         Member.
      */
+    @Override
     @BsonIgnore
     public Future<User> getUser() {
         return new FutureTask<>(() -> Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
@@ -132,10 +139,12 @@ public class MemberImpl extends AbstractEntity implements Member {
     /**
      * @return The ID corresponding to the {@link User} associated with this Member
      */
+    @Override
     public ObjectId getUserId() {
         return this.userId;
     }
 
+    @Override
     public boolean hasEffectivePermission(final Permissions perm) {
         if (this.isOwner()) {
             return true;
@@ -157,6 +166,7 @@ public class MemberImpl extends AbstractEntity implements Member {
      *
      * @return if the member is the owner of the guild
      */
+    @Override
     public boolean isOwner() {
         return this.owner;
     }
@@ -164,6 +174,7 @@ public class MemberImpl extends AbstractEntity implements Member {
     /**
      * @param guildId The ID corresponding to the Guild this Member is apart of.
      */
+    @Override
     public void setGuildId(final ObjectId guildId) {
         this.guildId = guildId;
     }
@@ -171,15 +182,18 @@ public class MemberImpl extends AbstractEntity implements Member {
     /**
      * @param nickname The user's nickname for this Guild
      */
+    @Override
     public void setNickname(final String nickname) {
         this.nickname = nickname;
     }
 
+    @Override
     public void setOwner(final boolean owner) {
         this.owner = owner;
     }
 
     // @todo: Fetch them from roles
+    @Override
     public void setPermissions(@Nonnull final Collection<Permissions> permissions) {
         this.permissions = permissions;
     }
@@ -188,6 +202,7 @@ public class MemberImpl extends AbstractEntity implements Member {
      * @param roles The IDs corresponding to the Guild roles that the Member
      *              possesses.
      */
+    @Override
     public void setRolesIds(@Nonnull final Collection<ObjectId> roles) {
         this.roles = roles;
     }
@@ -196,6 +211,7 @@ public class MemberImpl extends AbstractEntity implements Member {
      * @param userId The ID corresponding to the {@link User} associated with this
      *               Member.
      */
+    @Override
     public void setUserId(final ObjectId userId) {
         this.userId = userId;
     }

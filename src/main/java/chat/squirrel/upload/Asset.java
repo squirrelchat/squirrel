@@ -14,54 +14,54 @@ public class Asset extends AbstractEntity implements Closeable {
     @BsonIgnore
     private InputStream input;
 
-    public Asset(String id, String hash, String type, InputStream input) {
+    public Asset(final String id, final String hash, final String type, final InputStream input) {
         this.id = id;
         this.hash = hash;
         this.type = type;
         this.input = input;
     }
 
-    public Asset(String id, String hash, String type) {
+    public Asset(final String id, final String hash, final String type) {
         this(id, hash, type, (InputStream) null);
     }
 
     /**
      * Highly discouraged but here for testing
-     * 
+     *
      * @param id
      * @param hash
      * @param type
      * @param data
      */
-    public Asset(String id, String hash, String type, byte[] data) {
-        this(id, hash, type, (InputStream) new ByteArrayInputStream(data));
+    public Asset(final String id, final String hash, final String type, final byte[] data) {
+        this(id, hash, type, new ByteArrayInputStream(data));
     }
 
     public String getAssetId() {
-        return id;
+        return this.id;
     }
 
     public String getHash() {
-        return hash;
+        return this.hash;
     }
 
     public String getType() {
-        return type;
+        return this.type;
     }
 
     @BsonIgnore
     public InputStream getInput() {
-        return input;
+        return this.input;
     }
 
     @BsonIgnore
-    public void setInput(InputStream input) {
+    public void setInput(final InputStream input) {
         this.input = input;
     }
 
     @Override
     public void close() throws IOException {
-        getInput().close();
+        this.getInput().close();
     }
 
 }

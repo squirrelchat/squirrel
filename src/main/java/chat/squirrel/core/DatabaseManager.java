@@ -132,7 +132,7 @@ public class DatabaseManager {
 
         // noinspection StatementWithEmptyBody
         while (used.indexOf(dis = this.random.nextInt(10000)) != -1) {
-            ;
+
         }
         return dis;
     }
@@ -172,18 +172,20 @@ public class DatabaseManager {
         return this.db.getCollection(col.getMongoName()).updateMany(filter, update);
     }
 
-    public UpdateResult replaceOne(final SquirrelCollection col, IEntity entity, Bson filter) {
+    public UpdateResult replaceOne(final SquirrelCollection col, final IEntity entity, final Bson filter) {
         return this.db.getCollection(col.getMongoName(), IEntity.class).replaceOne(filter, entity);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends IEntity> Class<T> getImplementation(Class<T> inter) {
-        if (!inter.isInterface())
+    public static <T extends IEntity> Class<T> getImplementation(final Class<T> inter) {
+        if (!inter.isInterface()) {
             return inter;
+        }
 
         final Implementation im = inter.getAnnotation(Implementation.class);
-        if (im == null)
+        if (im == null) {
             throw new IllegalStateException("inter does't specify the Implementation");
+        }
 
         return (Class<T>) im.implCls();
     }

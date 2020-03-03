@@ -35,7 +35,7 @@ public class SquirrelConfig extends UserConfig {
     private long sessionTimeout = -1;
     private boolean allowRegister = true;
 
-    public SquirrelConfig(Class<?> owner) {
+    public SquirrelConfig(final Class<?> owner) {
         super(owner);
     }
 

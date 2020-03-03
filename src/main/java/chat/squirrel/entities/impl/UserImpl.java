@@ -47,14 +47,17 @@ public class UserImpl extends AbstractEntity implements IAccount, User {
     private long tokenValidSince;
     private Collection<String> ips = Collections.emptySet();
 
+    @Override
     public String getCustomEmail() {
         return this.customEmail;
     }
 
+    @Override
     public int getDiscriminator() {
         return this.discriminator;
     }
 
+    @Override
     public String getEmail() {
         return this.email;
     }
@@ -83,10 +86,12 @@ public class UserImpl extends AbstractEntity implements IAccount, User {
      *
      * @return The flags integer of this user
      */
+    @Override
     public int getFlags() {
         return this.flags;
     }
 
+    @Override
     public Collection<String> getIps() {
         return this.ips;
     }
@@ -96,80 +101,99 @@ public class UserImpl extends AbstractEntity implements IAccount, User {
         return this.getId().toHexString();
     }
 
+    @Override
     public String getUsername() {
         return this.username;
     }
 
+    @Override
     public boolean hasMfa() {
         return this.mfa;
     }
 
+    @Override
     public boolean isBanned() {
         return this.banned;
     }
 
+    @Override
     public boolean isDeleted() {
         return this.deleted;
     }
 
+    @Override
     public boolean isDisabled() {
         return this.disabled;
     }
 
     // Flags
+    @Override
     public boolean isInstanceAdmin() {
         return (0b1 & this.flags) != 0;
     }
 
+    @Override
     public boolean isInstanceModerator() {
         return (0b10 & this.flags) != 0;
     }
 
+    @Override
     public void setBanned(final boolean banned) {
         this.banned = banned;
     }
 
+    @Override
     public void setCustomEmail(final String customEmail) {
         this.customEmail = customEmail;
     }
 
+    @Override
     public void setDeleted(final boolean deleted) {
         this.deleted = deleted;
     }
 
+    @Override
     public void setDisabled(final boolean disabled) {
         this.disabled = disabled;
     }
 
+    @Override
     public void setDiscriminator(final int discriminator) {
         this.discriminator = discriminator;
     }
 
+    @Override
     public void setEmail(final String email) {
         this.email = email;
     }
 
+    @Override
     public void setFlags(final int flags) {
         this.flags = flags;
     }
 
+    @Override
     public void setIps(final Collection<String> ips) {
         this.ips = ips;
     }
 
+    @Override
     public void setTokenValidSince(final long tokenValidSince) {
         this.tokenValidSince = tokenValidSince;
     }
 
+    @Override
     public void setUsername(final String username) {
         this.username = username;
     }
 
+    @Override
     public String getBio() {
-        return bio;
+        return this.bio;
     }
 
-    public void setBio(String bio) {
+    @Override
+    public void setBio(final String bio) {
         this.bio = bio;
     }
 

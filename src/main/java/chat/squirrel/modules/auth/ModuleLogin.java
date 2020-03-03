@@ -74,13 +74,13 @@ public class ModuleLogin extends AbstractModule {
             ctx.response().setStatusCode(401).end(new JsonObject().put("failure_reason", res.getReason()).encode());
             return;
         }
-        
+
         final String ip = ctx.request().remoteAddress().host();
 
         final User user = res.getUser();
         if (user.getIps() != null && !user.getIps().contains(ip)) {
             LOG.info("New IP for " + user.toString() + ": " + ip);
-            addNewIp(user.getId(), ip);
+            this.addNewIp(user.getId(), ip);
         }
 
         ctx.response().setStatusCode(200).end(new JsonObject().put("mfa_required", false) // @todo: Consider 3fa support
@@ -114,12 +114,12 @@ public class ModuleLogin extends AbstractModule {
             return;
         }
 
-        addNewIp(res.getUser().getId(), ctx.request().remoteAddress().host());
+        this.addNewIp(res.getUser().getId(), ctx.request().remoteAddress().host());
 
         ctx.response().setStatusCode(204).end();
     }
 
-    private void addNewIp(ObjectId user, String ip) {
+    private void addNewIp(final ObjectId user, final String ip) {
         Squirrel.getInstance().getDatabaseManager().updateEntity(SquirrelCollection.USERS, Filters.eq(user),
                 Updates.addToSet("ips", ip));
     }

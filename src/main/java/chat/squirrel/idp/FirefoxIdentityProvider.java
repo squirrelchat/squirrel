@@ -13,7 +13,7 @@ public class FirefoxIdentityProvider implements IIdentityProvider<Object, Object
     }
 
     @Override
-    public Future<Firefox> provide(String userId, Object props) {
+    public Future<Firefox> provide(final String userId, final Object props) {
         // TODO Auto-generated method stub
         return null;
     }
