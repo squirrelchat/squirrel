@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import chat.squirrel.entities.impl.RoleImpl;
 
+@Implementation(implCls = RoleImpl.class)
 public interface Role extends IEntity {
     public static Role create() {
         return new RoleImpl();

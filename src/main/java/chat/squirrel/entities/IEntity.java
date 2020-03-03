@@ -46,4 +46,6 @@ public interface IEntity {
      * @return Vert.x {@link JsonObject} generated from this POJO
      */
     JsonObject toJson();
+    
+    
 }

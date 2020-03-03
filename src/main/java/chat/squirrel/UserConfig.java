@@ -17,5 +17,4 @@ public class UserConfig extends AbstractEntity {
         this.owner = owner;
     }
 
-
 }

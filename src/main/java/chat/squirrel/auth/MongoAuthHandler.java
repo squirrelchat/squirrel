@@ -49,7 +49,7 @@ import de.mkammerer.argon2.Argon2Factory.Argon2Types;
  * This {@link AuthHandler} manages authentication against the MongoDB database.
  */
 public class MongoAuthHandler implements AuthHandler {
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,8}$",
             Pattern.CASE_INSENSITIVE),
             /**
              * Does not allow escapes, line breaks, apple logo (F8FF)

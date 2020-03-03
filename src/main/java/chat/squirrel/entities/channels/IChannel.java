@@ -48,5 +48,4 @@ public interface IChannel extends IEntity {
     Future<Collection<ObjectId>> getParticipants();
 
     void setName(String name);
-
 }

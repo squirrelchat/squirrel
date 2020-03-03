@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import chat.squirrel.entities.Guild.Permissions;
 import chat.squirrel.entities.impl.MemberImpl;
 
+@Implementation(implCls = Member.class)
 public interface Member extends IEntity {
     public static Member create() {
         return new MemberImpl();
@@ -44,4 +45,5 @@ public interface Member extends IEntity {
     void setRolesIds(Collection<ObjectId> roles);
 
     void setUserId(ObjectId userId);
+
 }

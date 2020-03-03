@@ -79,4 +79,5 @@ public class AuditLogEntry extends AbstractEntity {
         MESSAGE_POLL_RESET,
         MESSAGE_POLL_STOP
     }
+
 }

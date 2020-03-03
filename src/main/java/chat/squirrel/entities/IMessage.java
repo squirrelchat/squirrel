@@ -30,10 +30,12 @@ package chat.squirrel.entities;
 import org.bson.types.ObjectId;
 
 import chat.squirrel.entities.channels.IChannel;
+import chat.squirrel.entities.impl.MessageImpl;
 
 /**
  * A general message in a {@link IChannel} or Group (TODO)
  */
+@Implementation(implCls = MessageImpl.class)
 public interface IMessage extends IEntity {
     /**
      * Author of the message. Can be either from a {@link User} or a Bot
@@ -46,5 +48,5 @@ public interface IMessage extends IEntity {
      * @return The String content of the message
      */
     String getContent();
-
+    
 }

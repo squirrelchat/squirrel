@@ -44,6 +44,7 @@ import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.core.MetricsManager;
 import chat.squirrel.core.ModuleManager;
 import chat.squirrel.mail.NotificationMailManager;
+import chat.squirrel.mail.SquirrelMailConfig;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
@@ -130,7 +131,8 @@ public final class Squirrel {
 
         this.httpClient = WebClient.create(vertx);
 
-        this.notifMail = new NotificationMailManager(vertx);
+        this.notifMail = new NotificationMailManager(vertx,
+                (SquirrelMailConfig) getUserConfig(NotificationMailManager.class, null));
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "squirrel-shutdown"));
     }

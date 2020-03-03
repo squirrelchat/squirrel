@@ -5,6 +5,7 @@ import java.util.Collection;
 import chat.squirrel.entities.impl.UserImpl;
 import xyz.bowser65.tokenize.IAccount;
 
+@Implementation(implCls = UserImpl.class)
 public interface User extends IEntity, IAccount {
     public static User create() {
         return new UserImpl();
@@ -57,4 +58,8 @@ public interface User extends IEntity, IAccount {
     String getBio();
 
     void setBio(String bio);
+
+    default Class<? extends IEntity> getImplementing() {
+        return UserImpl.class;
+    }
 }

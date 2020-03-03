@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import chat.squirrel.Squirrel;
 import io.vertx.core.Vertx;
 import io.vertx.ext.mail.MailClient;
 import io.vertx.ext.mail.MailConfig;
@@ -31,14 +30,14 @@ public class NotificationMailManager {
     private final ExecutorService exec = Executors.newSingleThreadExecutor();
     private boolean enabled = false;
 
-    public NotificationMailManager(final Vertx vertx) {
-        dbConf = (SquirrelMailConfig) Squirrel.getInstance().getUserConfig(NotificationMailManager.class, null);
-        if (dbConf == null) {
+    public NotificationMailManager(final Vertx vertx, final SquirrelMailConfig dbConf) {
+        this.dbConf = dbConf;
+        if (this.dbConf == null) {
             LOG.error("Mailing configuration not defined in DB");
             return;
         }
         
-        if (!dbConf.isEnabled()) {
+        if (!this.dbConf.isEnabled()) {
             LOG.info("Notification mail manager is disabled");
             return;
         }

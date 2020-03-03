@@ -53,6 +53,7 @@ import chat.squirrel.Version;
 import chat.squirrel.entities.Guild;
 import chat.squirrel.entities.IEntity;
 import chat.squirrel.entities.IMessage;
+import chat.squirrel.entities.Implementation;
 import chat.squirrel.entities.User;
 import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.entities.impl.UserImpl;
@@ -105,7 +106,7 @@ public class DatabaseManager {
 
     public <T extends IEntity> FindIterable<T> findEntities(final Class<T> type, final SquirrelCollection col,
             final Bson filters) {
-        return this.db.getCollection(col.getMongoName(), type).find(filters);
+        return this.db.getCollection(col.getMongoName(), getImplementation(type)).find(filters);
     }
 
     public <T extends IEntity> T findFirstEntity(final Class<T> type, final SquirrelCollection col,
@@ -170,9 +171,21 @@ public class DatabaseManager {
     public UpdateResult updateMany(final SquirrelCollection col, final Bson filter, final Bson update) {
         return this.db.getCollection(col.getMongoName()).updateMany(filter, update);
     }
-    
+
     public UpdateResult replaceOne(final SquirrelCollection col, IEntity entity, Bson filter) {
         return this.db.getCollection(col.getMongoName(), IEntity.class).replaceOne(filter, entity);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends IEntity> Class<T> getImplementation(Class<T> inter) {
+        if (!inter.isInterface())
+            return inter;
+
+        final Implementation im = inter.getAnnotation(Implementation.class);
+        if (im == null)
+            throw new IllegalStateException("inter does't specify the Implementation");
+
+        return (Class<T>) im.implCls();
     }
 
     /**
