@@ -31,9 +31,11 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.bson.codecs.pojo.annotations.BsonIgnore;
+import org.bson.types.ObjectId;
 
 import chat.squirrel.entities.AbstractEntity;
 import chat.squirrel.entities.User;
+import chat.squirrel.upload.Asset;
 import xyz.bowser65.tokenize.IAccount;
 
 /**
@@ -46,6 +48,8 @@ public class UserImpl extends AbstractEntity implements IAccount, User {
     @BsonIgnore
     private long tokenValidSince;
     private Collection<String> ips = Collections.emptySet();
+    private Collection<ObjectId> badges = Collections.emptySet();
+    private Asset avatar;
 
     @Override
     public String getCustomEmail() {
@@ -207,4 +211,25 @@ public class UserImpl extends AbstractEntity implements IAccount, User {
     public String toString() {
         return this.getUsername() + "#" + this.getDiscriminator() + " (" + this.getId().toHexString() + ")";
     }
+
+    @Override
+    public Asset getAvatar() {
+        return avatar;
+    }
+
+    @Override
+    public void setAvatar(Asset id) {
+        this.avatar = id;
+    }
+
+    @Override
+    public Collection<ObjectId> getBadges() {
+        return badges;
+    }
+
+    @Override
+    public void setBadges(Collection<ObjectId> badges) {
+        this.badges = badges;
+    }
+
 }
