@@ -187,7 +187,7 @@ public class DatabaseManager {
             throw new IllegalStateException("inter does't specify the Implementation");
         }
 
-        return (Class<T>) im.implCls();
+        return (Class<T>) im.value();
     }
 
     /**

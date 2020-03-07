@@ -35,5 +35,5 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface Implementation {
-    Class<? extends IEntity> implCls();
+    Class<? extends IEntity> value();
 }

@@ -34,7 +34,7 @@ import org.bson.types.ObjectId;
 import chat.squirrel.entities.Guild.Permissions;
 import chat.squirrel.entities.impl.MemberImpl;
 
-@Implementation(implCls = Member.class)
+@Implementation(Member.class)
 public interface Member extends IEntity {
     static Member create() {
         return new MemberImpl();

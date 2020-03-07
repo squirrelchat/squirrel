@@ -35,7 +35,7 @@ import chat.squirrel.entities.impl.UserImpl;
 import chat.squirrel.upload.Asset;
 import xyz.bowser65.tokenize.IAccount;
 
-@Implementation(implCls = UserImpl.class)
+@Implementation(UserImpl.class)
 public interface User extends IEntity, IAccount {
     static User create() {
         return new UserImpl();
