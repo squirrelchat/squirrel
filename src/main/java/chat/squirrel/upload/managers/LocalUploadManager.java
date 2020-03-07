@@ -88,14 +88,18 @@ public class LocalUploadManager extends AbstractUploadManager {
 
         res.setSuccess(true);
 
-        final Asset asset = new Asset(res.getAssetId(), res.getAssetHash(), res.getAssetType());
+        final Asset asset = new Asset(res.getAssetId(), res.getAssetHash(), res.getAssetType(), bucket);
         this.insertAsset(asset);
 
         return res;
     }
 
     @Override
-    public Asset retrieve(final Bucket bucket, final String id, final String hash, final String type) {
+    public InputStream retrieve(final Asset req) {
+        final String id = req.getAssetId();
+        final String hash = req.getHash();
+        final Bucket bucket = req.getBucket();
+        
         final Asset asset = this.retrieveAsset(id);
 
         if (asset == null) {
@@ -121,14 +125,14 @@ public class LocalUploadManager extends AbstractUploadManager {
         } catch (final FileNotFoundException e) {
             return null;
         }
-
-        asset.setInput(input);
-
-        return asset;
+        return input;
     }
 
     @Override
-    public ActionResult delete(final Bucket bucket, final String id, final String hash) {
+    public ActionResult delete(final Asset req) {
+        final String id = req.getAssetId();
+        final Bucket bucket = req.getBucket();
+        
         final ActionResult res = new ActionResult();
 
         final Asset asset = this.retrieveAsset(id);

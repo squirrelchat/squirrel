@@ -8,7 +8,7 @@ public interface IUploadManager {
     ActionResult upload(Bucket bucket, String type, InputStream input);
 
     @Nullable
-    Asset retrieve(Bucket bucket, String id, String hash, String type);
+    InputStream retrieve(Asset asset);
 
-    ActionResult delete(Bucket bucket, String id, String hash);
+    ActionResult delete(Asset asset);
 }
