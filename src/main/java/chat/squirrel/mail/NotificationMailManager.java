@@ -60,8 +60,10 @@ public class NotificationMailManager {
         this.exec.submit(() -> {
             LOG.info("Sending email %s in language %s to email %s", mailName, locale.getISO3Language(), to);
             final String raw;
+            final String rawPlain;
             try {
                 raw = this.getRawEmail(mailName);
+                rawPlain = this.getRawEmailPlain(mailName);
             } catch (final IOException e) {
                 LOG.error("Failed to read email template", e);
                 return;
@@ -75,13 +77,15 @@ public class NotificationMailManager {
                 return;
             }
             arguments.putAll(extras);
+
             final String content = this.replaceValues(raw, arguments, locale);
+            final String contentPlain = this.replaceValues(rawPlain, arguments, locale);
 
             final MailMessage mail = new MailMessage();
             mail.setTo(Arrays.asList(to));
             mail.setFrom(this.dbConf.getFromEmail());
             mail.setHtml(content);
-            // mail.setText(JSoup.gettextthingy) TODO: extract plain text using jsoup
+            mail.setText(contentPlain);
             this.client.sendMail(mail, result -> {
                 if (result.succeeded()) {
                     LOG.info("Successfully sent email " + result.result().getMessageID() + " to " + to);
@@ -125,5 +129,9 @@ public class NotificationMailManager {
 
     private String getRawEmail(final String mailName) throws IOException {
         return Files.readString(Paths.get(this.dbConf.getTemplateLookupFolder(), mailName + ".html"));
+    }
+
+    private String getRawEmailPlain(final String mailName) throws IOException {
+        return Files.readString(Paths.get(this.dbConf.getTemplateLookupFolder(), mailName + ".txt"));
     }
 }

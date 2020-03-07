@@ -8,16 +8,16 @@ public class SquirrelMailConfig extends UserConfig {
     private String templateLookupFolder, fromEmail;
     private boolean enabled;
 
+    public SquirrelMailConfig(final Class<?> owner) {
+        super(owner);
+    }
+    
     public String getFromEmail() {
         return this.fromEmail;
     }
 
     public void setFromEmail(final String fromEmail) {
         this.fromEmail = fromEmail;
-    }
-
-    public SquirrelMailConfig(final Class<?> owner) {
-        super(owner);
     }
 
     public MailConfig getConfig() {
