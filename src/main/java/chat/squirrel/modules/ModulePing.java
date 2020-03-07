@@ -28,8 +28,8 @@
 package chat.squirrel.modules;
 
 import chat.squirrel.Version;
-import chat.squirrel.core.MetricsManager;
-import de.mxro.metrics.MetricsCommon;
+import chat.squirrel.metrics.MetricOperation;
+import chat.squirrel.metrics.MetricsManager;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.RoutingContext;
 
@@ -41,12 +41,12 @@ public class ModulePing extends AbstractModule {
     }
 
     private void authPing(final RoutingContext ctx) {
-        MetricsManager.record(MetricsCommon.happened("ping.authed"));
+        MetricsManager.record(MetricOperation.happened("ping.authed"));
         ctx.response().end("Squirrel " + Version.VERSION + " as " + this.getRequester(ctx).toString());
     }
 
     private void ping(final RoutingContext ctx) {
-        MetricsManager.record(MetricsCommon.happened("ping.public"));
+        MetricsManager.record(MetricOperation.happened("ping.public"));
         ctx.response().end("Squirrel " + Version.VERSION);
     }
 }

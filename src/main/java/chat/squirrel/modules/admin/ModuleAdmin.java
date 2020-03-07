@@ -30,13 +30,11 @@ package chat.squirrel.modules.admin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.Snapshot;
-
 import chat.squirrel.Squirrel;
-import chat.squirrel.core.MetricsManager;
 import chat.squirrel.entities.User;
+import chat.squirrel.metrics.MetricOperation;
+import chat.squirrel.metrics.MetricsManager;
 import chat.squirrel.modules.AbstractModule;
-import de.mxro.metrics.MetricsCommon;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
@@ -53,7 +51,7 @@ public class ModuleAdmin extends AbstractModule {
         this.registerAuthedRoute(HttpMethod.GET, "/admin/metrics/histogram/:hist", this::handleHistogram);
     }
 
-    private void handleHistogram(final RoutingContext ctx) {
+    private void handleHistogram(final RoutingContext ctx) { // TODO this
         final User user = this.getRequester(ctx);
 
         if (!user.isInstanceAdmin()) {
@@ -63,13 +61,10 @@ public class ModuleAdmin extends AbstractModule {
 
         final String name = ctx.pathParam("hist");
 
-        final Snapshot snap = MetricsCommon.retrieveHistogram(name)
-                .perform(MetricsManager.getMetrics().getDataUnsafe());
-
-        ctx.response().end(JsonObject.mapFrom(snap).put("name", name).encode());
+        ctx.response().end(new JsonObject().put("name", name).encode());
     }
 
-    private void handleMetrics(final RoutingContext ctx) {
+    private void handleMetrics(final RoutingContext ctx) { // TODO
         final User user = this.getRequester(ctx);
 
         if (!user.isInstanceAdmin()) {
@@ -77,7 +72,7 @@ public class ModuleAdmin extends AbstractModule {
             return;
         }
 
-        ctx.response().end(MetricsManager.getMetrics().render().get());
+        ctx.response().end(/* MetricsManager.getMetrics().render().get() */);
     }
 
     private void handleShutdown(final RoutingContext ctx) {
@@ -91,7 +86,7 @@ public class ModuleAdmin extends AbstractModule {
         ctx.response().end(new JsonObject().put("shutdown", true).encode());
 
         LOG.info("Server shutdown was requested by " + user.toString());
-        MetricsManager.record(MetricsCommon.happened("admin.shutdown"));
+        MetricsManager.record(MetricOperation.happened("admin.shutdown"));
         Squirrel.getInstance().shutdown();
     }
 }

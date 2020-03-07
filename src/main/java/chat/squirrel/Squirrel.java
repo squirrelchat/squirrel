@@ -41,10 +41,10 @@ import chat.squirrel.auth.AuthHandler;
 import chat.squirrel.auth.MongoAuthHandler;
 import chat.squirrel.core.DatabaseManager;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.core.MetricsManager;
 import chat.squirrel.core.ModuleManager;
 import chat.squirrel.mail.NotificationMailManager;
 import chat.squirrel.mail.SquirrelMailConfig;
+import chat.squirrel.metrics.MetricsManager;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
@@ -235,7 +235,7 @@ public final class Squirrel {
         this.server.close();
         this.moduleManager.disableModules();
         this.dbManager.shutdown();
-        MetricsManager.getMetrics().stop();
+        MetricsManager.getInstance().stop();
         LOG.info("Shutdown successful, the process should end");
         System.exit(0); // TODO is this a good idea?
     }

@@ -30,8 +30,8 @@ package chat.squirrel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import chat.squirrel.core.MetricsManager;
-import de.mxro.metrics.MetricsCommon;
+import chat.squirrel.metrics.MetricOperation;
+import chat.squirrel.metrics.MetricsManager;
 import io.vertx.core.Handler;
 import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
@@ -46,7 +46,7 @@ public class WebJsonHandler implements Handler<RoutingContext> {
     @Override
     public void handle(final RoutingContext event) {
         // @todo: Do we really care
-        MetricsManager.record(MetricsCommon.value("network.payloadsize", event.request().bytesRead()));
+        MetricsManager.record(MetricOperation.value("network.payloadsize", event.request().bytesRead()));
         final JsonObject obj;
         try {
             obj = event.getBodyAsJson();

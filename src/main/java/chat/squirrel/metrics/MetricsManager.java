@@ -25,39 +25,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.core;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
-
-import de.mxro.metrics.jre.Metrics;
-import delight.async.properties.PropertyNode;
-import delight.async.properties.PropertyOperation;
+package chat.squirrel.metrics;
 
 public final class MetricsManager {
     private static MetricsManager instance = new MetricsManager();
 
-    private final PropertyNode metrics;
-
     public MetricsManager() {
-        this.metrics = Metrics.create();
     }
 
-    public void saveToStream(final OutputStream out, final Charset charset) throws IOException {
-        out.write(this.metrics.render().get().getBytes(charset));
+    public void save() {
+    }
+
+    public void stop() {
     }
 
     public static MetricsManager getInstance() {
         return instance;
     }
 
-    public static PropertyNode getMetrics() {
-        return getInstance().metrics;
-    }
-
-    public static void record(final PropertyOperation<?> op) {
-        getMetrics().record(op);
+    public static void record(final MetricOperation op) {
     }
 
 }
