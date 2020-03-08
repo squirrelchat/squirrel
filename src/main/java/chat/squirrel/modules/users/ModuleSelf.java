@@ -27,7 +27,14 @@
 
 package chat.squirrel.modules.users;
 
+import org.bson.types.ObjectId;
+
+import com.mongodb.client.model.Filters;
+
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.User;
+import chat.squirrel.entities.UserSettings;
 import chat.squirrel.modules.AbstractModule;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -44,12 +51,21 @@ public class ModuleSelf extends AbstractModule {
 
     private void handleMe(final RoutingContext ctx) {
         final User user = this.getRequester(ctx);
-        ctx.response()
-                .end(new JsonObject().put("id", user.getId().toHexString()).put("username", user.getUsername())
-                        .put("discriminator", user.getDiscriminator())
-                        // .put("avatar", user.get())
-                        .put("bot", false).put("email", user.getEmail()).put("custom_email", user.getCustomEmail())
-                        .put("verified", true).put("mfa_enabled", false).put("locale", "en-GB")
-                        .put("flags", user.getFlags()).encode());
+        final UserSettings sets = this.fetchUserSettings(user.getId());
+        final JsonObject obj = new JsonObject();
+
+        if (sets != null) {
+            obj.put("locale", sets.getLanguage());
+        }
+
+        ctx.response().end(obj.put("id", user.getId().toHexString()).put("username", user.getUsername())
+                .put("discriminator", user.getDiscriminator()).put("avatar", JsonObject.mapFrom(user.getAvatar()))
+                .put("bot", false).put("email", user.getEmail()).put("custom_email", user.getCustomEmail())
+                .put("verified", true).put("mfa_enabled", false).put("flags", user.getFlags()).encode());
+    }
+
+    private UserSettings fetchUserSettings(ObjectId userId) {
+        return Squirrel.getInstance().getDatabaseManager().findFirstEntity(UserSettings.class,
+                SquirrelCollection.USER_SETTINGS, Filters.eq(userId));
     }
 }

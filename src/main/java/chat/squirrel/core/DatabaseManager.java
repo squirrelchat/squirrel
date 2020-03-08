@@ -227,7 +227,11 @@ public class DatabaseManager {
         /**
          * 'assets'. Contains entity type {@link chat.squirrel.upload.Asset}
          */
-        ASSETS("assets");
+        ASSETS("assets"),
+        /**
+         * 'user_settings' collection. Contains entity type UserSettings
+         */
+        USER_SETTINGS("user_settings");
 
         private String mongoName;
 
