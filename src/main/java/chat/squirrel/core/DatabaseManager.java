@@ -28,6 +28,7 @@
 package chat.squirrel.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -47,6 +48,9 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.InsertOneModel;
+import com.mongodb.client.model.UpdateOneModel;
+import com.mongodb.client.model.WriteModel;
 import com.mongodb.client.result.UpdateResult;
 
 import chat.squirrel.Version;
@@ -139,6 +143,18 @@ public class DatabaseManager {
 
     public void insertEntity(final SquirrelCollection col, final IEntity ent) {
         this.db.getCollection(col.getMongoName(), IEntity.class).insertOne(ent);
+    }
+
+    public void bulkInsert(final SquirrelCollection col, final Collection<IEntity> ents) {
+        final List<InsertOneModel<IEntity>> ops = new ArrayList<>();
+        ents.forEach(e -> {
+            ops.add(new InsertOneModel<IEntity>(e));
+        });
+        bulkWrite(col, ops);
+    }
+
+    public void bulkWrite(final SquirrelCollection col, final List<? extends WriteModel<IEntity>> ops) {
+        this.db.getCollection(col.getMongoName(), IEntity.class).bulkWrite(ops);
     }
 
     /**
