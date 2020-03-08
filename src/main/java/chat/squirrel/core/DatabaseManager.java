@@ -145,7 +145,7 @@ public class DatabaseManager {
         this.db.getCollection(col.getMongoName(), IEntity.class).insertOne(ent);
     }
 
-    public void bulkInsert(final SquirrelCollection col, final Collection<IEntity> ents) {
+    public void bulkInsert(final SquirrelCollection col, final Collection<? extends IEntity> ents) {
         final List<InsertOneModel<IEntity>> ops = new ArrayList<>();
         ents.forEach(e -> {
             ops.add(new InsertOneModel<IEntity>(e));
@@ -153,7 +153,7 @@ public class DatabaseManager {
         bulkWrite(col, ops);
     }
 
-    public void bulkWrite(final SquirrelCollection col, final List<? extends WriteModel<IEntity>> ops) {
+    public void bulkWrite(final SquirrelCollection col, final List<? extends WriteModel<? extends IEntity>> ops) {
         this.db.getCollection(col.getMongoName(), IEntity.class).bulkWrite(ops);
     }
 
@@ -247,7 +247,11 @@ public class DatabaseManager {
         /**
          * 'user_settings' collection. Contains entity type UserSettings
          */
-        USER_SETTINGS("user_settings");
+        USER_SETTINGS("user_settings"),
+        /**
+         * 'metrics' collection. Contains entity type Histogram
+         */
+        METRICS("metrics");
 
         private String mongoName;
 
