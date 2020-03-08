@@ -25,40 +25,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel;
+package chat.squirrel.test;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.junit.Assert.*;
 
-import chat.squirrel.metrics.MetricsManager;
-import io.vertx.core.Handler;
-import io.vertx.core.json.DecodeException;
+import org.junit.Test;
+
+import chat.squirrel.metrics.UniformCalculator;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.RoutingContext;
 
-/**
- * This handler catches invalid JSON
- */
-public class WebJsonHandler implements Handler<RoutingContext> {
-    private static final Logger LOG = LoggerFactory.getLogger(WebJsonHandler.class);
+public class TestMetrics {
+    private final double[] sample = new double[] { 978, 76, 0, 928, 117, 783, 560, 179, 186, 633, 817, 412, 366, 68,
+            594, 604, 373, 717, 903, 5 };
 
-    @Override
-    public void handle(final RoutingContext event) {
-        // @todo: Do we really care
-        MetricsManager.getInstance().record("network.payloadsize", event.request().bytesRead());
-        final JsonObject obj;
-        try {
-            obj = event.getBodyAsJson();
-        } catch (final DecodeException e) {
-            LOG.info("Received invalid json from " + event.request().remoteAddress().toString());
-            event.fail(400);
-            return;
-        }
-        if (obj == null) {
-            LOG.info("Received invalid json from " + event.request().remoteAddress().toString());
-            event.fail(400);
-            return;
-        }
-        event.next();
+    @Test
+    public void testUniformCalculator() {
+        final UniformCalculator calc = new UniformCalculator(sample);
+        System.out.println(JsonObject.mapFrom(calc).encodePrettily());
+
+        assertEquals("Max", 978, calc.getMax(), 0.0);
+        assertEquals("Min", 0.0, calc.getMin(), 0.0);
+        assertEquals("Stdev", 330.047, calc.getStdDev(), 0.1);
+        assertEquals("Mean", 464.95, calc.getMean(), 0.001);
+        assertEquals("25% quartile", 163.5, calc.getQuantile(0.25), 0.1);
+        assertEquals("75% quartile", 733.5, calc.getQuantile(0.75), 0.1);
+        assertEquals("Media", 486, calc.getMedian(), 0.1);
     }
+
 }

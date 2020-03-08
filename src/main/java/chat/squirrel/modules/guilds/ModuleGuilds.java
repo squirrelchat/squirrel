@@ -32,7 +32,6 @@ import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.Guild;
 import chat.squirrel.entities.Member;
 import chat.squirrel.entities.User;
-import chat.squirrel.metrics.MetricOperation;
 import chat.squirrel.metrics.MetricsManager;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -76,7 +75,7 @@ public class ModuleGuilds extends AbstractGuildModule {
 
         Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.GUILDS, newGuild);
 
-        MetricsManager.record(MetricOperation.happened("guild.create"));
+        MetricsManager.getInstance().happened("guild.create");
         ctx.response().setStatusCode(201).end(newGuild.toJson().encode());
     }
 }

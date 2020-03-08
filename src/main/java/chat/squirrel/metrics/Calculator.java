@@ -25,40 +25,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel;
+package chat.squirrel.metrics;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public interface Calculator {
+    double getQuantile(double quantile);
 
-import chat.squirrel.metrics.MetricsManager;
-import io.vertx.core.Handler;
-import io.vertx.core.json.DecodeException;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.RoutingContext;
+    double[] getValues();
 
-/**
- * This handler catches invalid JSON
- */
-public class WebJsonHandler implements Handler<RoutingContext> {
-    private static final Logger LOG = LoggerFactory.getLogger(WebJsonHandler.class);
+    double getMax();
 
-    @Override
-    public void handle(final RoutingContext event) {
-        // @todo: Do we really care
-        MetricsManager.getInstance().record("network.payloadsize", event.request().bytesRead());
-        final JsonObject obj;
-        try {
-            obj = event.getBodyAsJson();
-        } catch (final DecodeException e) {
-            LOG.info("Received invalid json from " + event.request().remoteAddress().toString());
-            event.fail(400);
-            return;
-        }
-        if (obj == null) {
-            LOG.info("Received invalid json from " + event.request().remoteAddress().toString());
-            event.fail(400);
-            return;
-        }
-        event.next();
+    double getMean();
+
+    double getMin();
+
+    double getStdDev();
+
+    default double getMedian() {
+        return getQuantile(0.5);
     }
 }

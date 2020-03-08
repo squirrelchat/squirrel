@@ -27,23 +27,46 @@
 
 package chat.squirrel.metrics;
 
+import java.util.HashMap;
+
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+
 public final class MetricsManager {
     private static MetricsManager instance = new MetricsManager();
+    private HashMap<String, Histogram> histMap;
 
     public MetricsManager() {
     }
 
     public void save() {
+        Squirrel.getInstance().getDatabaseManager().bulkInsert(SquirrelCollection.METRICS, histMap.values());
     }
 
-    public void stop() {
+    public void record(String name, double value) {
+        checkHistName(name);
+        final Histogram hist = histMap.get(name);
+        hist.addValue(value);
+    }
+
+    public void happened(String name) {
+        record(name, 1);
+    }
+
+    public Histogram getHistogram(String name) {
+        return histMap.get(name);
+    }
+
+    public String[] getHistogramNames() {
+        return histMap.keySet().toArray(new String[histMap.size()]);
+    }
+
+    private void checkHistName(String hist) {
+        histMap.putIfAbsent(hist, new UniformHistogram(hist));
     }
 
     public static MetricsManager getInstance() {
         return instance;
-    }
-
-    public static void record(final MetricOperation op) {
     }
 
 }

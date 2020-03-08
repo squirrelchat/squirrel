@@ -25,40 +25,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel;
+package chat.squirrel.metrics;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 
-import chat.squirrel.metrics.MetricsManager;
-import io.vertx.core.Handler;
-import io.vertx.core.json.DecodeException;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.RoutingContext;
+import chat.squirrel.entities.IEntity;
 
-/**
- * This handler catches invalid JSON
- */
-public class WebJsonHandler implements Handler<RoutingContext> {
-    private static final Logger LOG = LoggerFactory.getLogger(WebJsonHandler.class);
+public interface Histogram extends IEntity {
 
-    @Override
-    public void handle(final RoutingContext event) {
-        // @todo: Do we really care
-        MetricsManager.getInstance().record("network.payloadsize", event.request().bytesRead());
-        final JsonObject obj;
-        try {
-            obj = event.getBodyAsJson();
-        } catch (final DecodeException e) {
-            LOG.info("Received invalid json from " + event.request().remoteAddress().toString());
-            event.fail(400);
-            return;
-        }
-        if (obj == null) {
-            LOG.info("Received invalid json from " + event.request().remoteAddress().toString());
-            event.fail(400);
-            return;
-        }
-        event.next();
-    }
+    String getName();
+
+    void addValue(double value);
+
+    void addValue(long value);
+    
+    int size();
+    
+    @BsonIgnore
+    Calculator getCalculator();
 }

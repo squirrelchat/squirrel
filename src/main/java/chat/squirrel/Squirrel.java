@@ -234,8 +234,8 @@ public final class Squirrel {
         LOG.info("Gracefully shutting down");
         this.server.close();
         this.moduleManager.disableModules();
+        MetricsManager.getInstance().save();
         this.dbManager.shutdown();
-        MetricsManager.getInstance().stop();
         LOG.info("Shutdown successful, the process should end");
         System.exit(0); // TODO is this a good idea?
     }

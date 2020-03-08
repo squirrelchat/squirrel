@@ -32,7 +32,8 @@ import org.slf4j.LoggerFactory;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.entities.User;
-import chat.squirrel.metrics.MetricOperation;
+import chat.squirrel.metrics.Calculator;
+import chat.squirrel.metrics.Histogram;
 import chat.squirrel.metrics.MetricsManager;
 import chat.squirrel.modules.AbstractModule;
 import io.vertx.core.http.HttpMethod;
@@ -51,7 +52,7 @@ public class ModuleAdmin extends AbstractModule {
         this.registerAuthedRoute(HttpMethod.GET, "/admin/metrics/histogram/:hist", this::handleHistogram);
     }
 
-    private void handleHistogram(final RoutingContext ctx) { // TODO this
+    private void handleHistogram(final RoutingContext ctx) {
         final User user = this.getRequester(ctx);
 
         if (!user.isInstanceAdmin()) {
@@ -61,10 +62,20 @@ public class ModuleAdmin extends AbstractModule {
 
         final String name = ctx.pathParam("hist");
 
-        ctx.response().end(new JsonObject().put("name", name).encode());
+        final Histogram hist = MetricsManager.getInstance().getHistogram(name);
+
+        if (hist == null) {
+            this.fail(ctx, 404, "no histogram found with specified name", new JsonObject().put("name", name));
+            return;
+        }
+
+        final Calculator calc = hist.getCalculator();
+
+        ctx.response().end(new JsonObject().put("name", name).put("id", hist.getId().toHexString())
+                .put("values", calc.getValues()).encode());
     }
 
-    private void handleMetrics(final RoutingContext ctx) { // TODO
+    private void handleMetrics(final RoutingContext ctx) {
         final User user = this.getRequester(ctx);
 
         if (!user.isInstanceAdmin()) {
@@ -72,7 +83,7 @@ public class ModuleAdmin extends AbstractModule {
             return;
         }
 
-        ctx.response().end(/* MetricsManager.getMetrics().render().get() */);
+        ctx.response().end(new JsonObject().put("histograms", MetricsManager.getInstance().getHistogramNames()).encode());
     }
 
     private void handleShutdown(final RoutingContext ctx) {
@@ -86,7 +97,7 @@ public class ModuleAdmin extends AbstractModule {
         ctx.response().end(new JsonObject().put("shutdown", true).encode());
 
         LOG.info("Server shutdown was requested by " + user.toString());
-        MetricsManager.record(MetricOperation.happened("admin.shutdown"));
+        MetricsManager.getInstance().happened("admin.shutdown");
         Squirrel.getInstance().shutdown();
     }
 }

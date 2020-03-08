@@ -30,7 +30,6 @@ package chat.squirrel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import chat.squirrel.metrics.MetricOperation;
 import chat.squirrel.metrics.MetricsManager;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
@@ -54,7 +53,7 @@ public class WebExceptionHandler implements Handler<RoutingContext> {
         if (event.response().getStatusCode() == 200) {
             event.response().setStatusCode(500);
         }
-        MetricsManager.record(MetricOperation.happened("error.statuscode." + event.response().getStatusCode()));
+        MetricsManager.getInstance().happened("error.statuscode." + event.response().getStatusCode());
         LOG.error("An unknown error has been caught in routing: " + obj.encode());
         event.response().end(obj.toBuffer());
     }
