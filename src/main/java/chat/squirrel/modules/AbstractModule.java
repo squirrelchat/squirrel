@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.WebAuthHandler;
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IUser;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -54,8 +54,8 @@ public abstract class AbstractModule {
         this.routes.forEach(Route::enable);
     }
 
-    public User getRequester(final RoutingContext ctx) {
-        return (User) this.getToken(ctx).getAccount();
+    public IUser getRequester(final RoutingContext ctx) {
+        return (IUser) this.getToken(ctx).getAccount();
     }
 
     public Token getToken(final RoutingContext ctx) {

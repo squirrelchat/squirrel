@@ -44,15 +44,15 @@ import com.mongodb.client.model.Filters;
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.AbstractEntity;
-import chat.squirrel.entities.Guild;
-import chat.squirrel.entities.Member;
-import chat.squirrel.entities.Role;
+import chat.squirrel.entities.IGuild;
+import chat.squirrel.entities.IMember;
+import chat.squirrel.entities.IRole;
 import chat.squirrel.entities.channels.IChannel;
 
 /**
  * A basic Guild
  */
-public class GuildImpl extends AbstractEntity implements Guild {
+public class GuildImpl extends AbstractEntity implements IGuild {
     private String name;
     private Collection<ObjectId> members = Collections.emptySet();
     private Collection<ObjectId> roles = Collections.emptySet();
@@ -69,9 +69,9 @@ public class GuildImpl extends AbstractEntity implements Guild {
      * @return The member corresponding to this user or null otherwise
      */
     @Override
-    public Member getMemberForUser(final ObjectId user) {
+    public IMember getMemberForUser(final ObjectId user) {
         try {
-            for (final Member m : this.getRealMembers().get()) {
+            for (final IMember m : this.getRealMembers().get()) {
                 if (m.getUserId().equals(user)) {
                     return m;
                 }
@@ -83,23 +83,23 @@ public class GuildImpl extends AbstractEntity implements Guild {
     }
 
     @Override
-    public void addMember(final Member m) {
+    public void addMember(final IMember m) {
         m.setGuildId(this.getId());
         Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.MEMBERS, m);
     }
 
     @Override
     @BsonIgnore
-    public Future<Collection<Member>> getRealMembers() {
+    public Future<Collection<IMember>> getRealMembers() {
         return CompletableFuture.supplyAsync(() -> {
             if (this.getMembers() == null) {
                 return Collections.emptyList();
             }
 
-            final ArrayList<Member> list = new ArrayList<>();
+            final ArrayList<IMember> list = new ArrayList<>();
 
             for (final ObjectId id : this.getMembers()) {
-                final Member member = Squirrel.getInstance().getDatabaseManager().findFirstEntity(Member.class,
+                final IMember member = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IMember.class,
                         SquirrelCollection.MEMBERS, Filters.eq(id));
                 list.add(member);
             }
@@ -108,7 +108,7 @@ public class GuildImpl extends AbstractEntity implements Guild {
     }
 
     /**
-     * @return The {@link Member}s that are a part of this Guild
+     * @return The {@link IMember}s that are a part of this Guild
      */
     @Override
     @Nonnull
@@ -146,16 +146,16 @@ public class GuildImpl extends AbstractEntity implements Guild {
 
     @Override
     @BsonIgnore
-    public Future<Collection<Role>> getRealRoles() {
+    public Future<Collection<IRole>> getRealRoles() {
         return CompletableFuture.supplyAsync(() -> {
             if (this.getRoles() == null) {
                 return Collections.emptyList();
             }
 
-            final ArrayList<Role> list = new ArrayList<>();
+            final ArrayList<IRole> list = new ArrayList<>();
 
             for (final ObjectId id : this.getRoles()) {
-                final Role chan = Squirrel.getInstance().getDatabaseManager().findFirstEntity(Role.class,
+                final IRole chan = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IRole.class,
                         SquirrelCollection.ROLES, Filters.eq(id));
                 list.add(chan);
             }
@@ -165,7 +165,7 @@ public class GuildImpl extends AbstractEntity implements Guild {
     }
 
     /**
-     * @return The {@link Role}s that are created in this Guild
+     * @return The {@link IRole}s that are created in this Guild
      */
     @Override
     @Nonnull
@@ -179,7 +179,7 @@ public class GuildImpl extends AbstractEntity implements Guild {
     }
 
     /**
-     * @param members The {@link Member}s that are a part of this Guild
+     * @param members The {@link IMember}s that are a part of this Guild
      */
     @Override
     public void setMembers(@Nonnull final Collection<ObjectId> members) {
@@ -195,7 +195,7 @@ public class GuildImpl extends AbstractEntity implements Guild {
     }
 
     /**
-     * @param roles The {@link Role}s that are created in this Guild
+     * @param roles The {@link IRole}s that are created in this Guild
      */
     @Override
     public void setRoles(@Nonnull final Collection<ObjectId> roles) {

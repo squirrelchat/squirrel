@@ -36,18 +36,18 @@ import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.entities.impl.GuildImpl;
 
 @Implementation(GuildImpl.class)
-public interface Guild extends IEntity {
-    static Guild create() {
+public interface IGuild extends IEntity {
+    static IGuild create() {
         return new GuildImpl();
     }
 
     Collection<ObjectId> getChannels();
 
-    Member getMemberForUser(ObjectId user);
+    IMember getMemberForUser(ObjectId user);
 
-    void addMember(Member m);
+    void addMember(IMember m);
 
-    Future<Collection<Member>> getRealMembers();
+    Future<Collection<IMember>> getRealMembers();
 
     Collection<ObjectId> getMembers();
 
@@ -55,7 +55,7 @@ public interface Guild extends IEntity {
 
     Future<Collection<IChannel>> getRealChannels();
 
-    Future<Collection<Role>> getRealRoles();
+    Future<Collection<IRole>> getRealRoles();
 
     Collection<ObjectId> getRoles();
 

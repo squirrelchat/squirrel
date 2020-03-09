@@ -43,16 +43,16 @@ import com.mongodb.client.model.Filters;
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.AbstractEntity;
-import chat.squirrel.entities.Guild;
-import chat.squirrel.entities.Guild.Permissions;
-import chat.squirrel.entities.Member;
-import chat.squirrel.entities.Role;
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IGuild;
+import chat.squirrel.entities.IGuild.Permissions;
+import chat.squirrel.entities.IMember;
+import chat.squirrel.entities.IRole;
+import chat.squirrel.entities.IUser;
 
 /**
  * Member of a guild
  */
-public class MemberImpl extends AbstractEntity implements Member {
+public class MemberImpl extends AbstractEntity implements IMember {
     private ObjectId userId, guildId;
     private String nickname;
     private Collection<ObjectId> roles = Collections.emptySet();
@@ -62,13 +62,13 @@ public class MemberImpl extends AbstractEntity implements Member {
     private boolean owner;
 
     /**
-     * @return The {@link Guild} that this Member is a part of
+     * @return The {@link IGuild} that this Member is a part of
      */
     @Override
     @BsonIgnore
-    public Future<Guild> getGuild() {
+    public Future<IGuild> getGuild() {
         // @todo: use an aggregation at query-time
-        return new FutureTask<>(() -> Squirrel.getInstance().getDatabaseManager().findFirstEntity(Guild.class,
+        return new FutureTask<>(() -> Squirrel.getInstance().getDatabaseManager().findFirstEntity(IGuild.class,
                 SquirrelCollection.GUILDS, Filters.eq(this.getGuildId())));
     }
 
@@ -100,13 +100,13 @@ public class MemberImpl extends AbstractEntity implements Member {
      */
     @Override
     @BsonIgnore
-    public Future<Collection<Role>> getRoles() {
+    public Future<Collection<IRole>> getRoles() {
         // @todo: use an aggregation at query-time
         return new FutureTask<>(() -> { // XXX this is ugly
-            final Guild guild = this.getGuild().get();
+            final IGuild guild = this.getGuild().get();
             final Collection<ObjectId> ids = this.getRolesIds();
-            final Collection<Role> realRoles = new ArrayList<>();
-            for (final Role role : guild.getRealRoles().get()) {
+            final Collection<IRole> realRoles = new ArrayList<>();
+            for (final IRole role : guild.getRealRoles().get()) {
                 if (ids.contains(role.getId())) {
                     realRoles.add(role);
                 }
@@ -126,18 +126,18 @@ public class MemberImpl extends AbstractEntity implements Member {
     /**
      * Async because DB request
      *
-     * @return Future that will return the {@link User} corresponding to this
+     * @return Future that will return the {@link IUser} corresponding to this
      *         Member.
      */
     @Override
     @BsonIgnore
-    public Future<User> getUser() {
-        return new FutureTask<>(() -> Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
+    public Future<IUser> getUser() {
+        return new FutureTask<>(() -> Squirrel.getInstance().getDatabaseManager().findFirstEntity(IUser.class,
                 SquirrelCollection.USERS, Filters.eq(this.getUserId())));
     }
 
     /**
-     * @return The ID corresponding to the {@link User} associated with this Member
+     * @return The ID corresponding to the {@link IUser} associated with this Member
      */
     @Override
     public ObjectId getUserId() {
@@ -208,7 +208,7 @@ public class MemberImpl extends AbstractEntity implements Member {
     }
 
     /**
-     * @param userId The ID corresponding to the {@link User} associated with this
+     * @param userId The ID corresponding to the {@link IUser} associated with this
      *               Member.
      */
     @Override

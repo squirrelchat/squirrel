@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IUser;
 import chat.squirrel.metrics.Calculator;
 import chat.squirrel.metrics.Histogram;
 import chat.squirrel.metrics.MetricsManager;
@@ -56,7 +56,7 @@ public class ModuleAdmin extends AbstractModule {
     }
 
     private void handleHistogram(final RoutingContext ctx) {
-        final User user = this.getRequester(ctx);
+        final IUser user = this.getRequester(ctx);
 
         if (!user.isInstanceAdmin()) {
             this.fail(ctx, 401, "Not server admin", null);
@@ -84,7 +84,7 @@ public class ModuleAdmin extends AbstractModule {
     }
 
     private void handleMetrics(final RoutingContext ctx) {
-        final User user = this.getRequester(ctx);
+        final IUser user = this.getRequester(ctx);
 
         if (!user.isInstanceAdmin()) {
             this.fail(ctx, 401, "Not server admin", null);
@@ -99,7 +99,7 @@ public class ModuleAdmin extends AbstractModule {
     }
 
     private void handleShutdown(final RoutingContext ctx) {
-        final User user = this.getRequester(ctx);
+        final IUser user = this.getRequester(ctx);
 
         if (!user.isInstanceAdmin()) {
             this.fail(ctx, 401, "Not server admin", null);

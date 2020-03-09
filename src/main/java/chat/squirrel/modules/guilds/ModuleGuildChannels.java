@@ -35,10 +35,10 @@ import com.mongodb.client.model.Filters;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.Guild;
-import chat.squirrel.entities.Guild.Permissions;
-import chat.squirrel.entities.Member;
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IGuild;
+import chat.squirrel.entities.IGuild.Permissions;
+import chat.squirrel.entities.IMember;
+import chat.squirrel.entities.IUser;
 import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.entities.channels.TextChannel;
 import chat.squirrel.entities.channels.VoiceChannel;
@@ -58,8 +58,8 @@ public class ModuleGuildChannels extends AbstractGuildModule {
     }
 
     private void handleCreateChannel(final RoutingContext ctx) {
-        final User user = this.getRequester(ctx);
-        final Guild guild = this.getGuild(ctx, user, Permissions.GUILD_MANAGE_CHANNELS);
+        final IUser user = this.getRequester(ctx);
+        final IGuild guild = this.getGuild(ctx, user, Permissions.GUILD_MANAGE_CHANNELS);
         if (guild == null) {
             return; // Payload already handled; No extra processing required
         }
@@ -100,8 +100,8 @@ public class ModuleGuildChannels extends AbstractGuildModule {
             return;
         }
 
-        final User user = this.getRequester(ctx);
-        final Guild guild = Squirrel.getInstance().getDatabaseManager().findFirstEntity(Guild.class,
+        final IUser user = this.getRequester(ctx);
+        final IGuild guild = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IGuild.class,
                 SquirrelCollection.GUILDS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         if (guild == null) {
@@ -109,7 +109,7 @@ public class ModuleGuildChannels extends AbstractGuildModule {
             return;
         }
 
-        final Member member = guild.getMemberForUser(user.getId());
+        final IMember member = guild.getMemberForUser(user.getId());
         if (member == null) {
             this.fail(ctx, 404, "Guild not found", null);
             return;

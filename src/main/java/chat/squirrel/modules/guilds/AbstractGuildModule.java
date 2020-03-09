@@ -33,16 +33,16 @@ import com.mongodb.client.model.Filters;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager;
-import chat.squirrel.entities.Guild;
-import chat.squirrel.entities.Member;
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IGuild;
+import chat.squirrel.entities.IMember;
+import chat.squirrel.entities.IUser;
 import chat.squirrel.modules.AbstractModule;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
 public abstract class AbstractGuildModule extends AbstractModule {
-    protected Guild getGuild(final RoutingContext ctx, final User user, final Guild.Permissions permission) {
-        final Guild guild = Squirrel.getInstance().getDatabaseManager().findFirstEntity(Guild.class,
+    protected IGuild getGuild(final RoutingContext ctx, final IUser user, final IGuild.Permissions permission) {
+        final IGuild guild = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IGuild.class,
                 DatabaseManager.SquirrelCollection.GUILDS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         if (guild == null) {
@@ -50,7 +50,7 @@ public abstract class AbstractGuildModule extends AbstractModule {
             return null;
         }
 
-        final Member member = guild.getMemberForUser(user.getId());
+        final IMember member = guild.getMemberForUser(user.getId());
         if (member == null || permission != null && !member.hasEffectivePermission(permission)) {
             ctx.response().setStatusCode(403).end(new JsonObject().put("message", "Missing Permissions").encode());
             return null;

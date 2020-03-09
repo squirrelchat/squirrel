@@ -29,10 +29,10 @@ package chat.squirrel.idp.identities;
 
 import java.util.concurrent.Future;
 
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IUser;
 
 public interface IIdentity {
     String getUserId();
 
-    Future<User> getSquirrelAccount();
+    Future<IUser> getSquirrelAccount();
 }

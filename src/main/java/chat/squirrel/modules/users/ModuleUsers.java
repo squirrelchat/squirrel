@@ -33,7 +33,7 @@ import com.mongodb.client.model.Filters;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IUser;
 import chat.squirrel.modules.AbstractModule;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -47,7 +47,7 @@ public class ModuleUsers extends AbstractModule {
     }
 
     private void handleGetAccount(final RoutingContext ctx) {
-        final User target = Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
+        final IUser target = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IUser.class,
                 SquirrelCollection.USERS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         ctx.response()

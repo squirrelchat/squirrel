@@ -27,24 +27,49 @@
 package chat.squirrel.entities;
 
 import java.util.Collection;
+import java.util.concurrent.Future;
 
-import chat.squirrel.entities.impl.RoleImpl;
+import org.bson.types.ObjectId;
 
-@Implementation(RoleImpl.class)
-public interface Role extends IEntity {
-    static Role create() {
-        return new RoleImpl();
+import chat.squirrel.entities.IGuild.Permissions;
+import chat.squirrel.entities.impl.MemberImpl;
+
+@Implementation(IMember.class)
+public interface IMember extends IEntity {
+    static IMember create() {
+        return new MemberImpl();
     }
 
-    int getColor();
+    Future<IGuild> getGuild();
 
-    String getName();
+    ObjectId getGuildId();
 
-    Collection<String> getPermissions();
+    String getNickname();
 
-    void setColor(int color);
+    Collection<Permissions> getPermissions();
 
-    void setName(String name);
+    Future<Collection<IRole>> getRoles();
 
-    void setPermissions(Collection<String> permissions);
+    Collection<ObjectId> getRolesIds();
+
+    Future<IUser> getUser();
+
+    ObjectId getUserId();
+
+    boolean hasEffectivePermission(Permissions perm);
+
+    boolean isOwner();
+
+    void setGuildId(ObjectId guildId);
+
+    void setNickname(String nickname);
+
+    void setOwner(boolean owner);
+
+    void setPermissions(Collection<Permissions> permissions);
+
+    void setRolesIds(Collection<ObjectId> roles);
+
+    void setUserId(ObjectId userId);
+
 }

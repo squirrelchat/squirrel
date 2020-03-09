@@ -40,7 +40,7 @@ import com.mongodb.client.result.UpdateResult;
 import chat.squirrel.Squirrel;
 import chat.squirrel.auth.AuthResult.FailureReason;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IUser;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import de.mkammerer.argon2.Argon2Factory.Argon2Types;
@@ -98,7 +98,7 @@ public class MongoAuthHandler implements AuthHandler {
         if (doc != null) {
             final String hash = doc.getString("password");
             if (this.argon.verify(hash, password)) {
-                final User user = Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class,
+                final IUser user = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IUser.class,
                         SquirrelCollection.USERS, Filters.eq(doc.get("_id")));
                 res.setUser(user);
                 res.setReason(null);
@@ -145,7 +145,7 @@ public class MongoAuthHandler implements AuthHandler {
             return res;
         }
 
-        final User user = User.create();
+        final IUser user = IUser.create();
         user.setEmail(email);
         user.setUsername(username);
         user.setDiscriminator(discriminator);

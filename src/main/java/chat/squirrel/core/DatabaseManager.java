@@ -54,11 +54,11 @@ import com.mongodb.client.model.WriteModel;
 import com.mongodb.client.result.UpdateResult;
 
 import chat.squirrel.Version;
-import chat.squirrel.entities.Guild;
+import chat.squirrel.entities.IGuild;
 import chat.squirrel.entities.IEntity;
 import chat.squirrel.entities.IMessage;
 import chat.squirrel.entities.Implementation;
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IUser;
 import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.entities.impl.UserImpl;
 
@@ -131,8 +131,8 @@ public class DatabaseManager {
 
         int dis;
         final List<Integer> used = new ArrayList<>();
-        this.findEntities(User.class, SquirrelCollection.USERS, Filters.eq("username", username))
-                .forEach((Consumer<User>) u -> used.add(u.getDiscriminator()));
+        this.findEntities(IUser.class, SquirrelCollection.USERS, Filters.eq("username", username))
+                .forEach((Consumer<IUser>) u -> used.add(u.getDiscriminator()));
 
         // noinspection StatementWithEmptyBody
         while (used.indexOf(dis = this.random.nextInt(10000)) != -1) {

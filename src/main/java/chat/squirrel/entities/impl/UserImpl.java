@@ -34,14 +34,14 @@ import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
 import chat.squirrel.entities.AbstractEntity;
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IUser;
 import chat.squirrel.upload.Asset;
 import xyz.bowser65.tokenize.IAccount;
 
 /**
  * Server wide user account
  */
-public class UserImpl extends AbstractEntity implements IAccount, User {
+public class UserImpl extends AbstractEntity implements IAccount, IUser {
     private String username, email, customEmail, bio;
     private int discriminator, flags;
     private boolean disabled, banned, deleted, mfa;

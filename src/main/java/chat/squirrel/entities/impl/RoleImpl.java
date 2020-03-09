@@ -33,13 +33,13 @@ import java.util.Collections;
 import javax.annotation.Nonnull;
 
 import chat.squirrel.entities.AbstractEntity;
-import chat.squirrel.entities.Guild;
-import chat.squirrel.entities.Role;
+import chat.squirrel.entities.IGuild;
+import chat.squirrel.entities.IRole;
 
 /**
- * A standard {@link Guild} Role
+ * A standard {@link IGuild} Role
  */
-public class RoleImpl extends AbstractEntity implements Role {
+public class RoleImpl extends AbstractEntity implements IRole {
     private int color;
     private String name;
     private Collection<String> permissions = Collections.emptySet();

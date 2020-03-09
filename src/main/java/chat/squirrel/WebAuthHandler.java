@@ -34,7 +34,7 @@ import org.bson.types.ObjectId;
 import com.mongodb.client.model.Filters;
 
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IUser;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
@@ -76,7 +76,7 @@ public class WebAuthHandler implements Handler<RoutingContext> {
             return;
         }
 
-        final User user = (User) token.getAccount();
+        final IUser user = (IUser) token.getAccount();
 
         if (user.isBanned()) {
             event.fail(403);
@@ -96,8 +96,8 @@ public class WebAuthHandler implements Handler<RoutingContext> {
         event.next();
     }
 
-    private User fetchAccount(final String id) {
-        return Squirrel.getInstance().getDatabaseManager().findFirstEntity(User.class, SquirrelCollection.USERS,
+    private IUser fetchAccount(final String id) {
+        return Squirrel.getInstance().getDatabaseManager().findFirstEntity(IUser.class, SquirrelCollection.USERS,
                 Filters.eq(new ObjectId(id)));
     }
 

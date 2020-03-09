@@ -27,49 +27,79 @@
 package chat.squirrel.entities;
 
 import java.util.Collection;
-import java.util.concurrent.Future;
 
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
-import chat.squirrel.entities.Guild.Permissions;
-import chat.squirrel.entities.impl.MemberImpl;
+import chat.squirrel.entities.impl.UserImpl;
+import chat.squirrel.upload.Asset;
+import xyz.bowser65.tokenize.IAccount;
 
-@Implementation(Member.class)
-public interface Member extends IEntity {
-    static Member create() {
-        return new MemberImpl();
+@Implementation(UserImpl.class)
+public interface IUser extends IEntity, IAccount {
+    static IUser create() {
+        return new UserImpl();
     }
 
-    Future<Guild> getGuild();
+    String getCustomEmail();
 
-    ObjectId getGuildId();
+    Asset getAvatar();
 
-    String getNickname();
+    int getDiscriminator();
 
-    Collection<Permissions> getPermissions();
+    String getEmail();
 
-    Future<Collection<Role>> getRoles();
+    int getFlags();
 
-    Collection<ObjectId> getRolesIds();
+    Collection<String> getIps();
 
-    Future<User> getUser();
+    String getUsername();
 
-    ObjectId getUserId();
+    boolean hasMfa();
 
-    boolean hasEffectivePermission(Permissions perm);
+    boolean isBanned();
 
-    boolean isOwner();
+    boolean isDeleted();
 
-    void setGuildId(ObjectId guildId);
+    boolean isDisabled();
 
-    void setNickname(String nickname);
+    @BsonIgnore
+    boolean isInstanceAdmin();
 
-    void setOwner(boolean owner);
+    @BsonIgnore
+    boolean isInstanceModerator();
 
-    void setPermissions(Collection<Permissions> permissions);
+    void setBanned(boolean banned);
 
-    void setRolesIds(Collection<ObjectId> roles);
+    void setCustomEmail(String customEmail);
 
-    void setUserId(ObjectId userId);
+    void setDeleted(boolean deleted);
 
+    void setDisabled(boolean disabled);
+
+    void setDiscriminator(int discriminator);
+
+    void setEmail(String email);
+
+    void setFlags(int flags);
+
+    void setIps(Collection<String> ips);
+
+    void setTokenValidSince(long tokenValidSince);
+
+    void setUsername(String username);
+
+    void setAvatar(Asset id);
+
+    String getBio();
+
+    void setBio(String bio);
+
+    Collection<ObjectId> getBadges();
+
+    void setBadges(Collection<ObjectId> badges);
+
+    default Class<? extends IEntity> getImplementing() {
+        return UserImpl.class;
+    }
 }

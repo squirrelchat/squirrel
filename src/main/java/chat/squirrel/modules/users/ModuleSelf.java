@@ -33,7 +33,7 @@ import com.mongodb.client.model.Filters;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IUser;
 import chat.squirrel.entities.UserSettings;
 import chat.squirrel.modules.AbstractModule;
 import io.vertx.core.http.HttpMethod;
@@ -50,7 +50,7 @@ public class ModuleSelf extends AbstractModule {
     }
 
     private void handleMe(final RoutingContext ctx) {
-        final User user = this.getRequester(ctx);
+        final IUser user = this.getRequester(ctx);
         final UserSettings sets = this.fetchUserSettings(user.getId());
         final JsonObject obj = new JsonObject();
 

@@ -29,9 +29,9 @@ package chat.squirrel.modules.guilds;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.Guild;
-import chat.squirrel.entities.Member;
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IGuild;
+import chat.squirrel.entities.IMember;
+import chat.squirrel.entities.IUser;
 import chat.squirrel.metrics.MetricsManager;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -63,11 +63,11 @@ public class ModuleGuilds extends AbstractGuildModule {
             return;
         }
 
-        final User user = this.getRequester(ctx);
-        final Guild newGuild = Guild.create();
+        final IUser user = this.getRequester(ctx);
+        final IGuild newGuild = IGuild.create();
         newGuild.setName(name);
 
-        final Member owner = Member.create();
+        final IMember owner = IMember.create();
         owner.setOwner(true);
         owner.setUserId(user.getId());
 

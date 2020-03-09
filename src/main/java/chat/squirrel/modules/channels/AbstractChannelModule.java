@@ -33,14 +33,14 @@ import com.mongodb.client.model.Filters;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager;
-import chat.squirrel.entities.Guild;
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IGuild;
+import chat.squirrel.entities.IUser;
 import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.modules.AbstractModule;
 import io.vertx.ext.web.RoutingContext;
 
 public abstract class AbstractChannelModule extends AbstractModule {
-    protected IChannel getChannel(final RoutingContext ctx, final User user, final Guild.Permissions permission) {
+    protected IChannel getChannel(final RoutingContext ctx, final IUser user, final IGuild.Permissions permission) {
         final IChannel channel = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IChannel.class,
                 DatabaseManager.SquirrelCollection.GUILDS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
 

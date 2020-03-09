@@ -38,7 +38,7 @@ import chat.squirrel.Squirrel;
 import chat.squirrel.auth.AuthHandler;
 import chat.squirrel.auth.AuthResult;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IUser;
 import chat.squirrel.metrics.MetricsManager;
 import chat.squirrel.modules.AbstractModule;
 import io.vertx.core.http.HttpMethod;
@@ -76,7 +76,7 @@ public class ModuleLogin extends AbstractModule {
 
         final String ip = ctx.request().remoteAddress().host();
 
-        final User user = res.getUser();
+        final IUser user = res.getUser();
         if (user.getIps() != null && !user.getIps().contains(ip)) {
             LOG.info("New IP for " + user.toString() + ": " + ip);
             this.addNewIp(user.getId(), ip);

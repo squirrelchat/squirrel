@@ -27,10 +27,10 @@
 
 package chat.squirrel.auth;
 
-import chat.squirrel.entities.User;
+import chat.squirrel.entities.IUser;
 
 public class AuthResult {
-    private User user;
+    private IUser user;
     private FailureReason reason = FailureReason.UNKNOWN;
 
     private String token;
@@ -43,7 +43,7 @@ public class AuthResult {
         return this.token;
     }
 
-    public User getUser() {
+    public IUser getUser() {
         return this.user;
     }
 
@@ -62,7 +62,7 @@ public class AuthResult {
         this.token = token;
     }
 
-    public void setUser(final User user) {
+    public void setUser(final IUser user) {
         this.user = user;
     }
 

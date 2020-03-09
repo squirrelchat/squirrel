@@ -28,78 +28,23 @@ package chat.squirrel.entities;
 
 import java.util.Collection;
 
-import org.bson.codecs.pojo.annotations.BsonIgnore;
-import org.bson.types.ObjectId;
+import chat.squirrel.entities.impl.RoleImpl;
 
-import chat.squirrel.entities.impl.UserImpl;
-import chat.squirrel.upload.Asset;
-import xyz.bowser65.tokenize.IAccount;
-
-@Implementation(UserImpl.class)
-public interface User extends IEntity, IAccount {
-    static User create() {
-        return new UserImpl();
+@Implementation(RoleImpl.class)
+public interface IRole extends IEntity {
+    static IRole create() {
+        return new RoleImpl();
     }
 
-    String getCustomEmail();
+    int getColor();
 
-    Asset getAvatar();
+    String getName();
 
-    int getDiscriminator();
+    Collection<String> getPermissions();
 
-    String getEmail();
+    void setColor(int color);
 
-    int getFlags();
+    void setName(String name);
 
-    Collection<String> getIps();
-
-    String getUsername();
-
-    boolean hasMfa();
-
-    boolean isBanned();
-
-    boolean isDeleted();
-
-    boolean isDisabled();
-
-    @BsonIgnore
-    boolean isInstanceAdmin();
-
-    @BsonIgnore
-    boolean isInstanceModerator();
-
-    void setBanned(boolean banned);
-
-    void setCustomEmail(String customEmail);
-
-    void setDeleted(boolean deleted);
-
-    void setDisabled(boolean disabled);
-
-    void setDiscriminator(int discriminator);
-
-    void setEmail(String email);
-
-    void setFlags(int flags);
-
-    void setIps(Collection<String> ips);
-
-    void setTokenValidSince(long tokenValidSince);
-
-    void setUsername(String username);
-
-    void setAvatar(Asset id);
-
-    String getBio();
-
-    void setBio(String bio);
-
-    Collection<ObjectId> getBadges();
-
-    void setBadges(Collection<ObjectId> badges);
-
-    default Class<? extends IEntity> getImplementing() {
-        return UserImpl.class;
-    }
+    void setPermissions(Collection<String> permissions);
 }

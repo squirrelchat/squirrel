@@ -38,7 +38,7 @@ import chat.squirrel.entities.impl.MessageImpl;
 @Implementation(MessageImpl.class)
 public interface IMessage extends IEntity {
     /**
-     * Author of the message. Can be either from a {@link User} or a Bot
+     * Author of the message. Can be either from a {@link IUser} or a Bot
      *
      * @return ID of the author of the message
      */
