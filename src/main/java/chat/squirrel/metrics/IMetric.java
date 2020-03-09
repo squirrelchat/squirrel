@@ -27,22 +27,6 @@
 
 package chat.squirrel.metrics;
 
-import chat.squirrel.entities.AbstractEntity;
-
-public abstract class AbstractHistogram extends AbstractEntity implements Histogram {
-    protected final String name;
-
-    public AbstractHistogram(String name) {
-        this.name = name;
-    }
-    
-    @Override
-    public String getName() {
-        return name;
-    }
-    
-    @Override
-    public String getType() {
-        return "Histogram";
-    }
+public interface IMetric {
+    String getType();
 }

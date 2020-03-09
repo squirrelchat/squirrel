@@ -133,6 +133,8 @@ public final class Squirrel {
 
         this.notifMail = new NotificationMailManager(vertx,
                 (SquirrelMailConfig) this.getUserConfig(NotificationMailManager.class, null));
+        
+        MetricsManager.getInstance().load(this.dbManager);
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "squirrel-shutdown"));
     }

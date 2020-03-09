@@ -27,6 +27,8 @@
 
 package chat.squirrel.modules.admin;
 
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +39,7 @@ import chat.squirrel.metrics.Histogram;
 import chat.squirrel.metrics.MetricsManager;
 import chat.squirrel.modules.AbstractModule;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
@@ -71,8 +74,13 @@ public class ModuleAdmin extends AbstractModule {
 
         final Calculator calc = hist.getCalculator();
 
-        ctx.response().end(new JsonObject().put("name", name).put("id", hist.getId().toHexString())
-                .put("values", calc.getValues()).encode());
+        final JsonArray arr = new JsonArray();
+
+        for (double d : calc.getValues())
+            arr.add(d);
+
+        ctx.response().end(
+                new JsonObject().put("name", name).put("id", hist.getId().toHexString()).put("values", arr).encode());
     }
 
     private void handleMetrics(final RoutingContext ctx) {
@@ -83,7 +91,11 @@ public class ModuleAdmin extends AbstractModule {
             return;
         }
 
-        ctx.response().end(new JsonObject().put("histograms", MetricsManager.getInstance().getHistogramNames()).encode());
+        ctx.response()
+                .end(new JsonObject()
+                        .put("histograms",
+                                new JsonArray(Arrays.asList(MetricsManager.getInstance().getHistogramNames())))
+                        .encode());
     }
 
     private void handleShutdown(final RoutingContext ctx) {

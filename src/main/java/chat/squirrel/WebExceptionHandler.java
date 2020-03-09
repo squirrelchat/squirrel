@@ -41,18 +41,20 @@ import io.vertx.ext.web.RoutingContext;
  */
 public class WebExceptionHandler implements Handler<RoutingContext> {
     private static final Logger LOG = LoggerFactory.getLogger(WebExceptionHandler.class);
-    private final boolean shouldPrintError = false;
+    private final boolean shouldPrintError = true;
 
     @Override
     public void handle(final RoutingContext event) {
-        final JsonObject obj = new JsonObject().put("error", event.response().getStatusCode());
+        final JsonObject obj = new JsonObject();
         if (this.shouldPrintError) {
             obj.put("path", event.normalisedPath());
-            obj.put("body", event.getBody());
+            obj.put("body", event.getBody().toJsonObject());
         }
         if (event.response().getStatusCode() == 200) {
             event.response().setStatusCode(500);
         }
+        obj.put("error", event.response().getStatusCode());
+        event.failure().printStackTrace();
         MetricsManager.getInstance().happened("error.statuscode." + event.response().getStatusCode());
         LOG.error("An unknown error has been caught in routing: " + obj.encode());
         event.response().end(obj.toBuffer());

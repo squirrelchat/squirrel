@@ -36,6 +36,7 @@ import com.mongodb.client.model.Filters;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.User;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import xyz.bowser65.tokenize.Token;
 
@@ -60,8 +61,8 @@ public class WebAuthHandler implements Handler<RoutingContext> {
         try {
             token = Squirrel.getInstance().getTokenize().validateToken(stringToken, this::fetchAccount);
         } catch (final SignatureException e) {
-            e.printStackTrace();
-            event.fail(403); // TODO: user better error payloads from AbstractModule#fail
+            event.response().setStatusCode(403)
+                    .end(new JsonObject().put("status", 403).put("desc", "Signature error in token").encode());
             return;
         }
 

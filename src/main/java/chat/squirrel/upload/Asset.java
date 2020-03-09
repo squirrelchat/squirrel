@@ -3,18 +3,18 @@ package chat.squirrel.upload;
 import chat.squirrel.entities.AbstractEntity;
 
 public class Asset extends AbstractEntity {
-    private final String id, hash, type;
-    private final Bucket bucket;
+    private String assetId, hash, type;
+    private Bucket bucket;
 
-    public Asset(final String id, final String hash, final String type, final Bucket bucket) {
-        this.id = id;
+    public Asset(final String assetId, final String hash, final String type, final Bucket bucket) {
+        this.assetId = assetId;
         this.hash = hash;
         this.type = type;
         this.bucket = bucket;
     }
 
     public String getAssetId() {
-        return this.id;
+        return this.assetId;
     }
 
     public String getHash() {
@@ -27,6 +27,22 @@ public class Asset extends AbstractEntity {
 
     public Bucket getBucket() {
         return bucket;
+    }
+
+    public void setAssetId(String assetId) {
+        this.assetId = assetId;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setBucket(Bucket bucket) {
+        this.bucket = bucket;
     }
 
 }

@@ -29,6 +29,8 @@ package chat.squirrel.metrics;
 
 import java.util.Random;
 
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+
 /**
  * Inspired from delight's UniformReservoir.
  * 
@@ -40,6 +42,10 @@ public class UniformHistogram extends AbstractHistogram implements Histogram {
     private int count = 0;
     private final double[] values;
     private final Random rng;
+
+    public UniformHistogram() {
+        this(null);
+    }
 
     public UniformHistogram(String name) {
         this(name, 1024);
@@ -93,8 +99,9 @@ public class UniformHistogram extends AbstractHistogram implements Histogram {
     }
 
     @Override
+    @BsonIgnore
     public Calculator getCalculator() {
-        return null;
+        return new UniformCalculator(values);
     }
 
 }

@@ -29,7 +29,12 @@ package chat.squirrel.metrics;
 
 import java.util.HashMap;
 
+import com.mongodb.Block;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.model.Filters;
+
 import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 
 public final class MetricsManager {
@@ -37,6 +42,20 @@ public final class MetricsManager {
     private HashMap<String, Histogram> histMap;
 
     public MetricsManager() {
+        histMap = new HashMap<String, Histogram>();
+    }
+
+    public void load(DatabaseManager db) {
+        final FindIterable<Histogram> findHist = db.findEntities(Histogram.class, SquirrelCollection.METRICS,
+                Filters.eq("type", "Histogram"));
+        findHist.forEach(new Block<Histogram>() {
+
+            @Override
+            public void apply(Histogram t) {
+                if (t.getName() != null)
+                    histMap.put(t.getName(), t);
+            }
+        });
     }
 
     public void save() {
