@@ -100,12 +100,12 @@ public abstract class AbstractModule {
             final IAuthHandler auth = Squirrel.getInstance().getAuthHandler();
             final JsonObject obj = ctx.getBodyAsJson();
             final String password = obj.getString("password");
-            
+
             if (password == null) {
                 this.fail(ctx, 400, "Missing password parameter for confirmation", null);
                 return;
             }
-            
+
             final IUser user = getRequester(ctx);
 
             final AuthResult res = auth.attemptLogin(
@@ -152,6 +152,14 @@ public abstract class AbstractModule {
     protected Route registerRoute(final HttpMethod method, final String path, final Handler<RoutingContext> handler) {
         final Route rt = Squirrel.getInstance().getRouter().route(method, path).handler(BodyHandler.create())
                 .handler(Squirrel.getInstance().getWebJsonHandler()).blockingHandler(handler).disable();
+        this.routes.add(rt);
+        return rt;
+    }
+
+    protected Route registerFileUploadRoute(final HttpMethod method, final String path,
+            final Handler<RoutingContext> handler) {
+        final Route rt = Squirrel.getInstance().getRouter().route(method, path).handler(BodyHandler.create(true))
+                .blockingHandler(handler).disable();
         this.routes.add(rt);
         return rt;
     }
