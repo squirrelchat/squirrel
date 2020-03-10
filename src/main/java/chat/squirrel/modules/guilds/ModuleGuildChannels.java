@@ -39,6 +39,7 @@ import chat.squirrel.entities.IGuild;
 import chat.squirrel.entities.IGuild.Permissions;
 import chat.squirrel.entities.IMember;
 import chat.squirrel.entities.IUser;
+import chat.squirrel.entities.AuditLogEntry.AuditLogEntryType;
 import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.entities.channels.TextChannel;
 import chat.squirrel.entities.channels.VoiceChannel;
@@ -90,6 +91,9 @@ public class ModuleGuildChannels extends AbstractGuildModule {
         }
 
         channel.setName(name); // @todo: Take into account other payload fields (?)
+        
+        this.submitAudit(guild.getId(), user.getId(), AuditLogEntryType.CHANNEL_CREATE);
+        
         ctx.response().end(channel.toJson().encode());
     }
 

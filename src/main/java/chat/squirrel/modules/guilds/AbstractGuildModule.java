@@ -27,12 +27,17 @@
 
 package chat.squirrel.modules.guilds;
 
+import java.util.Date;
+
 import org.bson.types.ObjectId;
 
 import com.mongodb.client.model.Filters;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.entities.AuditLogEntry;
+import chat.squirrel.entities.AuditLogEntry.AuditLogEntryType;
 import chat.squirrel.entities.IGuild;
 import chat.squirrel.entities.IMember;
 import chat.squirrel.entities.IUser;
@@ -58,5 +63,23 @@ public abstract class AbstractGuildModule extends AbstractModule {
 
         // @todo: MFA requirement
         return guild;
+    }
+
+    protected void submitAudit(final ObjectId guild, final ObjectId user, final AuditLogEntryType type) {
+        this.submitAudit(guild, user, type, new Date());
+    }
+
+    protected void submitAudit(final ObjectId guild, final ObjectId user, final AuditLogEntryType type,
+            final Date date) {
+        final AuditLogEntry entry = new AuditLogEntry();
+        entry.setGuild(guild);
+        entry.setUser(user);
+        entry.setType(type);
+        entry.setDate(date);
+        submitAudit(entry);
+    }
+
+    protected void submitAudit(final AuditLogEntry entry) {
+        Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.AUDITS, entry);
     }
 }

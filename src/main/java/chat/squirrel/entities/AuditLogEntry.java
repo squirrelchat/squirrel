@@ -27,10 +27,50 @@
 
 package chat.squirrel.entities;
 
+import java.util.Date;
+
+import org.bson.types.ObjectId;
+
 /**
  * A guild audit log entry
  */
 public class AuditLogEntry extends AbstractEntity {
+    private ObjectId guild, user;
+    private Date date;
+    private AuditLogEntryType type;
+    
+    public AuditLogEntryType getType() {
+        return type;
+    }
+
+    public void setType(AuditLogEntryType type) {
+        this.type = type;
+    }
+
+    public ObjectId getGuild() {
+        return guild;
+    }
+
+    public void setGuild(ObjectId guild) {
+        this.guild = guild;
+    }
+
+    public ObjectId getUser() {
+        return user;
+    }
+
+    public void setUser(ObjectId user) {
+        this.user = user;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
     /**
      * Type of entry an audit is
      */

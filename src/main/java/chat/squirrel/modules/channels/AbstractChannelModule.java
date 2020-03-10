@@ -36,10 +36,10 @@ import chat.squirrel.core.DatabaseManager;
 import chat.squirrel.entities.IGuild;
 import chat.squirrel.entities.IUser;
 import chat.squirrel.entities.channels.IChannel;
-import chat.squirrel.modules.AbstractModule;
+import chat.squirrel.modules.guilds.AbstractGuildModule;
 import io.vertx.ext.web.RoutingContext;
 
-public abstract class AbstractChannelModule extends AbstractModule {
+public abstract class AbstractChannelModule extends AbstractGuildModule {
     protected IChannel getChannel(final RoutingContext ctx, final IUser user, final IGuild.Permissions permission) {
         final IChannel channel = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IChannel.class,
                 DatabaseManager.SquirrelCollection.GUILDS, Filters.eq(new ObjectId(ctx.pathParam("id"))));

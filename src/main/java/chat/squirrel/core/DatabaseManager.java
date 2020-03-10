@@ -49,16 +49,15 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.InsertOneModel;
-import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.WriteModel;
 import com.mongodb.client.result.UpdateResult;
 
 import chat.squirrel.Version;
-import chat.squirrel.entities.IGuild;
 import chat.squirrel.entities.IEntity;
+import chat.squirrel.entities.IGuild;
 import chat.squirrel.entities.IMessage;
-import chat.squirrel.entities.Implementation;
 import chat.squirrel.entities.IUser;
+import chat.squirrel.entities.Implementation;
 import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.entities.impl.UserImpl;
 
@@ -212,11 +211,11 @@ public class DatabaseManager {
     public enum SquirrelCollection {
 
         /**
-         * 'users' collection. Contains entity type {@link User}
+         * 'users' collection. Contains entity type {@link IUser}
          */
         USERS("users"),
         /**
-         * 'guilds' collection. Contains entity type {@link Guild}
+         * 'guilds' collection. Contains entity type {@link IGuild}
          */
         GUILDS("guilds"),
         /**
@@ -233,11 +232,11 @@ public class DatabaseManager {
         CHANNELS("channels"),
         /**
          * 'members' collection. Contains entity type
-         * {@link chat.squirrel.entities.Member}
+         * {@link chat.squirrel.entities.IMember}
          */
         MEMBERS("members"),
         /**
-         * 'roles' collection. Contains entity type {@link chat.squirrel.entities.Role}
+         * 'roles' collection. Contains entity type {@link chat.squirrel.entities.IRole}
          */
         ROLES("roles"),
         /**
@@ -251,7 +250,11 @@ public class DatabaseManager {
         /**
          * 'metrics' collection. Contains entity type Histogram
          */
-        METRICS("metrics");
+        METRICS("metrics"),
+        /**
+         * 'audits' collection. Contains entity type AuditLogEntry
+         */
+        AUDITS("audits");
 
         private String mongoName;
 
