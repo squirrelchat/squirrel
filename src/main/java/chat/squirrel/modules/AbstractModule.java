@@ -34,6 +34,8 @@ import javax.annotation.Nullable;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.WebAuthHandler;
+import chat.squirrel.auth.AuthResult;
+import chat.squirrel.auth.IAuthHandler;
 import chat.squirrel.entities.IUser;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
@@ -92,6 +94,35 @@ public abstract class AbstractModule {
         ctx.response().setStatusCode(status).end(out.encode());
     }
 
+    protected Route registerPasswordConfirmRoute(final HttpMethod method, final String path,
+            final Handler<RoutingContext> handler) {
+        final Route rt = this.registerAuthedRoute(method, path, ctx -> {
+            final IAuthHandler auth = Squirrel.getInstance().getAuthHandler();
+            final JsonObject obj = ctx.getBodyAsJson();
+            final String password = obj.getString("password");
+            
+            if (password == null) {
+                this.fail(ctx, 400, "Missing password parameter for confirmation", null);
+                return;
+            }
+            
+            final IUser user = getRequester(ctx);
+
+            final AuthResult res = auth.attemptLogin(
+                    user.getUsername() + "#" + Squirrel.formatDiscriminator(user.getDiscriminator()),
+                    password.toCharArray());
+            if (res.isSuccess()) {
+                ctx.next();
+                return;
+            } else {
+                ctx.response().setStatusCode(401).end(new JsonObject().put("failure_reason", res.getReason()).encode());
+                return;
+            }
+        });
+        rt.handler(handler);
+        return rt;
+    }
+
     /**
      * Registers a new and disabled route behind the default authentication handler.
      * The Route will be enabled on server startup, so this should be called only
@@ -105,7 +136,7 @@ public abstract class AbstractModule {
     protected Route registerAuthedRoute(final HttpMethod method, final String path,
             final Handler<RoutingContext> handler) {
         final Route rt = this.registerRoute(method, path, Squirrel.getInstance().getApiAuthHandler());
-        rt.handler(handler);
+        rt.blockingHandler(handler);
         return rt;
     }
 

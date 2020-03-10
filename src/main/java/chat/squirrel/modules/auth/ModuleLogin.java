@@ -35,7 +35,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.auth.AuthHandler;
+import chat.squirrel.auth.IAuthHandler;
 import chat.squirrel.auth.AuthResult;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.IUser;
@@ -65,7 +65,7 @@ public class ModuleLogin extends AbstractModule {
             return;
         }
 
-        final AuthHandler auth = Squirrel.getInstance().getAuthHandler();
+        final IAuthHandler auth = Squirrel.getInstance().getAuthHandler();
         final AuthResult res = auth.attemptLogin(obj.getString("username"), obj.getString("password").toCharArray());
         LOG.info("Login attempt: " + res.toString() + ", IP: " + ctx.request().remoteAddress());
         MetricsManager.getInstance().happened("login." + (res.isSuccess() ? "success" : "failure"));
@@ -103,7 +103,7 @@ public class ModuleLogin extends AbstractModule {
             return;
         }
 
-        final AuthHandler auth = Squirrel.getInstance().getAuthHandler();
+        final IAuthHandler auth = Squirrel.getInstance().getAuthHandler();
         final AuthResult res = auth.register(obj.getString("email"), obj.getString("username"), password.toCharArray());
         LOG.info("Register attempt: " + res.toString() + ", IP: " + ctx.request().remoteAddress());
         MetricsManager.getInstance().happened("register." + (res.isSuccess() ? "success" : "failure." + res.getReason()));

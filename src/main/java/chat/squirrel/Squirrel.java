@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mongodb.client.model.Filters;
 
-import chat.squirrel.auth.AuthHandler;
+import chat.squirrel.auth.IAuthHandler;
 import chat.squirrel.auth.MongoAuthHandler;
 import chat.squirrel.core.DatabaseManager;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
@@ -68,7 +68,7 @@ public final class Squirrel {
     // Managers
     private final ModuleManager moduleManager;
     private final DatabaseManager dbManager;
-    private final AuthHandler authHandler;
+    private final IAuthHandler authHandler;
     private final Tokenize tokenize;
     private final NotificationMailManager notifMail;
 
@@ -149,7 +149,7 @@ public final class Squirrel {
     /**
      * @return The AuthHandler that manages authentication to the database
      */
-    public AuthHandler getAuthHandler() {
+    public IAuthHandler getAuthHandler() {
         return this.authHandler;
     }
 

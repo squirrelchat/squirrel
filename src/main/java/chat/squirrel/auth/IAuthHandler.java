@@ -27,7 +27,7 @@
 
 package chat.squirrel.auth;
 
-public interface AuthHandler {
+public interface IAuthHandler {
     /**
      * Attempts a login <b>NB: WIPES password ARRAY ON FAILURE AND SUCCESS</b>
      *

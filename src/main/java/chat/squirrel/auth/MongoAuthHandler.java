@@ -46,9 +46,9 @@ import de.mkammerer.argon2.Argon2Factory;
 import de.mkammerer.argon2.Argon2Factory.Argon2Types;
 
 /**
- * This {@link AuthHandler} manages authentication against the MongoDB database.
+ * This {@link IAuthHandler} manages authentication against the MongoDB database.
  */
-public class MongoAuthHandler implements AuthHandler {
+public class MongoAuthHandler implements IAuthHandler {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,8}$",
             Pattern.CASE_INSENSITIVE),
             /**

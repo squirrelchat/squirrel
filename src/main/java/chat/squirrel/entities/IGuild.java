@@ -121,19 +121,19 @@ public interface IGuild extends IEntity {
          */
         GUILD_MANAGE_MODERATION,
         /**
-         * Ban {@link Member}s from the Guild
+         * Ban {@link IMember}s from the Guild
          */
         MEMBER_BAN,
         /**
-         * Ban temporarily {@link Member}s from the Guild
+         * Ban temporarily {@link IMember}s from the Guild
          */
         MEMBER_TEMP_BAN,
         /**
-         * Kick {@link Member} from this Guild
+         * Kick {@link IMember} from this Guild
          */
         MEMBER_KICK,
         /**
-         * Mute {@link Member} from talking/speaking in channels
+         * Mute {@link IMember} from talking/speaking in channels
          */
         MEMBER_MUTE,
         /**
