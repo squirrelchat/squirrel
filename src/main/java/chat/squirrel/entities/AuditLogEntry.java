@@ -38,7 +38,7 @@ public class AuditLogEntry extends AbstractEntity {
     private ObjectId guild, user;
     private Date date;
     private AuditLogEntryType type;
-    
+
     public AuditLogEntryType getType() {
         return type;
     }

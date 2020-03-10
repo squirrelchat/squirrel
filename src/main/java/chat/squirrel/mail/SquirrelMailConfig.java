@@ -11,7 +11,7 @@ public class SquirrelMailConfig extends UserConfig {
     public SquirrelMailConfig(final Class<?> owner) {
         super(owner);
     }
-    
+
     public String getFromEmail() {
         return this.fromEmail;
     }

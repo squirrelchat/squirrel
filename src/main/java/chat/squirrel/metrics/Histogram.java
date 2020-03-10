@@ -40,9 +40,9 @@ public interface Histogram extends IEntity, IMetric {
     void addValue(double value);
 
     void addValue(long value);
-    
+
     int size();
-    
+
     @BsonIgnore
     Calculator getCalculator();
 }

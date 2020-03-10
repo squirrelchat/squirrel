@@ -47,11 +47,13 @@ public class ModuleUsers extends AbstractModule {
     }
 
     private void handleGetAccount(final RoutingContext ctx) {
-        final IUser target = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IUser.class,
-                SquirrelCollection.USERS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
+        final IUser target = Squirrel.getInstance()
+                .getDatabaseManager()
+                .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         ctx.response()
-                .end(new JsonObject().put("id", target.getId().toHexString()).put("username", target.getUsername())
+                .end(new JsonObject().put("id", target.getId().toHexString())
+                        .put("username", target.getUsername())
                         .put("discriminator", target.getDiscriminator())
                         // .put("avatar", target.get())
                         .encode());

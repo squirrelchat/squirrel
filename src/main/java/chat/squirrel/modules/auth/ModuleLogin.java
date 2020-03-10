@@ -82,8 +82,11 @@ public class ModuleLogin extends AbstractModule {
             this.addNewIp(user.getId(), ip);
         }
 
-        ctx.response().setStatusCode(200).end(new JsonObject().put("mfa_required", false) // @todo: Consider 3fa support
-                .put("token", res.getToken()).encode());
+        ctx.response()
+                .setStatusCode(200)
+                .end(new JsonObject().put("mfa_required", false) // @todo: Consider 3fa support
+                        .put("token", res.getToken())
+                        .encode());
     }
 
     private void handleRegister(final RoutingContext ctx) {
@@ -106,7 +109,8 @@ public class ModuleLogin extends AbstractModule {
         final IAuthHandler auth = Squirrel.getInstance().getAuthHandler();
         final AuthResult res = auth.register(obj.getString("email"), obj.getString("username"), password.toCharArray());
         LOG.info("Register attempt: " + res.toString() + ", IP: " + ctx.request().remoteAddress());
-        MetricsManager.getInstance().happened("register." + (res.isSuccess() ? "success" : "failure." + res.getReason()));
+        MetricsManager.getInstance()
+                .happened("register." + (res.isSuccess() ? "success" : "failure." + res.getReason()));
         if (!res.isSuccess()) {
             ctx.response().setStatusCode(401).end(new JsonObject().put("failure_reason", res.getReason()).encode());
             return;
@@ -118,7 +122,8 @@ public class ModuleLogin extends AbstractModule {
     }
 
     private void addNewIp(final ObjectId user, final String ip) {
-        Squirrel.getInstance().getDatabaseManager().updateEntity(SquirrelCollection.USERS, Filters.eq(user),
-                Updates.addToSet("ips", ip));
+        Squirrel.getInstance()
+                .getDatabaseManager()
+                .updateEntity(SquirrelCollection.USERS, Filters.eq(user), Updates.addToSet("ips", ip));
     }
 }

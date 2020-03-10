@@ -79,8 +79,11 @@ public class ModuleAdmin extends AbstractModule {
         for (double d : calc.getValues())
             arr.add(d);
 
-        ctx.response().end(
-                new JsonObject().put("name", name).put("id", hist.getId().toHexString()).put("values", arr).encode());
+        ctx.response()
+                .end(new JsonObject().put("name", name)
+                        .put("id", hist.getId().toHexString())
+                        .put("values", arr)
+                        .encode());
     }
 
     private void handleMetrics(final RoutingContext ctx) {

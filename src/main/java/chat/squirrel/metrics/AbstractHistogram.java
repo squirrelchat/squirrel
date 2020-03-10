@@ -35,12 +35,12 @@ public abstract class AbstractHistogram extends AbstractEntity implements Histog
     public AbstractHistogram(String name) {
         this.name = name;
     }
-    
+
     @Override
     public String getName() {
         return name;
     }
-    
+
     @Override
     public String getType() {
         return "Histogram";

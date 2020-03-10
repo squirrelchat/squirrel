@@ -91,9 +91,9 @@ public class ModuleGuildChannels extends AbstractGuildModule {
         }
 
         channel.setName(name); // @todo: Take into account other payload fields (?)
-        
+
         this.submitAudit(guild.getId(), user.getId(), AuditLogEntryType.CHANNEL_CREATE);
-        
+
         ctx.response().end(channel.toJson().encode());
     }
 
@@ -105,8 +105,10 @@ public class ModuleGuildChannels extends AbstractGuildModule {
         }
 
         final IUser user = this.getRequester(ctx);
-        final IGuild guild = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IGuild.class,
-                SquirrelCollection.GUILDS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
+        final IGuild guild = Squirrel.getInstance()
+                .getDatabaseManager()
+                .findFirstEntity(IGuild.class, SquirrelCollection.GUILDS,
+                        Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         if (guild == null) {
             this.fail(ctx, 404, "Guild not found", null);

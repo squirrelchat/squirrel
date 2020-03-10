@@ -22,10 +22,12 @@ public class YandexIdentityProvider implements IIdentityProvider<String, String>
         final Yandex iden = new Yandex();
         iden.setUserId(userId);
 
-        final MultipartForm form = MultipartForm.create().attribute("grant_type", "authorization_code")
+        final MultipartForm form = MultipartForm.create()
+                .attribute("grant_type", "authorization_code")
                 .attribute("code", code);
 
-        final HttpRequest<Buffer> req = Squirrel.getInstance().getHttpClient()
+        final HttpRequest<Buffer> req = Squirrel.getInstance()
+                .getHttpClient()
                 .postAbs("https://oauth.yandex.com/token");
 
         req.sendMultipartForm(form, (a) -> {

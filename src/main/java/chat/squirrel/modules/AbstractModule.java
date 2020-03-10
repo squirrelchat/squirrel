@@ -150,16 +150,25 @@ public abstract class AbstractModule {
      * @return The new route to be slick :sunglasses:
      */
     protected Route registerRoute(final HttpMethod method, final String path, final Handler<RoutingContext> handler) {
-        final Route rt = Squirrel.getInstance().getRouter().route(method, path).handler(BodyHandler.create())
-                .handler(Squirrel.getInstance().getWebJsonHandler()).blockingHandler(handler).disable();
+        final Route rt = Squirrel.getInstance()
+                .getRouter()
+                .route(method, path)
+                .handler(BodyHandler.create())
+                .handler(Squirrel.getInstance().getWebJsonHandler())
+                .blockingHandler(handler)
+                .disable();
         this.routes.add(rt);
         return rt;
     }
 
     protected Route registerFileUploadRoute(final HttpMethod method, final String path,
             final Handler<RoutingContext> handler) {
-        final Route rt = Squirrel.getInstance().getRouter().route(method, path).handler(BodyHandler.create(true))
-                .blockingHandler(handler).disable();
+        final Route rt = Squirrel.getInstance()
+                .getRouter()
+                .route(method, path)
+                .handler(BodyHandler.create(true))
+                .blockingHandler(handler)
+                .disable();
         this.routes.add(rt);
         return rt;
     }

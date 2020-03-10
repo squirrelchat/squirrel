@@ -17,8 +17,9 @@ public abstract class AbstractUploadManager implements IUploadManager {
     }
 
     protected Asset retrieveAsset(final ObjectId id) {
-        return Squirrel.getInstance().getDatabaseManager().findFirstEntity(Asset.class, SquirrelCollection.ASSETS,
-                Filters.eq(id));
+        return Squirrel.getInstance()
+                .getDatabaseManager()
+                .findFirstEntity(Asset.class, SquirrelCollection.ASSETS, Filters.eq(id));
     }
 
     protected void removeAsset(final String id) {

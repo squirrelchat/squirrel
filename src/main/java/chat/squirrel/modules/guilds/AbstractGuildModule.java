@@ -47,8 +47,10 @@ import io.vertx.ext.web.RoutingContext;
 
 public abstract class AbstractGuildModule extends AbstractModule {
     protected IGuild getGuild(final RoutingContext ctx, final IUser user, final IGuild.Permissions permission) {
-        final IGuild guild = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IGuild.class,
-                DatabaseManager.SquirrelCollection.GUILDS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
+        final IGuild guild = Squirrel.getInstance()
+                .getDatabaseManager()
+                .findFirstEntity(IGuild.class, DatabaseManager.SquirrelCollection.GUILDS,
+                        Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         if (guild == null) {
             this.fail(ctx, 404, "Guild not found", null);

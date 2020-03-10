@@ -41,8 +41,10 @@ import io.vertx.ext.web.RoutingContext;
 
 public abstract class AbstractChannelModule extends AbstractGuildModule {
     protected IChannel getChannel(final RoutingContext ctx, final IUser user, final IGuild.Permissions permission) {
-        final IChannel channel = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IChannel.class,
-                DatabaseManager.SquirrelCollection.GUILDS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
+        final IChannel channel = Squirrel.getInstance()
+                .getDatabaseManager()
+                .findFirstEntity(IChannel.class, DatabaseManager.SquirrelCollection.GUILDS,
+                        Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         if (channel == null) {
             this.fail(ctx, 404, "Channel not found", null);

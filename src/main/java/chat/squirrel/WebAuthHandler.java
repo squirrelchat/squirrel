@@ -61,7 +61,8 @@ public class WebAuthHandler implements Handler<RoutingContext> {
         try {
             token = Squirrel.getInstance().getTokenize().validateToken(stringToken, this::fetchAccount);
         } catch (final SignatureException e) {
-            event.response().setStatusCode(403)
+            event.response()
+                    .setStatusCode(403)
                     .end(new JsonObject().put("status", 403).put("desc", "Signature error in token").encode());
             return;
         }
@@ -97,8 +98,9 @@ public class WebAuthHandler implements Handler<RoutingContext> {
     }
 
     private IUser fetchAccount(final String id) {
-        return Squirrel.getInstance().getDatabaseManager().findFirstEntity(IUser.class, SquirrelCollection.USERS,
-                Filters.eq(new ObjectId(id)));
+        return Squirrel.getInstance()
+                .getDatabaseManager()
+                .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(new ObjectId(id)));
     }
 
 }

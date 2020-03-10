@@ -99,7 +99,7 @@ public class LocalUploadManager extends AbstractUploadManager {
         final String id = req.getAssetId();
         final String hash = req.getHash();
         final Bucket bucket = req.getBucket();
-        
+
         final Asset asset = this.retrieveAsset(id);
 
         if (asset == null) {
@@ -132,7 +132,7 @@ public class LocalUploadManager extends AbstractUploadManager {
     public ActionResult delete(final Asset req) {
         final String id = req.getAssetId();
         final Bucket bucket = req.getBucket();
-        
+
         final ActionResult res = new ActionResult();
 
         final Asset asset = this.retrieveAsset(id);
@@ -176,8 +176,8 @@ public class LocalUploadManager extends AbstractUploadManager {
     }
 
     private static File getDefaultUploadFolder() {
-        final TableUserConfig conf = (TableUserConfig) Squirrel.getInstance().getUserConfig(LocalUploadManager.class,
-                new TableUserConfig(LocalUploadManager.class));
+        final TableUserConfig conf = (TableUserConfig) Squirrel.getInstance()
+                .getUserConfig(LocalUploadManager.class, new TableUserConfig(LocalUploadManager.class));
         final Object rawUp = conf.getTable().get("upload_folder");
         if (!(rawUp instanceof String)) {
             throw new IllegalStateException("upload folder not set as string in config");

@@ -85,8 +85,10 @@ public class DatabaseManager {
         LOG.info("Connecting to MongoDB using con string: " + conStr.toString());
 
         final MongoClientSettings set = MongoClientSettings.builder()
-                .applicationName("Squirrel (" + Version.VERSION + ")").applyConnectionString(conStr)
-                .codecRegistry(this.pojoCodecRegistry).build();
+                .applicationName("Squirrel (" + Version.VERSION + ")")
+                .applyConnectionString(conStr)
+                .codecRegistry(this.pojoCodecRegistry)
+                .build();
 
         this.client = MongoClients.create(set);
         this.db = this.client.getDatabase(dbName);

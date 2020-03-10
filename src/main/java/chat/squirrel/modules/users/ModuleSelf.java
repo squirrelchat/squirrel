@@ -59,14 +59,23 @@ public class ModuleSelf extends AbstractModule {
             obj.put("locale", sets.getLanguage());
         }
 
-        ctx.response().end(obj.put("id", user.getId().toHexString()).put("username", user.getUsername())
-                .put("discriminator", user.getDiscriminator()).put("avatar", JsonObject.mapFrom(user.getAvatar()))
-                .put("bot", false).put("email", user.getEmail()).put("custom_email", user.getCustomEmail())
-                .put("verified", true).put("mfa_enabled", false).put("flags", user.getFlags()).encode());
+        ctx.response()
+                .end(obj.put("id", user.getId().toHexString())
+                        .put("username", user.getUsername())
+                        .put("discriminator", user.getDiscriminator())
+                        .put("avatar", JsonObject.mapFrom(user.getAvatar()))
+                        .put("bot", false)
+                        .put("email", user.getEmail())
+                        .put("custom_email", user.getCustomEmail())
+                        .put("verified", true)
+                        .put("mfa_enabled", false)
+                        .put("flags", user.getFlags())
+                        .encode());
     }
 
     private UserSettings fetchUserSettings(ObjectId userId) {
-        return Squirrel.getInstance().getDatabaseManager().findFirstEntity(UserSettings.class,
-                SquirrelCollection.USER_SETTINGS, Filters.eq(userId));
+        return Squirrel.getInstance()
+                .getDatabaseManager()
+                .findFirstEntity(UserSettings.class, SquirrelCollection.USER_SETTINGS, Filters.eq(userId));
     }
 }

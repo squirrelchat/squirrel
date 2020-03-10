@@ -51,8 +51,9 @@ public class UserSettings extends AbstractEntity {
     }
 
     public UpdateResult updateSettings(final ObjectId userId) {
-        return Squirrel.getInstance().getDatabaseManager().updateEntity(SquirrelCollection.USERS, Filters.eq(userId),
-                Updates.set("userSettings", this));
+        return Squirrel.getInstance()
+                .getDatabaseManager()
+                .updateEntity(SquirrelCollection.USERS, Filters.eq(userId), Updates.set("userSettings", this));
     }
 
     /**
@@ -60,8 +61,10 @@ public class UserSettings extends AbstractEntity {
      * @return the UserSettings object for this user
      */
     public static UserSettings getUserSettings(final ObjectId id) {
-        final Document doc = Squirrel.getInstance().getDatabaseManager()
-                .rawRequest(SquirrelCollection.USERS, Filters.eq(id)).first();
+        final Document doc = Squirrel.getInstance()
+                .getDatabaseManager()
+                .rawRequest(SquirrelCollection.USERS, Filters.eq(id))
+                .first();
 
         return (UserSettings) Squirrel.getInstance().getDatabaseManager().convertDocument(doc, UserSettings.class);
     }

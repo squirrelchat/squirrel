@@ -68,8 +68,9 @@ public class MemberImpl extends AbstractEntity implements IMember {
     @BsonIgnore
     public Future<IGuild> getGuild() {
         // @todo: use an aggregation at query-time
-        return new FutureTask<>(() -> Squirrel.getInstance().getDatabaseManager().findFirstEntity(IGuild.class,
-                SquirrelCollection.GUILDS, Filters.eq(this.getGuildId())));
+        return new FutureTask<>(() -> Squirrel.getInstance()
+                .getDatabaseManager()
+                .findFirstEntity(IGuild.class, SquirrelCollection.GUILDS, Filters.eq(this.getGuildId())));
     }
 
     /**
@@ -132,8 +133,9 @@ public class MemberImpl extends AbstractEntity implements IMember {
     @Override
     @BsonIgnore
     public Future<IUser> getUser() {
-        return new FutureTask<>(() -> Squirrel.getInstance().getDatabaseManager().findFirstEntity(IUser.class,
-                SquirrelCollection.USERS, Filters.eq(this.getUserId())));
+        return new FutureTask<>(() -> Squirrel.getInstance()
+                .getDatabaseManager()
+                .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(this.getUserId())));
     }
 
     /**

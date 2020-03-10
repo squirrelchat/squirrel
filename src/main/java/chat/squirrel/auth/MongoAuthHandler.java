@@ -46,7 +46,8 @@ import de.mkammerer.argon2.Argon2Factory;
 import de.mkammerer.argon2.Argon2Factory.Argon2Types;
 
 /**
- * This {@link IAuthHandler} manages authentication against the MongoDB database.
+ * This {@link IAuthHandler} manages authentication against the MongoDB
+ * database.
  */
 public class MongoAuthHandler implements IAuthHandler {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,8}$",
@@ -98,8 +99,9 @@ public class MongoAuthHandler implements IAuthHandler {
         if (doc != null) {
             final String hash = doc.getString("password");
             if (this.argon.verify(hash, password)) {
-                final IUser user = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IUser.class,
-                        SquirrelCollection.USERS, Filters.eq(doc.get("_id")));
+                final IUser user = Squirrel.getInstance()
+                        .getDatabaseManager()
+                        .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(doc.get("_id")));
                 res.setUser(user);
                 res.setReason(null);
                 res.setToken(Squirrel.getInstance().getTokenize().generateToken(user).toString());
@@ -151,8 +153,9 @@ public class MongoAuthHandler implements IAuthHandler {
         user.setDiscriminator(discriminator);
 
         Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.USERS, user);
-        final UpdateResult pwdUp = Squirrel.getInstance().getDatabaseManager().updateEntity(SquirrelCollection.USERS,
-                Filters.eq(user.getId()), Updates.set("password",
+        final UpdateResult pwdUp = Squirrel.getInstance()
+                .getDatabaseManager()
+                .updateEntity(SquirrelCollection.USERS, Filters.eq(user.getId()), Updates.set("password",
                         this.argon.hash(this.ARGON_ITERATION, this.ARGON_MEMORY, this.ARGON_PARALLELISM, password)));
         this.argon.wipeArray(password);
 
@@ -172,14 +175,16 @@ public class MongoAuthHandler implements IAuthHandler {
 
     private boolean hitMaxUsernameCount(final String username) {
         final int max = Squirrel.getInstance().getConfig().getMaximumUsernameCount();
-        final long count = Squirrel.getInstance().getDatabaseManager().countDocuments(SquirrelCollection.USERS,
-                Filters.eq("username", username));
+        final long count = Squirrel.getInstance()
+                .getDatabaseManager()
+                .countDocuments(SquirrelCollection.USERS, Filters.eq("username", username));
         return count >= 5000 || max != -1 && count >= max;
     }
 
     private boolean isEmailTaken(final String email) {
-        return Squirrel.getInstance().getDatabaseManager().countDocuments(SquirrelCollection.USERS,
-                Filters.eq("email", email)) != 0;
+        return Squirrel.getInstance()
+                .getDatabaseManager()
+                .countDocuments(SquirrelCollection.USERS, Filters.eq("email", email)) != 0;
     }
 
     public static boolean isValidEmail(final String email) { // XXX should we move that to Squirrel?

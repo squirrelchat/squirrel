@@ -99,8 +99,9 @@ public class GuildImpl extends AbstractEntity implements IGuild {
             final ArrayList<IMember> list = new ArrayList<>();
 
             for (final ObjectId id : this.getMembers()) {
-                final IMember member = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IMember.class,
-                        SquirrelCollection.MEMBERS, Filters.eq(id));
+                final IMember member = Squirrel.getInstance()
+                        .getDatabaseManager()
+                        .findFirstEntity(IMember.class, SquirrelCollection.MEMBERS, Filters.eq(id));
                 list.add(member);
             }
             return list;
@@ -135,8 +136,9 @@ public class GuildImpl extends AbstractEntity implements IGuild {
             final ArrayList<IChannel> list = new ArrayList<>();
 
             for (final ObjectId id : this.getChannels()) {
-                final IChannel chan = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IChannel.class,
-                        SquirrelCollection.CHANNELS, Filters.eq(id));
+                final IChannel chan = Squirrel.getInstance()
+                        .getDatabaseManager()
+                        .findFirstEntity(IChannel.class, SquirrelCollection.CHANNELS, Filters.eq(id));
                 list.add(chan);
             }
             return list;
@@ -155,8 +157,9 @@ public class GuildImpl extends AbstractEntity implements IGuild {
             final ArrayList<IRole> list = new ArrayList<>();
 
             for (final ObjectId id : this.getRoles()) {
-                final IRole chan = Squirrel.getInstance().getDatabaseManager().findFirstEntity(IRole.class,
-                        SquirrelCollection.ROLES, Filters.eq(id));
+                final IRole chan = Squirrel.getInstance()
+                        .getDatabaseManager()
+                        .findFirstEntity(IRole.class, SquirrelCollection.ROLES, Filters.eq(id));
                 list.add(chan);
             }
             return list;
