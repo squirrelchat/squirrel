@@ -108,9 +108,7 @@ public abstract class AbstractModule {
 
             final IUser user = getRequester(ctx);
 
-            final AuthResult res = auth.attemptLogin(
-                    user.getUsername() + "#" + Squirrel.formatDiscriminator(user.getDiscriminator()),
-                    password.toCharArray());
+            final AuthResult res = auth.confirmPassword(user.getId(), password.toCharArray());
             if (res.isSuccess()) {
                 ctx.next();
                 return;

@@ -27,6 +27,8 @@
 
 package chat.squirrel.auth;
 
+import org.bson.types.ObjectId;
+
 public interface IAuthHandler {
     /**
      * Attempts a login <b>NB: WIPES password ARRAY ON FAILURE AND SUCCESS</b>
@@ -49,4 +51,6 @@ public interface IAuthHandler {
      * @return AuthResult
      */
     AuthResult register(String email, String username, final char[] password);
+    
+    AuthResult confirmPassword(final ObjectId id, final char[] password);
 }

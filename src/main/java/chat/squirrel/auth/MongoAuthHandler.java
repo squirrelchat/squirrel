@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.Filters;
@@ -166,6 +167,29 @@ public class MongoAuthHandler implements IAuthHandler {
 
         res.setUser(user);
         res.setReason(null);
+        return res;
+    }
+
+    @Override
+    public AuthResult confirmPassword(ObjectId id, char[] password) {
+        final AuthResult res = new AuthResult();
+        final FindIterable<Document> it = fetchUsers(Filters.eq(id));
+        final Document doc = it.first();
+
+        if (doc != null) {
+            final String hash = doc.getString("password");
+            if (this.argon.verify(hash, password)) {
+                final IUser user = Squirrel.getInstance()
+                        .getDatabaseManager()
+                        .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(doc.get("_id")));
+                res.setUser(user);
+                res.setReason(null);
+            } else {
+                res.setReason(FailureReason.INVALID_PASSWORD);
+            }
+        } else {
+            res.setReason(FailureReason.INVALID_CREDENTIALS);
+        }
         return res;
     }
 
