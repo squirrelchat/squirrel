@@ -113,7 +113,8 @@ public abstract class AbstractModule {
                 ctx.next();
                 return;
             } else {
-                ctx.response().setStatusCode(401).end(new JsonObject().put("failure_reason", res.getReason()).encode());
+                this.fail(ctx, 401, "Error while confirming password",
+                        new JsonObject().put("failure_reason", res.getReason()));
                 return;
             }
         });

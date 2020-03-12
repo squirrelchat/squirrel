@@ -67,7 +67,8 @@ public class ModuleLogin extends AbstractModule {
 
         final IAuthHandler auth = Squirrel.getInstance().getAuthHandler();
         final AuthResult res = auth.attemptLogin(obj.getString("username"), obj.getString("password").toCharArray());
-        LOG.info("Login attempt: " + res.toString() + ", IP: " + ctx.request().remoteAddress());
+        LOG.info("Login attempt: " + res.toString()
+                + (Squirrel.getInstance().getConfig().isSaveIP() ? ", IP: " + ctx.request().remoteAddress() : ""));
         MetricsManager.getInstance().happened("login." + (res.isSuccess() ? "success" : "failure"));
         if (!res.isSuccess()) {
             ctx.response().setStatusCode(401).end(new JsonObject().put("failure_reason", res.getReason()).encode());
@@ -78,7 +79,6 @@ public class ModuleLogin extends AbstractModule {
 
         final IUser user = res.getUser();
         if (user.getIps() != null && !user.getIps().contains(ip)) {
-            LOG.info("New IP for " + user.toString() + ": " + ip);
             this.addNewIp(user.getId(), ip);
         }
 
@@ -108,7 +108,8 @@ public class ModuleLogin extends AbstractModule {
 
         final IAuthHandler auth = Squirrel.getInstance().getAuthHandler();
         final AuthResult res = auth.register(obj.getString("email"), obj.getString("username"), password.toCharArray());
-        LOG.info("Register attempt: " + res.toString() + ", IP: " + ctx.request().remoteAddress());
+        LOG.info("Register attempt: " + res.toString()
+        + (Squirrel.getInstance().getConfig().isSaveIP() ? ", IP: " + ctx.request().remoteAddress() : ""));
         MetricsManager.getInstance()
                 .happened("register." + (res.isSuccess() ? "success" : "failure." + res.getReason()));
         if (!res.isSuccess()) {
@@ -122,6 +123,9 @@ public class ModuleLogin extends AbstractModule {
     }
 
     private void addNewIp(final ObjectId user, final String ip) {
+        if (!Squirrel.getInstance().getConfig().isSaveIP())
+            return;
+        LOG.info("New IP for " + user.toString() + ": " + ip);
         Squirrel.getInstance()
                 .getDatabaseManager()
                 .updateEntity(SquirrelCollection.USERS, Filters.eq(user), Updates.addToSet("ips", ip));

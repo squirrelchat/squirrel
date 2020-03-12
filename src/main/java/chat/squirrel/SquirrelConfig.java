@@ -33,7 +33,7 @@ public class SquirrelConfig extends UserConfig {
     private String orgName = "Squirrel Chat", srvDescription = "Default Squirrel Server", secret;
     private int maximumUsernameCount = -1;
     private long sessionTimeout = -1;
-    private boolean allowRegister = true;
+    private boolean allowRegister = true, saveIP = false;
 
     public SquirrelConfig(final Class<?> owner) {
         super(owner);
@@ -94,5 +94,13 @@ public class SquirrelConfig extends UserConfig {
 
     public void setTokenSecret(final String secret) {
         this.secret = secret;
+    }
+
+    public boolean isSaveIP() {
+        return saveIP;
+    }
+
+    public void setSaveIP(boolean saveIP) {
+        this.saveIP = saveIP;
     }
 }

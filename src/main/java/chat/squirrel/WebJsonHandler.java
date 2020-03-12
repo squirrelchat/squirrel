@@ -44,21 +44,22 @@ public class WebJsonHandler implements Handler<RoutingContext> {
 
     @Override
     public void handle(final RoutingContext event) {
-        // @todo: Do we really care
-        MetricsManager.getInstance().record("network.payloadsize", event.request().bytesRead());
+        final String ip = Squirrel.getInstance().getConfig().isSaveIP() ? event.request().remoteAddress().host() : "-";
         final JsonObject obj;
         try {
             obj = event.getBodyAsJson();
         } catch (final DecodeException e) {
-            LOG.info("Received invalid json from " + event.request().remoteAddress().toString());
+            LOG.info("Received invalid json from " + ip);
             event.fail(400);
             return;
         }
         if (obj == null) {
-            LOG.info("Received invalid json from " + event.request().remoteAddress().toString());
+            LOG.info("Received invalid json from " + ip);
             event.fail(400);
             return;
         }
+        // @todo: Do we really care
+        MetricsManager.getInstance().record("network.payloadsize", event.request().bytesRead());
         event.next();
     }
 }
