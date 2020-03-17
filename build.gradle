@@ -52,7 +52,13 @@ allprojects {
 repositories {
     mavenCentral()
     jcenter()
-    maven { url 'https://jitpack.io' }
+
+    maven {
+        url 'https://dl.bintray.com/michaelklishin/maven/'
+    }
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 dependencies {
@@ -62,10 +68,14 @@ dependencies {
     implementation 'io.vertx:vertx-web-client:3.8.5'
     implementation 'org.reflections:reflections:0.9.12'
     implementation 'de.mkammerer:argon2-jvm:2.6'
-    implementation 'xyz.bowser65:Tokenize:8abdea8'
+    implementation 'com.github.Bowser65:Tokenize:d19bbb04eb'
     implementation 'io.vertx:vertx-mail-client:3.8.5'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
     
-
+    
+    implementation 'org.quartz-scheduler:quartz:2.3.2'
+    implementation 'com.novemberain:quartz-mongodb:2.1.0'
+    
     // Logging
     implementation 'io.sentry:sentry-logback:1.7.22'
     implementation 'ch.qos.logback:logback-classic:1.2.3'

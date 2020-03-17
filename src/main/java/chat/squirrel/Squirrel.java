@@ -42,9 +42,11 @@ import chat.squirrel.auth.MongoAuthHandler;
 import chat.squirrel.core.DatabaseManager;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.core.ModuleManager;
+import chat.squirrel.event.EventBus;
 import chat.squirrel.mail.NotificationMailManager;
 import chat.squirrel.mail.SquirrelMailConfig;
 import chat.squirrel.metrics.MetricsManager;
+import chat.squirrel.scheduling.SchedulerManager;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
@@ -71,8 +73,11 @@ public final class Squirrel {
     private final IAuthHandler authHandler;
     private final Tokenize tokenize;
     private final NotificationMailManager notifMail;
+    private final SchedulerManager scheduler;
+    private final EventBus eventBus;
 
     // Vert.x
+    private final Vertx vertx;
     private final HttpServer server;
     private final Router rootRouter;
     private final Router apiRouter;
@@ -107,6 +112,11 @@ public final class Squirrel {
                 this.getProperty("mongo.db-name", "squirrel"));
 
         this.config = (SquirrelConfig) this.getUserConfig(Squirrel.class, new SquirrelConfig(this.getClass()));
+        
+        this.eventBus = new EventBus();
+        
+        this.scheduler = new SchedulerManager();
+        this.scheduler.start();
 
         this.authHandler = new MongoAuthHandler(); // TODO: make customizable when there'll be more
 
@@ -115,8 +125,11 @@ public final class Squirrel {
         LOG.info("Loading modules");
         this.moduleManager.scanPackage("chat.squirrel.modules");
         LOG.info("Initializing vert.x");
-        final Vertx vertx = Vertx.vertx();
+        vertx = Vertx.vertx();
+        
         this.server = vertx.createHttpServer();
+        
+        this.server.webSocketHandler(this.eventBus);
 
         this.rootRouter = Router.router(vertx);
         this.apiRouter = Router.router(vertx);
@@ -206,6 +219,10 @@ public final class Squirrel {
     public NotificationMailManager getNotifMail() {
         return this.notifMail;
     }
+    
+    public SchedulerManager getScheduler() {
+        return scheduler;
+    }
 
     public UserConfig getUserConfig(final Class<?> owner) {
         final UserConfig def = new UserConfig(owner);
@@ -234,12 +251,14 @@ public final class Squirrel {
      */
     public void shutdown() {
         LOG.info("Gracefully shutting down");
-        this.server.close();
+        scheduler.shutdown();
         this.moduleManager.disableModules();
+        this.server.close(e -> {
+            this.vertx.close();
+        });
         MetricsManager.getInstance().save();
         this.dbManager.shutdown();
         LOG.info("Shutdown successful, the process should end");
-        System.exit(0); // TODO is this a good idea?
     }
 
     /**
