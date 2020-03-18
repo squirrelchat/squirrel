@@ -25,36 +25,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.entities;
+package chat.squirrel.entities.channels.impl;
+
+import java.util.Collection;
+import java.util.concurrent.Future;
 
 import org.bson.types.ObjectId;
 
-import chat.squirrel.entities.channels.IChannel;
-import chat.squirrel.entities.impl.MessageImpl;
+import chat.squirrel.entities.channels.IGuildVoiceChannel;
 
-/**
- * A general message in a {@link IChannel} or Group (TODO)
- */
-@Implementation(MessageImpl.class)
-public interface IMessage extends IEntity {
-    /**
-     * Author of the message. Can be either from a {@link IUser} or a Bot
-     *
-     * @return ID of the author of the message
-     */
-    ObjectId getAuthor();
+public class GuildVoiceChannelImpl extends AbstractChannel implements IGuildVoiceChannel {
 
-    void setAuthor(ObjectId author);
-
-    /**
-     * @return The String content of the message
-     */
-    String getContent();
-
-    void setContent(String content);
-
-    ObjectId getOwningChannel();
-
-    void setOwningChannel(ObjectId channel);
+    @Override
+    public Future<Collection<ObjectId>> getParticipants() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

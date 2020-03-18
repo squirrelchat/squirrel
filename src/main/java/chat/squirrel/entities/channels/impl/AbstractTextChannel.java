@@ -25,36 +25,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.entities;
+package chat.squirrel.entities.channels.impl;
 
-import org.bson.types.ObjectId;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-import chat.squirrel.entities.channels.IChannel;
-import chat.squirrel.entities.impl.MessageImpl;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 
-/**
- * A general message in a {@link IChannel} or Group (TODO)
- */
-@Implementation(MessageImpl.class)
-public interface IMessage extends IEntity {
-    /**
-     * Author of the message. Can be either from a {@link IUser} or a Bot
-     *
-     * @return ID of the author of the message
-     */
-    ObjectId getAuthor();
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.entities.IMessage;
+import chat.squirrel.entities.channels.ITextChannel;
 
-    void setAuthor(ObjectId author);
+public abstract class AbstractTextChannel extends AbstractChannel implements ITextChannel {
 
-    /**
-     * @return The String content of the message
-     */
-    String getContent();
+    @Override
+    public CompletableFuture<List<IMessage>> fetchMessages(int nbr) {
+        return CompletableFuture.supplyAsync(() -> {
+            final ArrayList<IMessage> arr = new ArrayList<>();
+            final FindIterable<IMessage> it = Squirrel.getInstance()
+                    .getDatabaseManager()
+                    .findEntities(IMessage.class, SquirrelCollection.MESSAGES, Filters.eq("owningChannel", getId()));
+            it.batchSize(nbr);
+            it.sort(Sorts.descending("_id"));
 
-    void setContent(String content);
+            final MongoCursor<IMessage> cur = it.iterator();
+            while (cur.hasNext() && arr.size() <= nbr) {
+                arr.add(cur.tryNext());
+            }
 
-    ObjectId getOwningChannel();
-
-    void setOwningChannel(ObjectId channel);
-
+            return arr;
+        });
+    }
 }

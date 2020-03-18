@@ -25,36 +25,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.entities;
+package chat.squirrel.entities.channels;
+
+import java.util.concurrent.CompletableFuture;
 
 import org.bson.types.ObjectId;
 
-import chat.squirrel.entities.channels.IChannel;
-import chat.squirrel.entities.impl.MessageImpl;
+import chat.squirrel.entities.IGuild;
 
-/**
- * A general message in a {@link IChannel} or Group (TODO)
- */
-@Implementation(MessageImpl.class)
-public interface IMessage extends IEntity {
-    /**
-     * Author of the message. Can be either from a {@link IUser} or a Bot
-     *
-     * @return ID of the author of the message
-     */
-    ObjectId getAuthor();
+public interface IGuildChannel extends IChannel {
+    ObjectId getGuild();
 
-    void setAuthor(ObjectId author);
+    void setGuild(ObjectId guild);
 
-    /**
-     * @return The String content of the message
-     */
-    String getContent();
-
-    void setContent(String content);
-
-    ObjectId getOwningChannel();
-
-    void setOwningChannel(ObjectId channel);
-
+    CompletableFuture<IGuild> getRealGuild();
 }

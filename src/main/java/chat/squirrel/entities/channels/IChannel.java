@@ -36,16 +36,27 @@ import org.bson.types.ObjectId;
 import chat.squirrel.entities.IEntity;
 
 public interface IChannel extends IEntity {
-    String getName();
 
     /**
      * Gets the participants dynamically
      *
-     * @return The collection of ids of the members that are able to interact with
+     * @return The collection of ids of the IUser s that are able to interact with
      *         this channel
      */
     @BsonIgnore
     Future<Collection<ObjectId>> getParticipants();
 
     void setName(String name);
+
+    String getName();
+
+    int getOrder();
+
+    void setOrder(int order);
+
+    String getCategory();
+
+    void setCategory(String cat);
+
+    Future<Boolean> hasAccess(ObjectId user);
 }

@@ -25,33 +25,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.entities.channels;
+package chat.squirrel.entities.channels.impl;
 
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
-import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
-import chat.squirrel.entities.AbstractEntity;
+import com.mongodb.client.model.Filters;
 
-public class VoiceChannel extends AbstractEntity implements IChannel {
-    private String name;
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.entities.IGuild;
+import chat.squirrel.entities.channels.IGuildTextChannel;
+
+public class GuildTextChannelImpl extends AbstractTextChannel implements IGuildTextChannel {
+    private ObjectId guildId;
 
     @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    @BsonIgnore
-    public Future<Collection<ObjectId>> getParticipants() { // TODO
+    public Future<Collection<ObjectId>> getParticipants() {
+        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public void setName(final String name) {
-        this.name = name;
+    public ObjectId getGuild() {
+        return guildId;
+    }
+
+    @Override
+    public void setGuild(ObjectId guild) {
+        this.guildId = guild;
+    }
+
+    @Override
+    public CompletableFuture<IGuild> getRealGuild() {
+        return CompletableFuture.supplyAsync(() -> {
+            return Squirrel.getInstance()
+                    .getDatabaseManager()
+                    .findFirstEntity(IGuild.class, SquirrelCollection.GUILDS, Filters.eq(getGuild()));
+        });
     }
 
 }

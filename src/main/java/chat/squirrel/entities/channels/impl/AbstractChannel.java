@@ -25,36 +25,66 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.entities;
+package chat.squirrel.entities.channels.impl;
+
+import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.bson.types.ObjectId;
 
+import chat.squirrel.entities.AbstractEntity;
 import chat.squirrel.entities.channels.IChannel;
-import chat.squirrel.entities.impl.MessageImpl;
 
-/**
- * A general message in a {@link IChannel} or Group (TODO)
- */
-@Implementation(MessageImpl.class)
-public interface IMessage extends IEntity {
-    /**
-     * Author of the message. Can be either from a {@link IUser} or a Bot
-     *
-     * @return ID of the author of the message
-     */
-    ObjectId getAuthor();
+public abstract class AbstractChannel extends AbstractEntity implements IChannel {
+    private String category, name;
+    private int order;
 
-    void setAuthor(ObjectId author);
+    @Override
+    public String getCategory() {
+        return category;
+    }
 
-    /**
-     * @return The String content of the message
-     */
-    String getContent();
+    @Override
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
-    void setContent(String content);
+    @Override
+    public int getOrder() {
+        return order;
+    }
 
-    ObjectId getOwningChannel();
+    @Override
+    public void setOrder(int order) {
+        this.order = order;
+    }
 
-    void setOwningChannel(ObjectId channel);
+    @Override
+    public String getName() {
+        return name;
+    }
 
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public Future<Boolean> hasAccess(ObjectId user) {
+        return CompletableFuture.supplyAsync(() -> {
+            Collection<ObjectId> parts;
+            try {
+                parts = getParticipants().get();
+            } catch (Exception e) { // shouldn't be called
+                e.printStackTrace();
+                throw new IllegalStateException();
+            }
+            if (parts != null)
+                return parts.contains(user);
+            else
+                return false;
+        });
+    }
 }

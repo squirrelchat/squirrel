@@ -25,36 +25,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.entities;
+package chat.squirrel.entities.channels;
 
-import org.bson.types.ObjectId;
-
-import chat.squirrel.entities.channels.IChannel;
-import chat.squirrel.entities.impl.MessageImpl;
-
-/**
- * A general message in a {@link IChannel} or Group (TODO)
- */
-@Implementation(MessageImpl.class)
-public interface IMessage extends IEntity {
-    /**
-     * Author of the message. Can be either from a {@link IUser} or a Bot
-     *
-     * @return ID of the author of the message
-     */
-    ObjectId getAuthor();
-
-    void setAuthor(ObjectId author);
-
-    /**
-     * @return The String content of the message
-     */
-    String getContent();
-
-    void setContent(String content);
-
-    ObjectId getOwningChannel();
-
-    void setOwningChannel(ObjectId channel);
+public interface IGuildVoiceChannel {
 
 }

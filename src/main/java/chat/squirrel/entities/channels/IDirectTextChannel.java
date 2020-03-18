@@ -27,46 +27,22 @@
 
 package chat.squirrel.entities.channels;
 
-import java.util.Collection;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 
-import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
-import chat.squirrel.entities.AbstractEntity;
-import chat.squirrel.entities.IMessage;
+import chat.squirrel.entities.IUser;
 
-public class TextChannel extends AbstractEntity implements IChannel {
-    private String name;
-    private ObjectId guildId;
+public interface IDirectTextChannel extends ITextChannel {
+    ObjectId getFirstParticipant();
 
-    public ObjectId getGuildId() {
-        return this.guildId;
-    }
+    void setFirstParticipant(ObjectId fPart);
 
-    @BsonIgnore
-    public Collection<IMessage> getMessages(final int nbr) { // TODO
-        return null;
-    }
+    ObjectId getSecondParticipant();
 
-    @Override
-    public String getName() {
-        return this.name;
-    }
+    void setSecondParticipant(ObjectId sPart);
 
-    @Override
-    public Future<Collection<ObjectId>> getParticipants() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    CompletableFuture<IUser> getRealFirstParticipant();
 
-    public void setGuildId(final ObjectId guildId) {
-        this.guildId = guildId;
-    }
-
-    @Override
-    public void setName(final String name) {
-        this.name = name;
-    }
-
+    CompletableFuture<IUser> getRealSecondParticipant();
 }

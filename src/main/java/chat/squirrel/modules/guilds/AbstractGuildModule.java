@@ -39,14 +39,11 @@ import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.AuditLogEntry;
 import chat.squirrel.entities.AuditLogEntry.AuditLogEntryType;
 import chat.squirrel.entities.IGuild;
-import chat.squirrel.entities.IMember;
-import chat.squirrel.entities.IUser;
 import chat.squirrel.modules.AbstractModule;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
 public abstract class AbstractGuildModule extends AbstractModule {
-    protected IGuild getGuild(final RoutingContext ctx, final IUser user, final IGuild.Permissions permission) {
+    protected IGuild getGuild(final RoutingContext ctx) {
         final IGuild guild = Squirrel.getInstance()
                 .getDatabaseManager()
                 .findFirstEntity(IGuild.class, DatabaseManager.SquirrelCollection.GUILDS,
@@ -57,13 +54,6 @@ public abstract class AbstractGuildModule extends AbstractModule {
             return null;
         }
 
-        final IMember member = guild.getMemberForUser(user.getId());
-        if (member == null || permission != null && !member.hasEffectivePermission(permission)) {
-            ctx.response().setStatusCode(403).end(new JsonObject().put("message", "Missing Permissions").encode());
-            return null;
-        }
-
-        // @todo: MFA requirement
         return guild;
     }
 

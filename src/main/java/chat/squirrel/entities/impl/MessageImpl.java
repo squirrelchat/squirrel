@@ -36,7 +36,7 @@ import chat.squirrel.entities.IMessage;
  * A standard text message TODO: Rename to TextMessage
  */
 public class MessageImpl extends AbstractEntity implements IMessage {
-    private ObjectId author;
+    private ObjectId author, owningChannel;
     private String content;
 
     @Override
@@ -47,6 +47,27 @@ public class MessageImpl extends AbstractEntity implements IMessage {
     @Override
     public String getContent() {
         return this.content;
+    }
+
+    @Override
+    public void setAuthor(ObjectId author) {
+        this.author = author;
+
+    }
+
+    @Override
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    @Override
+    public ObjectId getOwningChannel() {
+        return owningChannel;
+    }
+
+    @Override
+    public void setOwningChannel(ObjectId channel) {
+        this.owningChannel = channel;
     }
 
 }

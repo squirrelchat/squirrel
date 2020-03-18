@@ -35,14 +35,15 @@ import com.mongodb.client.model.Filters;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.entities.AuditLogEntry.AuditLogEntryType;
 import chat.squirrel.entities.IGuild;
 import chat.squirrel.entities.IGuild.Permissions;
 import chat.squirrel.entities.IMember;
 import chat.squirrel.entities.IUser;
-import chat.squirrel.entities.AuditLogEntry.AuditLogEntryType;
 import chat.squirrel.entities.channels.IChannel;
-import chat.squirrel.entities.channels.TextChannel;
-import chat.squirrel.entities.channels.VoiceChannel;
+import chat.squirrel.entities.channels.IVoiceChannel;
+import chat.squirrel.entities.channels.impl.GuildTextChannelImpl;
+import chat.squirrel.entities.channels.impl.GuildVoiceChannelImpl;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -55,14 +56,22 @@ public class ModuleGuildChannels extends AbstractGuildModule {
         this.registerAuthedRoute(HttpMethod.GET, "/guilds/:id/channels", this::handleListChannels);
         this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id/channels", this::notImplemented); // Channel order
         this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id/channels/:chanId", this::notImplemented);
-        this.registerAuthedRoute(HttpMethod.DELETE, "/guilds/:id/channels/:chanId", this::notImplemented);
+        this.registerAuthedRoute(HttpMethod.DELETE, "/guilds/:id/channels/:chanId", this::handleDeleteChannel);
     }
 
     private void handleCreateChannel(final RoutingContext ctx) {
         final IUser user = this.getRequester(ctx);
-        final IGuild guild = this.getGuild(ctx, user, Permissions.GUILD_MANAGE_CHANNELS);
+        final IGuild guild = this.getGuild(ctx);
+
         if (guild == null) {
             return; // Payload already handled; No extra processing required
+        }
+
+        final IMember member = guild.getMemberForUser(user.getId());
+        
+        if (member.hasEffectivePermission(Permissions.GUILD_MANAGE_CHANNELS)) {
+            this.fail(ctx, 403, "Missing permissions", null);
+            return;
         }
 
         final JsonObject obj = ctx.getBodyAsJson();
@@ -85,9 +94,9 @@ public class ModuleGuildChannels extends AbstractGuildModule {
         final boolean voiceChan = obj.getBoolean("voice", false);
         final IChannel channel;
         if (voiceChan) {
-            channel = new VoiceChannel();
+            channel = new GuildVoiceChannelImpl();
         } else {
-            channel = new TextChannel();
+            channel = new GuildTextChannelImpl();
         }
 
         channel.setName(name); // @todo: Take into account other payload fields (?)
@@ -129,7 +138,7 @@ public class ModuleGuildChannels extends AbstractGuildModule {
                 // @todo: Add all of the fields we'll have
                 jsonChan.put("name", chan.getName());
                 jsonChan.put("id", chan.getId().toHexString());
-                jsonChan.put("voice", chan instanceof VoiceChannel);
+                jsonChan.put("voice", chan instanceof IVoiceChannel);
                 out.add(jsonChan);
             }
         } catch (InterruptedException | ExecutionException e) { // Shouldn't be called
@@ -137,5 +146,21 @@ public class ModuleGuildChannels extends AbstractGuildModule {
         }
 
         ctx.response().end(out.encode());
+    }
+
+    private void handleDeleteChannel(final RoutingContext ctx) {
+        final IUser user = this.getRequester(ctx);
+        final IGuild guild = this.getGuild(ctx);
+        if (guild == null) {
+            return; // Payload already handled; No extra processing required
+        }
+
+        final IMember member = guild.getMemberForUser(user.getId());
+        if (member.hasEffectivePermission(Permissions.GUILD_MANAGE_CHANNELS)) {
+            this.fail(ctx, 403, "Missing permissions", null);
+            return;
+        }
+        
+        
     }
 }
