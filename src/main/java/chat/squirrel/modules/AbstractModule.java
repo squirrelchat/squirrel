@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,11 +27,6 @@
 
 package chat.squirrel.modules;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import chat.squirrel.Squirrel;
 import chat.squirrel.WebAuthHandler;
 import chat.squirrel.auth.AuthResult;
@@ -44,6 +39,10 @@ import io.vertx.ext.web.Route;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import xyz.bowser65.tokenize.Token;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractModule {
     private final List<Route> routes = new ArrayList<>();
@@ -83,7 +82,7 @@ public abstract class AbstractModule {
      * @param extra  The extra informations to provide, may be null
      */
     protected void fail(final RoutingContext ctx, final int status, final String desc,
-            @Nullable final JsonObject extra) {
+                        @Nullable final JsonObject extra) {
         final JsonObject out = new JsonObject();
         out.put("status", status);
         out.put("desc", desc);
@@ -95,7 +94,7 @@ public abstract class AbstractModule {
     }
 
     protected Route registerPasswordConfirmRoute(final HttpMethod method, final String path,
-            final Handler<RoutingContext> handler) {
+                                                 final Handler<RoutingContext> handler) {
         final Route rt = this.registerAuthedRoute(method, path, ctx -> {
             final IAuthHandler auth = Squirrel.getInstance().getAuthHandler();
             final JsonObject obj = ctx.getBodyAsJson();
@@ -133,7 +132,7 @@ public abstract class AbstractModule {
      * @return The new route to be slick :sunglasses:
      */
     protected Route registerAuthedRoute(final HttpMethod method, final String path,
-            final Handler<RoutingContext> handler) {
+                                        final Handler<RoutingContext> handler) {
         final Route rt = this.registerRoute(method, path, Squirrel.getInstance().getApiAuthHandler());
         rt.blockingHandler(handler);
         return rt;
@@ -161,7 +160,7 @@ public abstract class AbstractModule {
     }
 
     protected Route registerFileUploadRoute(final HttpMethod method, final String path,
-            final Handler<RoutingContext> handler) {
+                                            final Handler<RoutingContext> handler) {
         final Route rt = Squirrel.getInstance()
                 .getRouter()
                 .route(method, path)

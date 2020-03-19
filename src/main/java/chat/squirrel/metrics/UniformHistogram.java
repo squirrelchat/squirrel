@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,16 +27,16 @@
 
 package chat.squirrel.metrics;
 
-import java.util.Random;
-
 import org.bson.codecs.pojo.annotations.BsonIgnore;
+
+import java.util.Random;
 
 /**
  * Inspired from delight's UniformReservoir.
- * 
+ *
  * @see <a href=
- *      "https://github.com/javadelight/delight-metrics/blob/cdeb9513b42a930b58cf2930da2d3be8e8e5f6a9/src/main/java/com/codahale/metrics/UniformReservoir.java">delight-metrics
- *      UniformReservoir</a>
+ * "https://github.com/javadelight/delight-metrics/blob/cdeb9513b42a930b58cf2930da2d3be8e8e5f6a9/src/main/java/com/codahale/metrics/UniformReservoir.java">delight-metrics
+ * UniformReservoir</a>
  */
 public class UniformHistogram extends AbstractHistogram implements Histogram {
     private int count = 0;
@@ -90,7 +90,7 @@ public class UniformHistogram extends AbstractHistogram implements Histogram {
 
     /**
      * Returns a random double
-     * 
+     *
      * @param max the exclusive maximum
      * @return a random double between 0 (inclusive) and max (exclusive)
      */

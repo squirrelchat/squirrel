@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,27 +27,20 @@
 
 package chat.squirrel.entities.impl;
 
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.entities.*;
+import chat.squirrel.entities.IGuild.Permissions;
+import com.mongodb.client.model.Filters;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+import org.bson.types.ObjectId;
+
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-
-import javax.annotation.Nonnull;
-
-import org.bson.codecs.pojo.annotations.BsonIgnore;
-import org.bson.types.ObjectId;
-
-import com.mongodb.client.model.Filters;
-
-import chat.squirrel.Squirrel;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.AbstractEntity;
-import chat.squirrel.entities.IGuild;
-import chat.squirrel.entities.IGuild.Permissions;
-import chat.squirrel.entities.IMember;
-import chat.squirrel.entities.IRole;
-import chat.squirrel.entities.IUser;
 
 /**
  * Member of a guild
@@ -128,7 +121,7 @@ public class MemberImpl extends AbstractEntity implements IMember {
      * Async because DB request
      *
      * @return Future that will return the {@link IUser} corresponding to this
-     *         Member.
+     * Member.
      */
     @Override
     @BsonIgnore

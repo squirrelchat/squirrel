@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,16 +27,15 @@
 
 package chat.squirrel.test;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
 import chat.squirrel.metrics.UniformCalculator;
 import io.vertx.core.json.JsonObject;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class TestMetrics {
-    private final double[] sample = new double[] { 978, 76, 0, 928, 117, 783, 560, 179, 186, 633, 817, 412, 366, 68,
-            594, 604, 373, 717, 903, 5 };
+    private final double[] sample = new double[]{978, 76, 0, 928, 117, 783, 560, 179, 186, 633, 817, 412, 366, 68,
+            594, 604, 373, 717, 903, 5};
 
     @Test
     public void testUniformCalculator() {

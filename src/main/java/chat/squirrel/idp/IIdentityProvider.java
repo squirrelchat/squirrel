@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,9 +27,9 @@
 
 package chat.squirrel.idp;
 
-import java.util.concurrent.Future;
-
 import chat.squirrel.idp.identities.IIdentity;
+
+import java.util.concurrent.Future;
 
 interface IIdentityProvider<Pre, Auth> {
     Pre getPreAuth();

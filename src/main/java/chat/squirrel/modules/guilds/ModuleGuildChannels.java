@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,12 +27,6 @@
 
 package chat.squirrel.modules.guilds;
 
-import java.util.concurrent.ExecutionException;
-
-import org.bson.types.ObjectId;
-
-import com.mongodb.client.model.Filters;
-
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.AuditLogEntry.AuditLogEntryType;
@@ -44,10 +38,14 @@ import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.entities.channels.IVoiceChannel;
 import chat.squirrel.entities.channels.impl.GuildTextChannelImpl;
 import chat.squirrel.entities.channels.impl.GuildVoiceChannelImpl;
+import com.mongodb.client.model.Filters;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+import org.bson.types.ObjectId;
+
+import java.util.concurrent.ExecutionException;
 
 public class ModuleGuildChannels extends AbstractGuildModule {
     @Override
@@ -68,7 +66,7 @@ public class ModuleGuildChannels extends AbstractGuildModule {
         }
 
         final IMember member = guild.getMemberForUser(user.getId());
-        
+
         if (member.hasEffectivePermission(Permissions.GUILD_MANAGE_CHANNELS)) {
             this.fail(ctx, 403, "Missing permissions", null);
             return;
@@ -160,7 +158,7 @@ public class ModuleGuildChannels extends AbstractGuildModule {
             this.fail(ctx, 403, "Missing permissions", null);
             return;
         }
-        
-        
+
+
     }
 }
