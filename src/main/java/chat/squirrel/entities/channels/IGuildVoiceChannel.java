@@ -27,6 +27,6 @@
 
 package chat.squirrel.entities.channels;
 
-public interface IGuildVoiceChannel {
+public interface IGuildVoiceChannel extends IGuildChannel, IVoiceChannel {
 
 }

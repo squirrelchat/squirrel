@@ -35,7 +35,7 @@ import chat.squirrel.entities.impl.MessageImpl;
 /**
  * A general message in a {@link IChannel} or Group (TODO)
  */
-@Implementation(MessageImpl.class)
+
 public interface IMessage extends IEntity {
     /**
      * Author of the message. Can be either from a {@link IUser} or a Bot

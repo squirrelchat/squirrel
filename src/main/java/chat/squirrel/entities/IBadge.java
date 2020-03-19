@@ -6,7 +6,7 @@ import chat.squirrel.upload.Asset;
 /**
  * A badge is a server-wide entity and not attributed to a single guild
  */
-@Implementation(BadgeImpl.class)
+
 public interface IBadge extends IEntity {
     String getName();
 

@@ -29,7 +29,6 @@ package chat.squirrel.entities.channels.impl;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.bson.types.ObjectId;
@@ -87,4 +86,5 @@ public abstract class AbstractChannel extends AbstractEntity implements IChannel
                 return false;
         });
     }
+    
 }

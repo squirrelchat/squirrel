@@ -36,6 +36,9 @@ import java.util.function.Consumer;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.ClassModelBuilder;
+import org.bson.codecs.pojo.Convention;
+import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 import org.slf4j.Logger;
@@ -57,7 +60,6 @@ import chat.squirrel.entities.IEntity;
 import chat.squirrel.entities.IGuild;
 import chat.squirrel.entities.IMessage;
 import chat.squirrel.entities.IUser;
-import chat.squirrel.entities.Implementation;
 import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.entities.impl.UserImpl;
 
@@ -77,8 +79,20 @@ public class DatabaseManager {
      * @param dbName           The database to use
      */
     public DatabaseManager(final String connectionString, final String dbName) {
+        final Convention entityConvention = new Convention() {
+
+            @Override
+            public void apply(ClassModelBuilder<?> classModelBuilder) {
+                classModelBuilder.enableDiscriminator(true);
+            }
+        };
+
         this.pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
-                CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+                CodecRegistries.fromProviders(PojoCodecProvider.builder()
+                        .automatic(true)
+                        .conventions(List.of(entityConvention, Conventions.ANNOTATION_CONVENTION,
+                                Conventions.CLASS_AND_PROPERTY_CONVENTION)) // Defaults + entityConvention
+                        .build()));
 
         final ConnectionString conStr = new ConnectionString(connectionString);
 
@@ -111,7 +125,7 @@ public class DatabaseManager {
 
     public <T extends IEntity> FindIterable<T> findEntities(final Class<T> type, final SquirrelCollection col,
             final Bson filters) {
-        return this.db.getCollection(col.getMongoName(), getImplementation(type)).find(filters);
+        return this.db.getCollection(col.getMongoName(), type).find(filters);
     }
 
     public <T extends IEntity> T findFirstEntity(final Class<T> type, final SquirrelCollection col,
@@ -191,20 +205,6 @@ public class DatabaseManager {
 
     public UpdateResult replaceOne(final SquirrelCollection col, final IEntity entity, final Bson filter) {
         return this.db.getCollection(col.getMongoName(), IEntity.class).replaceOne(filter, entity);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends IEntity> Class<T> getImplementation(final Class<T> inter) {
-        if (!inter.isInterface()) {
-            return inter;
-        }
-
-        final Implementation im = inter.getAnnotation(Implementation.class);
-        if (im == null) {
-            throw new IllegalStateException("inter does't specify the Implementation");
-        }
-
-        return (Class<T>) im.value();
     }
 
     /**

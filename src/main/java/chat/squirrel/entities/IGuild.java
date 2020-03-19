@@ -35,7 +35,7 @@ import org.bson.types.ObjectId;
 import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.entities.impl.GuildImpl;
 
-@Implementation(GuildImpl.class)
+
 public interface IGuild extends IEntity {
     static IGuild create() {
         return new GuildImpl();

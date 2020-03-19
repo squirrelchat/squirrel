@@ -28,18 +28,43 @@
 package chat.squirrel.entities.channels.impl;
 
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 import org.bson.types.ObjectId;
 
+import com.mongodb.client.model.Filters;
+
+import chat.squirrel.Squirrel;
+import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.entities.IGuild;
 import chat.squirrel.entities.channels.IGuildVoiceChannel;
 
 public class GuildVoiceChannelImpl extends AbstractChannel implements IGuildVoiceChannel {
+    private ObjectId guildId;
 
     @Override
     public Future<Collection<ObjectId>> getParticipants() {
-        // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public ObjectId getGuild() {
+        return guildId;
+    }
+
+    @Override
+    public void setGuild(ObjectId guild) {
+        this.guildId = guild;
+    }
+
+    @Override
+    public CompletableFuture<IGuild> getRealGuild() {
+        return CompletableFuture.supplyAsync(() -> {
+            return Squirrel.getInstance()
+                    .getDatabaseManager()
+                    .findFirstEntity(IGuild.class, SquirrelCollection.GUILDS, Filters.eq(getGuild()));
+        });
     }
 
 }

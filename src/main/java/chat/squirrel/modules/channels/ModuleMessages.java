@@ -27,7 +27,6 @@
 
 package chat.squirrel.modules.channels;
 
-import chat.squirrel.entities.IGuild.Permissions;
 import chat.squirrel.entities.channels.IChannel;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -39,7 +38,7 @@ public class ModuleMessages extends AbstractChannelModule {
         this.registerAuthedRoute(HttpMethod.POST, "/channels/:id/messages", this::sendMessage);
     }
 
-    private void sendMessage(final RoutingContext ctx) {
+    private void sendMessage(final RoutingContext ctx) { // TODO
         final JsonObject obj = ctx.getBodyAsJson();
         final String content = obj.getString("content");
 
@@ -47,7 +46,8 @@ public class ModuleMessages extends AbstractChannelModule {
             this.fail(ctx, 400, "Missing message content", null);
             return;
         }
-        
+
         final IChannel channel = getChannel(ctx);
+        ctx.response().end();
     }
 }
