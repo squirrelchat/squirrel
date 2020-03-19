@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,11 +26,11 @@
  */
 package chat.squirrel.entities;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Retention(RUNTIME)
 @Target(TYPE)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,24 +27,22 @@
 
 package chat.squirrel.auth;
 
-import java.util.regex.Pattern;
-
-import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
-
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Updates;
-import com.mongodb.client.result.UpdateResult;
-
 import chat.squirrel.Squirrel;
 import chat.squirrel.auth.AuthResult.FailureReason;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.IUser;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import de.mkammerer.argon2.Argon2Factory.Argon2Types;
+import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
+
+import java.util.regex.Pattern;
 
 /**
  * This {@link IAuthHandler} manages authentication against the MongoDB
@@ -53,10 +51,10 @@ import de.mkammerer.argon2.Argon2Factory.Argon2Types;
 public class MongoAuthHandler implements IAuthHandler {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,8}$",
             Pattern.CASE_INSENSITIVE),
-            /**
-             * Does not allow escapes, line breaks, apple logo (F8FF)
-             */
-            USERNAME_PATTERN = Pattern.compile("^\\S[^#\\e\\p{Cntrl}}\\v\\xF8FF]+\\S$", Pattern.CASE_INSENSITIVE);
+    /**
+     * Does not allow escapes, line breaks, apple logo (F8FF)
+     */
+    USERNAME_PATTERN = Pattern.compile("^\\S[^#\\e\\p{Cntrl}}\\v\\xF8FF]+\\S$", Pattern.CASE_INSENSITIVE);
     private final Argon2 argon;
     @SuppressWarnings("FieldCanBeLocal")
     private final int ARGON_ITERATION = 3, ARGON_MEMORY = 128000, ARGON_PARALLELISM = 4;

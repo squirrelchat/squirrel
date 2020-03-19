@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,10 +27,9 @@
 
 package chat.squirrel.metrics;
 
-import org.bson.codecs.pojo.annotations.BsonIgnore;
-
 import chat.squirrel.entities.IEntity;
 import chat.squirrel.entities.Implementation;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 @Implementation(UniformHistogram.class)
 public interface Histogram extends IEntity, IMetric {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,19 +27,13 @@
 
 package chat.squirrel.modules.channels;
 
-import org.bson.types.ObjectId;
-
-import com.mongodb.client.model.Filters;
-
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager;
-import chat.squirrel.entities.IGuild;
-import chat.squirrel.entities.IMember;
-import chat.squirrel.entities.IUser;
 import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.modules.guilds.AbstractGuildModule;
-import io.vertx.core.json.JsonObject;
+import com.mongodb.client.model.Filters;
 import io.vertx.ext.web.RoutingContext;
+import org.bson.types.ObjectId;
 
 public abstract class AbstractChannelModule extends AbstractGuildModule {
     protected IChannel getChannel(final RoutingContext ctx) {

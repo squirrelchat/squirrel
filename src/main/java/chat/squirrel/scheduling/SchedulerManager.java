@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,10 +27,10 @@
 
 package chat.squirrel.scheduling;
 
-import java.util.LinkedList;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.LinkedList;
 
 public class SchedulerManager implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(SchedulerManager.class);
@@ -62,7 +62,7 @@ public class SchedulerManager implements Runnable {
     @Override
     public void run() {
         try {
-            for (;;) {
+            for (; ; ) {
                 if (fifo.size() == 0) {
                     Thread.sleep(normalTime);
                     continue;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,20 +27,10 @@
 
 package chat.squirrel.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
-import java.util.function.Consumer;
-
-import org.bson.Document;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.PojoCodecProvider;
-import org.bson.conversions.Bson;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import chat.squirrel.Version;
+import chat.squirrel.entities.*;
+import chat.squirrel.entities.channels.IChannel;
+import chat.squirrel.entities.impl.UserImpl;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.FindIterable;
@@ -51,15 +41,19 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.InsertOneModel;
 import com.mongodb.client.model.WriteModel;
 import com.mongodb.client.result.UpdateResult;
+import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
+import org.bson.conversions.Bson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import chat.squirrel.Version;
-import chat.squirrel.entities.IEntity;
-import chat.squirrel.entities.IGuild;
-import chat.squirrel.entities.IMessage;
-import chat.squirrel.entities.IUser;
-import chat.squirrel.entities.Implementation;
-import chat.squirrel.entities.channels.IChannel;
-import chat.squirrel.entities.impl.UserImpl;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Consumer;
 
 /**
  * A DatabaseManager manages the interactions with MongoDB
@@ -110,12 +104,12 @@ public class DatabaseManager {
     }
 
     public <T extends IEntity> FindIterable<T> findEntities(final Class<T> type, final SquirrelCollection col,
-            final Bson filters) {
+                                                            final Bson filters) {
         return this.db.getCollection(col.getMongoName(), getImplementation(type)).find(filters);
     }
 
     public <T extends IEntity> T findFirstEntity(final Class<T> type, final SquirrelCollection col,
-            final Bson filters) {
+                                                 final Bson filters) {
         return this.findEntities(type, col, filters).first();
     }
 
@@ -162,7 +156,7 @@ public class DatabaseManager {
      * @param username The username string to check
      * @param dis      The discriminator integer to check
      * @return {@code true} if the discriminator is already used for this username,
-     *         {@code false} otherwise
+     * {@code false} otherwise
      */
     public boolean isDiscriminatorTaken(final String username, final int dis) {
         return this.findFirstEntity(UserImpl.class, SquirrelCollection.USERS,
@@ -266,7 +260,7 @@ public class DatabaseManager {
 
         /**
          * @return the name of the MongoDB collection to use because we try to comply
-         *         with BSON naming standards.
+         * with BSON naming standards.
          */
         public String getMongoName() {
             return this.mongoName;

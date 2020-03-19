@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,10 +27,10 @@
 
 package chat.squirrel.entities.channels;
 
+import chat.squirrel.entities.IMessage;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
-import chat.squirrel.entities.IMessage;
 
 public interface ITextChannel extends IChannel {
     CompletableFuture<List<IMessage>> fetchMessages(int nbr);

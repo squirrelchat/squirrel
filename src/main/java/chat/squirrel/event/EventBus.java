@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,17 +27,16 @@
 
 package chat.squirrel.event;
 
+import io.vertx.core.Handler;
+import io.vertx.core.http.ServerWebSocket;
+import org.bson.types.ObjectId;
+
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.bson.types.ObjectId;
-
-import io.vertx.core.Handler;
-import io.vertx.core.http.ServerWebSocket;
-
 public class EventBus implements Handler<ServerWebSocket> {
     private final Map<ObjectId, ServerWebSocket> sockets;
-    
+
     public EventBus() {
         sockets = new Hashtable<ObjectId, ServerWebSocket>();
     }
@@ -47,7 +46,7 @@ public class EventBus implements Handler<ServerWebSocket> {
         // TODO Auto-generated method stub
 
     }
-    
+
     private void makeHandshake(ServerWebSocket sock) {
     }
 

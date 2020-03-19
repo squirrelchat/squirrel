@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,15 +27,13 @@
 
 package chat.squirrel.entities.channels.impl;
 
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import org.bson.types.ObjectId;
-
 import chat.squirrel.entities.AbstractEntity;
 import chat.squirrel.entities.channels.IChannel;
+import org.bson.types.ObjectId;
+
+import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 public abstract class AbstractChannel extends AbstractEntity implements IChannel {
     private String category, name;

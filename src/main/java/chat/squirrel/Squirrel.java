@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,16 +27,6 @@
 
 package chat.squirrel;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.mongodb.client.model.Filters;
-
 import chat.squirrel.auth.IAuthHandler;
 import chat.squirrel.auth.MongoAuthHandler;
 import chat.squirrel.core.DatabaseManager;
@@ -47,13 +37,21 @@ import chat.squirrel.mail.NotificationMailManager;
 import chat.squirrel.mail.SquirrelMailConfig;
 import chat.squirrel.metrics.MetricsManager;
 import chat.squirrel.scheduling.SchedulerManager;
+import com.mongodb.client.model.Filters;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.client.WebClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.bowser65.tokenize.Tokenize;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 
 /**
  * The main Squirrel Class. This class is the core of the server, it supervises
@@ -112,9 +110,9 @@ public final class Squirrel {
                 this.getProperty("mongo.db-name", "squirrel"));
 
         this.config = (SquirrelConfig) this.getUserConfig(Squirrel.class, new SquirrelConfig(this.getClass()));
-        
+
         this.eventBus = new EventBus();
-        
+
         this.scheduler = new SchedulerManager();
         this.scheduler.start();
 
@@ -126,9 +124,9 @@ public final class Squirrel {
         this.moduleManager.scanPackage("chat.squirrel.modules");
         LOG.info("Initializing vert.x");
         vertx = Vertx.vertx();
-        
+
         this.server = vertx.createHttpServer();
-        
+
         this.server.webSocketHandler(this.eventBus);
 
         this.rootRouter = Router.router(vertx);
@@ -219,7 +217,7 @@ public final class Squirrel {
     public NotificationMailManager getNotifMail() {
         return this.notifMail;
     }
-    
+
     public SchedulerManager getScheduler() {
         return scheduler;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,16 +27,15 @@
 
 package chat.squirrel.entities.impl;
 
-import java.util.Collection;
-import java.util.Collections;
-
-import org.bson.codecs.pojo.annotations.BsonIgnore;
-import org.bson.types.ObjectId;
-
 import chat.squirrel.entities.AbstractEntity;
 import chat.squirrel.entities.IUser;
 import chat.squirrel.upload.Asset;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+import org.bson.types.ObjectId;
 import xyz.bowser65.tokenize.IAccount;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Server wide user account

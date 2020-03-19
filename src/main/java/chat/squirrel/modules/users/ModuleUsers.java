@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,17 +27,15 @@
 
 package chat.squirrel.modules.users;
 
-import org.bson.types.ObjectId;
-
-import com.mongodb.client.model.Filters;
-
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.IUser;
 import chat.squirrel.modules.AbstractModule;
+import com.mongodb.client.model.Filters;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+import org.bson.types.ObjectId;
 
 public class ModuleUsers extends AbstractModule {
     @Override

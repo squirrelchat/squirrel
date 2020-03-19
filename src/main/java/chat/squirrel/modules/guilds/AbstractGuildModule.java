@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,12 +27,6 @@
 
 package chat.squirrel.modules.guilds;
 
-import java.util.Date;
-
-import org.bson.types.ObjectId;
-
-import com.mongodb.client.model.Filters;
-
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
@@ -40,7 +34,11 @@ import chat.squirrel.entities.AuditLogEntry;
 import chat.squirrel.entities.AuditLogEntry.AuditLogEntryType;
 import chat.squirrel.entities.IGuild;
 import chat.squirrel.modules.AbstractModule;
+import com.mongodb.client.model.Filters;
 import io.vertx.ext.web.RoutingContext;
+import org.bson.types.ObjectId;
+
+import java.util.Date;
 
 public abstract class AbstractGuildModule extends AbstractModule {
     protected IGuild getGuild(final RoutingContext ctx) {
@@ -62,7 +60,7 @@ public abstract class AbstractGuildModule extends AbstractModule {
     }
 
     protected void submitAudit(final ObjectId guild, final ObjectId user, final AuditLogEntryType type,
-            final Date date) {
+                               final Date date) {
         final AuditLogEntry entry = new AuditLogEntry();
         entry.setGuild(guild);
         entry.setUser(user);

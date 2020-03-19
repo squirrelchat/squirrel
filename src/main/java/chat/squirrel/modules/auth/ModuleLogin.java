@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-present Bowser65 & vinceh121, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,23 +27,21 @@
 
 package chat.squirrel.modules.auth;
 
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Updates;
-
 import chat.squirrel.Squirrel;
-import chat.squirrel.auth.IAuthHandler;
 import chat.squirrel.auth.AuthResult;
+import chat.squirrel.auth.IAuthHandler;
 import chat.squirrel.core.DatabaseManager.SquirrelCollection;
 import chat.squirrel.entities.IUser;
 import chat.squirrel.metrics.MetricsManager;
 import chat.squirrel.modules.AbstractModule;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Module manages authentication and MFA to Squirrel
@@ -109,7 +107,7 @@ public class ModuleLogin extends AbstractModule {
         final IAuthHandler auth = Squirrel.getInstance().getAuthHandler();
         final AuthResult res = auth.register(obj.getString("email"), obj.getString("username"), password.toCharArray());
         LOG.info("Register attempt: " + res.toString()
-        + (Squirrel.getInstance().getConfig().isSaveIP() ? ", IP: " + ctx.request().remoteAddress() : ""));
+                + (Squirrel.getInstance().getConfig().isSaveIP() ? ", IP: " + ctx.request().remoteAddress() : ""));
         MetricsManager.getInstance()
                 .happened("register." + (res.isSuccess() ? "success" : "failure." + res.getReason()));
         if (!res.isSuccess()) {
