@@ -27,7 +27,7 @@
 
 package chat.squirrel;
 
-import chat.squirrel.entities.AbstractEntity;
+import chat.squirrel.database.entities.AbstractEntity;
 
 public class UserConfig extends AbstractEntity {
     private Class<?> owner;

@@ -31,7 +31,7 @@ import chat.squirrel.Squirrel;
 import chat.squirrel.WebAuthHandler;
 import chat.squirrel.auth.AuthResult;
 import chat.squirrel.auth.IAuthHandler;
-import chat.squirrel.entities.IUser;
+import chat.squirrel.database.entities.IUser;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -110,11 +110,9 @@ public abstract class AbstractModule {
             final AuthResult res = auth.confirmPassword(user.getId(), password.toCharArray());
             if (res.isSuccess()) {
                 ctx.next();
-                return;
             } else {
                 this.fail(ctx, 401, "Error while confirming password",
                         new JsonObject().put("failure_reason", res.getReason()));
-                return;
             }
         });
         rt.handler(handler);

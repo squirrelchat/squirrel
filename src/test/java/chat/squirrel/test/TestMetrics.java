@@ -31,7 +31,7 @@ import chat.squirrel.metrics.UniformCalculator;
 import io.vertx.core.json.JsonObject;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class TestMetrics {
     private final double[] sample = new double[]{978, 76, 0, 928, 117, 783, 560, 179, 186, 633, 817, 412, 366, 68,

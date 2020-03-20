@@ -28,11 +28,11 @@
 package chat.squirrel.modules.guilds;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.core.DatabaseManager;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.AuditLogEntry;
-import chat.squirrel.entities.AuditLogEntry.AuditLogEntryType;
-import chat.squirrel.entities.IGuild;
+import chat.squirrel.database.DatabaseManagerEditionBoomerware;
+import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
+import chat.squirrel.database.entities.AuditLogEntry;
+import chat.squirrel.database.entities.AuditLogEntry.AuditLogEntryType;
+import chat.squirrel.database.entities.IGuild;
 import chat.squirrel.modules.AbstractModule;
 import com.mongodb.client.model.Filters;
 import io.vertx.ext.web.RoutingContext;
@@ -44,7 +44,7 @@ public abstract class AbstractGuildModule extends AbstractModule {
     protected IGuild getGuild(final RoutingContext ctx) {
         final IGuild guild = Squirrel.getInstance()
                 .getDatabaseManager()
-                .findFirstEntity(IGuild.class, DatabaseManager.SquirrelCollection.GUILDS,
+                .findFirstEntity(IGuild.class, DatabaseManagerEditionBoomerware.SquirrelCollection.GUILDS,
                         Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         if (guild == null) {

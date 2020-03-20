@@ -27,8 +27,8 @@
 
 package chat.squirrel;
 
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.IUser;
+import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
+import chat.squirrel.database.entities.IUser;
 import com.mongodb.client.model.Filters;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;

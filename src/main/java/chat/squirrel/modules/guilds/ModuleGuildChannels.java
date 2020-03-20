@@ -28,16 +28,16 @@
 package chat.squirrel.modules.guilds;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.AuditLogEntry.AuditLogEntryType;
-import chat.squirrel.entities.IGuild;
-import chat.squirrel.entities.IGuild.Permissions;
-import chat.squirrel.entities.IMember;
-import chat.squirrel.entities.IUser;
-import chat.squirrel.entities.channels.IChannel;
-import chat.squirrel.entities.channels.IVoiceChannel;
-import chat.squirrel.entities.channels.impl.GuildTextChannelImpl;
-import chat.squirrel.entities.channels.impl.GuildVoiceChannelImpl;
+import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
+import chat.squirrel.database.entities.AuditLogEntry.AuditLogEntryType;
+import chat.squirrel.database.entities.IGuild;
+import chat.squirrel.database.entities.IGuild.Permissions;
+import chat.squirrel.database.entities.IMember;
+import chat.squirrel.database.entities.IUser;
+import chat.squirrel.database.entities.channels.IChannel;
+import chat.squirrel.database.entities.channels.IVoiceChannel;
+import chat.squirrel.database.entities.channels.impl.GuildTextChannelImpl;
+import chat.squirrel.database.entities.channels.impl.GuildVoiceChannelImpl;
 import com.mongodb.client.model.Filters;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonArray;
@@ -156,9 +156,10 @@ public class ModuleGuildChannels extends AbstractGuildModule {
         final IMember member = guild.getMemberForUser(user.getId());
         if (member.hasEffectivePermission(Permissions.GUILD_MANAGE_CHANNELS)) {
             this.fail(ctx, 403, "Missing permissions", null);
+            // noinspection UnnecessaryReturnStatement
             return;
         }
 
-
+        // TODO
     }
 }

@@ -28,8 +28,8 @@
 package chat.squirrel.modules.users;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.IUser;
+import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
+import chat.squirrel.database.entities.IUser;
 import chat.squirrel.modules.AbstractModule;
 import com.mongodb.client.model.Filters;
 import io.vertx.core.http.HttpMethod;

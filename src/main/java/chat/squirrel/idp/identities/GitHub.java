@@ -27,7 +27,7 @@
 
 package chat.squirrel.idp.identities;
 
-import chat.squirrel.entities.IUser;
+import chat.squirrel.database.entities.IUser;
 
 import java.util.concurrent.Future;
 

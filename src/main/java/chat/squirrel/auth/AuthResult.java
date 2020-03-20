@@ -27,7 +27,7 @@
 
 package chat.squirrel.auth;
 
-import chat.squirrel.entities.IUser;
+import chat.squirrel.database.entities.IUser;
 
 public class AuthResult {
     private IUser user;

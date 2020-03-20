@@ -29,13 +29,13 @@ package chat.squirrel;
 
 import chat.squirrel.auth.IAuthHandler;
 import chat.squirrel.auth.MongoAuthHandler;
-import chat.squirrel.core.DatabaseManager;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.core.ModuleManager;
+import chat.squirrel.database.DatabaseManagerEditionBoomerware;
+import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
 import chat.squirrel.event.EventBus;
 import chat.squirrel.mail.NotificationMailManager;
 import chat.squirrel.mail.SquirrelMailConfig;
 import chat.squirrel.metrics.MetricsManager;
+import chat.squirrel.modules.ModuleManager;
 import chat.squirrel.scheduling.SchedulerManager;
 import com.mongodb.client.model.Filters;
 import io.vertx.core.Handler;
@@ -67,7 +67,7 @@ public final class Squirrel {
 
     // Managers
     private final ModuleManager moduleManager;
-    private final DatabaseManager dbManager;
+    private final DatabaseManagerEditionBoomerware dbManager;
     private final IAuthHandler authHandler;
     private final Tokenize tokenize;
     private final NotificationMailManager notifMail;
@@ -106,7 +106,7 @@ public final class Squirrel {
         }
         LOG.info("Initializing managers");
         this.moduleManager = new ModuleManager();
-        this.dbManager = new DatabaseManager(this.getProperty("mongo.con-string"),
+        this.dbManager = new DatabaseManagerEditionBoomerware(this.getProperty("mongo.con-string"),
                 this.getProperty("mongo.db-name", "squirrel"));
 
         this.config = (SquirrelConfig) this.getUserConfig(Squirrel.class, new SquirrelConfig(this.getClass()));
@@ -174,7 +174,7 @@ public final class Squirrel {
     /**
      * @return The DatabaseManager used by this server
      */
-    public DatabaseManager getDatabaseManager() {
+    public DatabaseManagerEditionBoomerware getDatabaseManager() {
         return this.dbManager;
     }
 
@@ -251,9 +251,7 @@ public final class Squirrel {
         LOG.info("Gracefully shutting down");
         scheduler.shutdown();
         this.moduleManager.disableModules();
-        this.server.close(e -> {
-            this.vertx.close();
-        });
+        this.server.close(e -> this.vertx.close());
         MetricsManager.getInstance().save();
         this.dbManager.shutdown();
         LOG.info("Shutdown successful, the process should end");

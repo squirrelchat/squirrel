@@ -28,7 +28,7 @@
 package chat.squirrel.modules.admin;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.entities.IUser;
+import chat.squirrel.database.entities.IUser;
 import chat.squirrel.metrics.Calculator;
 import chat.squirrel.metrics.Histogram;
 import chat.squirrel.metrics.MetricsManager;

@@ -27,7 +27,7 @@
 
 package chat.squirrel.metrics;
 
-import chat.squirrel.entities.IEntity;
+import chat.squirrel.database.entities.IEntity;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
 public interface Histogram extends IEntity, IMetric {

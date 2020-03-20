@@ -28,10 +28,10 @@
 package chat.squirrel.modules.guilds;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.IGuild;
-import chat.squirrel.entities.IMember;
-import chat.squirrel.entities.IUser;
+import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
+import chat.squirrel.database.entities.IGuild;
+import chat.squirrel.database.entities.IMember;
+import chat.squirrel.database.entities.IUser;
 import chat.squirrel.metrics.MetricsManager;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;

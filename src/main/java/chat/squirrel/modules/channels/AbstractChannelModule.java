@@ -27,21 +27,19 @@
 
 package chat.squirrel.modules.channels;
 
-import org.bson.types.ObjectId;
-
-import com.mongodb.client.model.Filters;
-
 import chat.squirrel.Squirrel;
-import chat.squirrel.core.DatabaseManager;
-import chat.squirrel.entities.channels.IChannel;
+import chat.squirrel.database.DatabaseManagerEditionBoomerware;
+import chat.squirrel.database.entities.channels.IChannel;
 import chat.squirrel.modules.guilds.AbstractGuildModule;
+import com.mongodb.client.model.Filters;
 import io.vertx.ext.web.RoutingContext;
+import org.bson.types.ObjectId;
 
 public abstract class AbstractChannelModule extends AbstractGuildModule {
     protected IChannel getChannel(final RoutingContext ctx) {
         final IChannel channel = Squirrel.getInstance()
                 .getDatabaseManager()
-                .findFirstEntity(IChannel.class, DatabaseManager.SquirrelCollection.CHANNELS,
+                .findFirstEntity(IChannel.class, DatabaseManagerEditionBoomerware.SquirrelCollection.CHANNELS,
                         Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         if (channel == null) {

@@ -28,32 +28,28 @@
 package chat.squirrel.metrics;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.core.DatabaseManager;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import com.mongodb.Block;
+import chat.squirrel.database.DatabaseManagerEditionBoomerware;
+import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.Filters;
 
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 public final class MetricsManager {
     private static MetricsManager instance = new MetricsManager();
     private HashMap<String, Histogram> histMap;
 
     public MetricsManager() {
-        histMap = new HashMap<String, Histogram>();
+        histMap = new HashMap<>();
     }
 
-    public void load(DatabaseManager db) {
+    public void load(DatabaseManagerEditionBoomerware db) {
         final FindIterable<Histogram> findHist = db.findEntities(Histogram.class, SquirrelCollection.METRICS,
                 Filters.eq("type", "Histogram"));
-        findHist.forEach(new Block<Histogram>() {
-
-            @Override
-            public void apply(Histogram t) {
-                if (t.getName() != null)
-                    histMap.put(t.getName(), t);
-            }
+        findHist.forEach((Consumer<? super Histogram>) t -> {
+            if (t.getName() != null)
+                histMap.put(t.getName(), t);
         });
     }
 

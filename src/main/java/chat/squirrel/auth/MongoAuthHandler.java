@@ -29,8 +29,8 @@ package chat.squirrel.auth;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.auth.AuthResult.FailureReason;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
-import chat.squirrel.entities.IUser;
+import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
+import chat.squirrel.database.entities.IUser;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;

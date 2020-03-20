@@ -67,8 +67,7 @@ dependencies {
 
     // Databases
     implementation 'io.lettuce:lettuce-core:5.1.6.RELEASE'
-    implementation 'org.mongodb:mongo-java-driver:3.8.2'
-    // TODO: implementation 'org.mongodb:mongodb-driver-sync:4.0.1'
+    implementation 'org.mongodb:mongodb-driver-sync:4.0.1'
     // implementation 'org.javadelight:delight-metrics:0.0.6'
 
     // Unit (lol like we're going to test this)
@@ -132,3 +131,6 @@ static def getCommitHash() {
     p.waitFor()
     p.getIn().text.trim()
 }
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11

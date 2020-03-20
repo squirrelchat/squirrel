@@ -28,7 +28,7 @@
 package chat.squirrel.upload;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.core.DatabaseManager.SquirrelCollection;
+import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
 import com.mongodb.client.model.Filters;
 import org.bson.types.ObjectId;
 

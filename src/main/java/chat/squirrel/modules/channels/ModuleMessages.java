@@ -27,7 +27,7 @@
 
 package chat.squirrel.modules.channels;
 
-import chat.squirrel.entities.channels.IChannel;
+import chat.squirrel.database.entities.channels.IChannel;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;

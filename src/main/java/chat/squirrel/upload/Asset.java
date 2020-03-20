@@ -27,7 +27,7 @@
 
 package chat.squirrel.upload;
 
-import chat.squirrel.entities.AbstractEntity;
+import chat.squirrel.database.entities.AbstractEntity;
 
 public class Asset extends AbstractEntity {
     private String assetId, hash, type;
