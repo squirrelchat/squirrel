@@ -38,7 +38,7 @@ public class ModuleMessages extends AbstractChannelModule {
         this.registerAuthedRoute(HttpMethod.POST, "/channels/:id/messages", this::sendMessage);
     }
 
-    private void sendMessage(final RoutingContext ctx) {
+    private void sendMessage(final RoutingContext ctx) { // TODO
         final JsonObject obj = ctx.getBodyAsJson();
         final String content = obj.getString("content");
 
@@ -48,5 +48,6 @@ public class ModuleMessages extends AbstractChannelModule {
         }
 
         final IChannel channel = getChannel(ctx);
+        ctx.response().end();
     }
 }

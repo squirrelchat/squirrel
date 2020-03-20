@@ -27,13 +27,14 @@
 
 package chat.squirrel.entities.channels.impl;
 
-import chat.squirrel.entities.AbstractEntity;
-import chat.squirrel.entities.channels.IChannel;
-import org.bson.types.ObjectId;
-
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+
+import org.bson.types.ObjectId;
+
+import chat.squirrel.entities.AbstractEntity;
+import chat.squirrel.entities.channels.IChannel;
 
 public abstract class AbstractChannel extends AbstractEntity implements IChannel {
     private String category, name;
@@ -85,4 +86,5 @@ public abstract class AbstractChannel extends AbstractEntity implements IChannel
                 return false;
         });
     }
+    
 }

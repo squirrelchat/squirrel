@@ -34,7 +34,6 @@ import xyz.bowser65.tokenize.IAccount;
 
 import java.util.Collection;
 
-@Implementation(UserImpl.class)
 public interface IUser extends IEntity, IAccount {
     static IUser create() {
         return new UserImpl();

@@ -27,13 +27,15 @@
 
 package chat.squirrel.modules.channels;
 
+import org.bson.types.ObjectId;
+
+import com.mongodb.client.model.Filters;
+
 import chat.squirrel.Squirrel;
 import chat.squirrel.core.DatabaseManager;
 import chat.squirrel.entities.channels.IChannel;
 import chat.squirrel.modules.guilds.AbstractGuildModule;
-import com.mongodb.client.model.Filters;
 import io.vertx.ext.web.RoutingContext;
-import org.bson.types.ObjectId;
 
 public abstract class AbstractChannelModule extends AbstractGuildModule {
     protected IChannel getChannel(final RoutingContext ctx) {
@@ -46,13 +48,6 @@ public abstract class AbstractChannelModule extends AbstractGuildModule {
             this.fail(ctx, 404, "Channel not found", null);
             return null;
         }
-
-
-//        final IMember member = guild.getMemberForUser(user.getId());
-//        if (member == null || (permission != null && !member.hasEffectivePermission(permission))) {
-//            this.fail(ctx, 403, "Missing Permissions", null);
-//            return null;
-//        }
 
         return channel;
     }

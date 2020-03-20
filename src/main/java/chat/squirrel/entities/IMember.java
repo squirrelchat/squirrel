@@ -33,7 +33,7 @@ import org.bson.types.ObjectId;
 import java.util.Collection;
 import java.util.concurrent.Future;
 
-@Implementation(IMember.class)
+
 public interface IMember extends IEntity {
     static IMember create() {
         return new MemberImpl();

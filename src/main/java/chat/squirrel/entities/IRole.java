@@ -30,7 +30,6 @@ import chat.squirrel.entities.impl.RoleImpl;
 
 import java.util.Collection;
 
-@Implementation(RoleImpl.class)
 public interface IRole extends IEntity {
     static IRole create() {
         return new RoleImpl();

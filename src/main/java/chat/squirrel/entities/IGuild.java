@@ -34,7 +34,7 @@ import org.bson.types.ObjectId;
 import java.util.Collection;
 import java.util.concurrent.Future;
 
-@Implementation(GuildImpl.class)
+
 public interface IGuild extends IEntity {
     static IGuild create() {
         return new GuildImpl();

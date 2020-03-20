@@ -131,11 +131,13 @@ public class UserImpl extends AbstractEntity implements IAccount, IUser {
 
     // Flags
     @Override
+    @BsonIgnore
     public boolean isInstanceAdmin() {
         return (0b1 & this.flags) != 0;
     }
 
     @Override
+    @BsonIgnore
     public boolean isInstanceModerator() {
         return (0b10 & this.flags) != 0;
     }

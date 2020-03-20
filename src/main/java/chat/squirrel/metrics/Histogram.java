@@ -28,10 +28,8 @@
 package chat.squirrel.metrics;
 
 import chat.squirrel.entities.IEntity;
-import chat.squirrel.entities.Implementation;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 
-@Implementation(UniformHistogram.class)
 public interface Histogram extends IEntity, IMetric {
 
     String getName();
