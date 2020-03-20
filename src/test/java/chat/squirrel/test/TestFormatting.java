@@ -34,7 +34,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TestFormatting {
-
     @Test
     public void testDiscriminator() {
         assertEquals("0069", Squirrel.formatDiscriminator(69));
@@ -57,5 +56,4 @@ public class TestFormatting {
         assertFalse(MongoAuthHandler.isValidUsername("hayyaya#0003"));
         assertFalse(MongoAuthHandler.isValidUsername("line\nb\reak"));
     }
-
 }

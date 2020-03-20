@@ -27,22 +27,13 @@
 
 // @todo: Pull and build React stuff
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:5.0.0'
-    }
+plugins {
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'application'
 }
 
-apply plugin: 'application'
 mainClassName = 'chat.squirrel.Squirrel'
 def versionObj = new Version(major: 0, minor: 0, revision: 1)
-
-apply plugin: 'com.github.johnrengelman.shadow'
 
 allprojects {
     group 'chat.squirrel'
@@ -62,19 +53,13 @@ repositories {
 }
 
 dependencies {
-    testImplementation('junit:junit:4.13')
-
-    implementation 'io.vertx:vertx-web:3.8.4'
+    implementation 'io.vertx:vertx-web:3.8.5'
     implementation 'io.vertx:vertx-web-client:3.8.5'
     implementation 'org.reflections:reflections:0.9.12'
     implementation 'de.mkammerer:argon2-jvm:2.6'
     implementation 'com.github.Bowser65:Tokenize:d19bbb04eb'
     implementation 'io.vertx:vertx-mail-client:3.8.5'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-
-
-    implementation 'org.quartz-scheduler:quartz:2.3.2'
-    implementation 'com.novemberain:quartz-mongodb:2.1.0'
 
     // Logging
     implementation 'io.sentry:sentry-logback:1.7.22'
@@ -83,13 +68,17 @@ dependencies {
     // Databases
     implementation 'io.lettuce:lettuce-core:5.1.6.RELEASE'
     implementation 'org.mongodb:mongo-java-driver:3.8.2'
+    // TODO: implementation 'org.mongodb:mongodb-driver-sync:4.0.1'
     // implementation 'org.javadelight:delight-metrics:0.0.6'
+
+    // Unit (lol like we're going to test this)
+    testImplementation 'junit:junit:4.13'
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
-//noinspection GroovyAssignabilityCheck
-task sourcesForRelease(type: Copy) {
+// noinspection GroovyAssignabilityCheck
+task replaceTokens(type: Copy) {
     outputs.upToDateWhen { false }
 
     from('src/main/java') {
@@ -105,16 +94,16 @@ task sourcesForRelease(type: Copy) {
     includeEmptyDirs = false
 }
 
-//noinspection GroovyAssignabilityCheck
+// noinspection GroovyAssignabilityCheck
 task generateJavaSources(type: SourceTask) {
     outputs.upToDateWhen { false }
 
     def javaSources = sourceSets.main.allJava.filter {
         it.name != 'Version.java'
     }
-    source = javaSources + sourcesForRelease.destinationDir
+    source = javaSources + replaceTokens.destinationDir
 
-    dependsOn sourcesForRelease
+    dependsOn replaceTokens
 }
 
 compileJava {
@@ -125,9 +114,11 @@ compileJava {
 }
 
 shadowJar {
-    version = versionObj.toString()
+    // noinspection GroovyAssignabilityCheck, GroovyAccessibility
+    archiveVersion = versionObj.toString()
 }
 
+// Utils
 class Version {
     String major, minor, revision
 
