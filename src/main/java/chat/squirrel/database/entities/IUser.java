@@ -85,12 +85,6 @@ public interface IUser extends IEntity, IAccount {
 
     boolean isDisabled();
 
-    @BsonIgnore
-    boolean isInstanceAdmin();
-
-    @BsonIgnore
-    boolean isInstanceModerator();
-
     void setBanned(boolean banned);
 
     void setCustomEmail(String customEmail);
@@ -120,4 +114,15 @@ public interface IUser extends IEntity, IAccount {
     Collection<ObjectId> getBadges();
 
     void setBadges(Collection<ObjectId> badges);
+
+    IUserSettings getSettings();
+
+    void setSettings(IUserSettings settings);
+
+    // STUFF
+    @BsonIgnore
+    boolean isInstanceAdmin();
+
+    @BsonIgnore
+    boolean isInstanceModerator();
 }

@@ -29,6 +29,7 @@ package chat.squirrel.database.entities.impl;
 
 import chat.squirrel.database.entities.AbstractEntity;
 import chat.squirrel.database.entities.IUser;
+import chat.squirrel.database.entities.IUserSettings;
 import chat.squirrel.upload.Asset;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
@@ -44,11 +45,13 @@ public class UserImpl extends AbstractEntity implements IAccount, IUser {
     private String username, email, customEmail, bio;
     private int discriminator, flags;
     private boolean disabled, banned, deleted, mfa;
+
     @BsonIgnore
     private long tokenValidSince;
     private Collection<String> ips = Collections.emptySet();
     private Collection<ObjectId> badges = Collections.emptySet();
     private Asset avatar;
+    private IUserSettings settings;
 
     @Override
     public String getCustomEmail() {
@@ -106,18 +109,6 @@ public class UserImpl extends AbstractEntity implements IAccount, IUser {
     }
 
     // Flags
-    @Override
-    @BsonIgnore
-    public boolean isInstanceAdmin() {
-        return (0b1 & this.flags) != 0;
-    }
-
-    @Override
-    @BsonIgnore
-    public boolean isInstanceModerator() {
-        return (0b10 & this.flags) != 0;
-    }
-
     @Override
     public void setBanned(final boolean banned) {
         this.banned = banned;
@@ -185,11 +176,6 @@ public class UserImpl extends AbstractEntity implements IAccount, IUser {
     }
 
     @Override
-    public String toString() {
-        return this.getUsername() + "#" + this.getDiscriminator() + " (" + this.getId().toHexString() + ")";
-    }
-
-    @Override
     public Asset getAvatar() {
         return avatar;
     }
@@ -209,4 +195,31 @@ public class UserImpl extends AbstractEntity implements IAccount, IUser {
         this.badges = badges;
     }
 
+    @Override
+    public IUserSettings getSettings() {
+        return settings;
+    }
+
+    @Override
+    public void setSettings(IUserSettings settings) {
+        this.settings = settings;
+    }
+
+    // STUFF
+    @Override
+    @BsonIgnore
+    public boolean isInstanceAdmin() {
+        return (0b1 & this.flags) != 0;
+    }
+
+    @Override
+    @BsonIgnore
+    public boolean isInstanceModerator() {
+        return (0b10 & this.flags) != 0;
+    }
+
+    @Override
+    public String toString() {
+        return this.getUsername() + "#" + this.getDiscriminator() + " (" + this.getId().toHexString() + ")";
+    }
 }

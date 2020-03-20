@@ -24,55 +24,11 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package chat.squirrel.database.entities;
 
-import chat.squirrel.Squirrel;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Updates;
-import com.mongodb.client.result.UpdateResult;
-import org.bson.Document;
-import org.bson.types.ObjectId;
+package chat.squirrel.database.entities.impl;
 
-public class UserSettings extends AbstractEntity {
-    private String language;
+import chat.squirrel.database.entities.AbstractEntity;
+import chat.squirrel.database.entities.IPermissionOverride;
 
-    public String getLanguage() {
-        return this.language;
-    }
-
-    public void setLanguage(final String language) {
-        if (language.length() > 5) {
-            throw new IllegalArgumentException("Language string cannot be over 5 in length");
-        }
-        this.language = language;
-    }
-
-    public UpdateResult updateSettings(final ObjectId userId) {
-        return Squirrel.getInstance()
-                .getDatabaseManager()
-                .updateEntity(SquirrelCollection.USERS, Filters.eq(userId), Updates.set("userSettings", this));
-    }
-
-    /**
-     * @param id The Mongo ID of the user to get the settings for
-     * @return the UserSettings object for this user
-     */
-    public static UserSettings getUserSettings(final ObjectId id) {
-        final Document doc = Squirrel.getInstance()
-                .getDatabaseManager()
-                .rawRequest(SquirrelCollection.USERS, Filters.eq(id))
-                .first();
-
-        return (UserSettings) Squirrel.getInstance().getDatabaseManager().convertDocument(doc, UserSettings.class);
-    }
-
+public class PermissionOverrideImpl extends AbstractEntity implements IPermissionOverride {
 }
-
-/*
-const user = {
-  settings: {
-    --------
-  }
-}
- */

@@ -25,13 +25,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.entities;
+package chat.squirrel.database.entities.impl;
 
-import chat.squirrel.database.entities.channels.IChannel;
+import chat.squirrel.database.entities.AbstractEntity;
+import chat.squirrel.database.entities.IUserSettings;
 
-/**
- * Permission override to a {@link IChannel}
- */
-public class PermissionOverride extends AbstractEntity {
-    // @todo
+public class UserSettingsImpl extends AbstractEntity implements IUserSettings {
+    private String language;
+
+    @Override
+    public String getLanguage() {
+        return this.language;
+    }
+
+    @Override
+    public void setLanguage(final String language) {
+        if (language.length() > 5) { // TODO: Validate with a hard list of languages? Use a regex? Keep as-is?
+            throw new IllegalArgumentException("Language string cannot be over 5 in length");
+        }
+        this.language = language;
+    }
 }

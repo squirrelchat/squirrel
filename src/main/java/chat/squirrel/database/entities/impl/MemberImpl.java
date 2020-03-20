@@ -140,7 +140,7 @@ public class MemberImpl extends AbstractEntity implements IMember {
     }
 
     @Override
-    public boolean hasEffectivePermission(final Permissions perm) {
+    public boolean hasEffectivePermission(final Permissions perm) { // TODO: Rewrite this
         if (this.isOwner()) {
             return true;
         }
@@ -153,6 +153,7 @@ public class MemberImpl extends AbstractEntity implements IMember {
             return true;
         }
 
+        // Perms are more complex than that with implicit permission removal (like with CHANNEL_ACCESS)
         return this.getPermissions().contains(perm) || this.getPermissions().contains(Permissions.ADMINISTRATOR);
     }
 
@@ -194,8 +195,7 @@ public class MemberImpl extends AbstractEntity implements IMember {
     }
 
     /**
-     * @param roles The IDs corresponding to the Guild roles that the Member
-     *              possesses.
+     * @param roles The IDs corresponding to the Guild roles that the Member possesses.
      */
     @Override
     public void setRolesIds(@Nonnull final Collection<ObjectId> roles) {
@@ -203,12 +203,10 @@ public class MemberImpl extends AbstractEntity implements IMember {
     }
 
     /**
-     * @param userId The ID corresponding to the {@link IUser} associated with this
-     *               Member.
+     * @param userId The ID corresponding to the {@link IUser} associated with this Member.
      */
     @Override
     public void setUserId(final ObjectId userId) {
         this.userId = userId;
     }
-
 }

@@ -25,8 +25,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.entities;
+package chat.squirrel.database.entities.impl;
 
+import chat.squirrel.database.entities.AbstractEntity;
+import chat.squirrel.database.entities.IAuditLogEntry;
 import org.bson.types.ObjectId;
 
 import java.util.Date;
@@ -34,90 +36,48 @@ import java.util.Date;
 /**
  * A guild audit log entry
  */
-public class AuditLogEntry extends AbstractEntity {
+public class AuditLogEntryImpl extends AbstractEntity implements IAuditLogEntry {
     private ObjectId guild, user;
     private Date date;
     private AuditLogEntryType type;
 
+    @Override
     public AuditLogEntryType getType() {
         return type;
     }
 
+    @Override
     public void setType(AuditLogEntryType type) {
         this.type = type;
     }
 
+    @Override
     public ObjectId getGuild() {
         return guild;
     }
 
+    @Override
     public void setGuild(ObjectId guild) {
         this.guild = guild;
     }
 
+    @Override
     public ObjectId getUser() {
         return user;
     }
 
+    @Override
     public void setUser(ObjectId user) {
         this.user = user;
     }
 
+    @Override
     public Date getDate() {
         return date;
     }
 
+    @Override
     public void setDate(Date date) {
         this.date = date;
     }
-
-    /**
-     * Type of entry an audit is
-     */
-    public enum AuditLogEntryType {
-        // Guild
-        GUILD_UPDATE,
-        // Channels
-        CHANNEL_CREATE,
-        CHANNEL_UPDATE,
-        CHANNEL_DELETE,
-        // Permission overrides
-        OVERRIDE_CREATE,
-        OVERRIDE_UPDATE,
-        OVERRIDE_DELETE,
-        // Integrations
-        INTEGRATION_CREATE,
-        INTEGRATION_UPDATE,
-        INTEGRATION_DELETE,
-        BOT_ADD,
-        // Webhooks
-        WEBHOOK_CREATE,
-        WEBHOOK_UPDATE,
-        WEBHOOK_DELETE,
-        // Invites
-        INVITE_CREATE,
-        INVITE_DELETE,
-        // Emojis
-        EMOJI_CREATE,
-        EMOJI_UPDATE,
-        EMOJI_DELETE,
-        // Members
-        MEMBER_UPDATE,
-        MEMBER_ROLE_UPDATE,
-        MEMBER_MUTE,
-        MEMBER_KICK,
-        MEMBER_TEMP_BAN,
-        MEMBER_BAN,
-        MEMBER_UNMUTE,
-        MEMBER_UNBAN,
-        // Messages
-        MESSAGE_DELETE,
-        MESSAGE_BULK_DELETE,
-        MESSAGE_PIN,
-        MESSGE_UNPIN,
-        // "Rich" messages
-        MESSAGE_POLL_RESET,
-        MESSAGE_POLL_STOP
-    }
-
 }

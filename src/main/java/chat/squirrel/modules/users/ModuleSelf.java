@@ -27,16 +27,11 @@
 
 package chat.squirrel.modules.users;
 
-import chat.squirrel.Squirrel;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
 import chat.squirrel.database.entities.IUser;
-import chat.squirrel.database.entities.UserSettings;
 import chat.squirrel.modules.AbstractModule;
-import com.mongodb.client.model.Filters;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-import org.bson.types.ObjectId;
 
 public class ModuleSelf extends AbstractModule {
     @Override
@@ -50,12 +45,12 @@ public class ModuleSelf extends AbstractModule {
 
     private void handleMe(final RoutingContext ctx) {
         final IUser user = this.getRequester(ctx);
-        final UserSettings sets = this.fetchUserSettings(user.getId());
+        // final UserSettings sets = this.fetchUserSettings(user.getId());
         final JsonObject obj = new JsonObject();
 
-        if (sets != null) {
-            obj.put("locale", sets.getLanguage());
-        }
+        // if (sets != null) {
+        //     obj.put("locale", sets.getLanguage());
+        // }
 
         ctx.response()
                 .end(obj.put("id", user.getId().toHexString())
@@ -71,9 +66,9 @@ public class ModuleSelf extends AbstractModule {
                         .encode());
     }
 
-    private UserSettings fetchUserSettings(ObjectId userId) {
-        return Squirrel.getInstance()
-                .getDatabaseManager()
-                .findFirstEntity(UserSettings.class, SquirrelCollection.USER_SETTINGS, Filters.eq(userId));
-    }
+    // private UserSettings fetchUserSettings(ObjectId userId) {
+    //     return Squirrel.getInstance()
+    //             .getDatabaseManager()
+    //             .findFirstEntity(UserSettings.class, SquirrelCollection.USER_SETTINGS, Filters.eq(userId));
+    // }
 }

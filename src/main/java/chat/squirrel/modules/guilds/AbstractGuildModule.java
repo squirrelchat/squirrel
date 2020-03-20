@@ -30,8 +30,8 @@ package chat.squirrel.modules.guilds;
 import chat.squirrel.Squirrel;
 import chat.squirrel.database.DatabaseManagerEditionBoomerware;
 import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
-import chat.squirrel.database.entities.AuditLogEntry;
-import chat.squirrel.database.entities.AuditLogEntry.AuditLogEntryType;
+import chat.squirrel.database.entities.IAuditLogEntry;
+import chat.squirrel.database.entities.IAuditLogEntry.AuditLogEntryType;
 import chat.squirrel.database.entities.IGuild;
 import chat.squirrel.modules.AbstractModule;
 import com.mongodb.client.model.Filters;
@@ -61,7 +61,7 @@ public abstract class AbstractGuildModule extends AbstractModule {
 
     protected void submitAudit(final ObjectId guild, final ObjectId user, final AuditLogEntryType type,
                                final Date date) {
-        final AuditLogEntry entry = new AuditLogEntry();
+        final IAuditLogEntry entry = IAuditLogEntry.create();
         entry.setGuild(guild);
         entry.setUser(user);
         entry.setType(type);
@@ -69,7 +69,7 @@ public abstract class AbstractGuildModule extends AbstractModule {
         submitAudit(entry);
     }
 
-    protected void submitAudit(final AuditLogEntry entry) {
+    protected void submitAudit(final IAuditLogEntry entry) {
         Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.AUDITS, entry);
     }
 }
