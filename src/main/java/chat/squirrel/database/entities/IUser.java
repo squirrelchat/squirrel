@@ -47,6 +47,30 @@ public interface IUser extends IEntity, IAccount {
 
     String getEmail();
 
+    /**
+     * <table summary="">
+     * <tr>
+     * <td>Bit 6</td>
+     * <td>Bit 5</td>
+     * <td>Bit 4</td>
+     * <td>Bit 3</td>
+     * <td>Bit 2</td>
+     * <td>Bit 1</td>
+     * <td>Bit 0</td>
+     * </tr>
+     * <tr>
+     * <td>TBD</td>
+     * <td>TBD</td>
+     * <td>TBD</td>
+     * <td>TBD</td>
+     * <td>TBD</td>
+     * <td>Instance Moderator</td>
+     * <td>Instance Admin</td>
+     * </tr>
+     * </table>
+     *
+     * @return The flags integer of this user
+     */
     int getFlags();
 
     Collection<String> getIps();
@@ -96,8 +120,4 @@ public interface IUser extends IEntity, IAccount {
     Collection<ObjectId> getBadges();
 
     void setBadges(Collection<ObjectId> badges);
-
-    default Class<? extends IEntity> getImplementing() {
-        return UserImpl.class;
-    }
 }

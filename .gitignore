@@ -13,6 +13,7 @@ out
 # Stuff
 *.nogit.*
 *.nogit/
+squirrel.properties
 
 # Eclipse bs
 /.settings/

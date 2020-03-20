@@ -29,7 +29,9 @@ package chat.squirrel.database;
 
 import chat.squirrel.Version;
 import chat.squirrel.database.collections.ICollection;
+import chat.squirrel.database.collections.IUserCollection;
 import chat.squirrel.database.collections.SquirrelCollection;
+import chat.squirrel.database.entities.IEntity;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
@@ -43,7 +45,13 @@ import org.bson.codecs.pojo.PojoCodecProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InvalidClassException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class responsible for managing database interactions
@@ -54,6 +62,7 @@ public class DatabaseManager {
     private final MongoDatabase db;
 
     private final CodecRegistry pojoCodecRegistry;
+    private final Map<String, ICollection<? extends IEntity>> collections;
 
     /**
      * @param connectionString MongoDB Connection String
@@ -85,16 +94,63 @@ public class DatabaseManager {
 
         this.client = MongoClients.create(set);
         this.db = this.client.getDatabase(dbName);
+        this.collections = new HashMap<>();
+        this.registerCollections();
     }
 
-    public <T extends ICollection> T getCollection(Class<T> collection) {
-        final SquirrelCollection[] annotations = collection.getAnnotationsByType(SquirrelCollection.class);
+    public void registerCollection(Class<? extends ICollection<? extends IEntity>> collectionClass) throws InvalidClassException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        final SquirrelCollection[] annotations = collectionClass.getAnnotationsByType(SquirrelCollection.class);
         if (annotations.length == 0) {
-            return null;
+            throw new InvalidClassException("Collection must be annotated with @SquirrelCollection!");
         }
-
         final SquirrelCollection annotation = annotations[0];
-        // todo: yikes
-        return null;
+
+        Class<? extends ICollection<?>> impl;
+        if (collectionClass.isInterface() || Modifier.isAbstract(collectionClass.getModifiers())) {
+            impl = annotation.impl();
+            if (impl.equals(SquirrelCollection.NULL)) {
+                throw new InvalidClassException("An implementation class is required for abstract classes and interfaces");
+            }
+            if (!impl.isAssignableFrom(collectionClass)) {
+                throw new InvalidClassException("Invalid implementation specified in @SquirrelCollection annotation");
+            }
+            if (!impl.isInterface() || Modifier.isAbstract(impl.getModifiers())) {
+                throw new InvalidClassException("Implementation cannot be an interface or an abstract class");
+            }
+        } else {
+            impl = collectionClass;
+        }
+        ICollection<? extends IEntity> instance;
+        Constructor<?> constructor = impl.getDeclaredConstructors()[0];
+        if (annotation.storageMethod() == SquirrelCollection.StorageMethod.PERSISTENT) {
+            instance = (ICollection<? extends IEntity>) constructor.newInstance(db.getCollection(annotation.collection()));
+        } else if (annotation.storageMethod() == SquirrelCollection.StorageMethod.MEMORY) {
+            instance = null; // TODO
+        } else {
+            throw new IllegalStateException("My life is potato? (Invalid storage method");
+        }
+        collections.put(collectionClass.getCanonicalName(), instance);
+    }
+
+    public <E extends IEntity, T extends ICollection<E>> T getCollection(Class<T> collectionClass) {
+        // noinspection unchecked TODO: Consider unshittifying this
+        return (T) this.collections.get(collectionClass.getCanonicalName());
+    }
+
+    /**
+     * Shutdown the MongoDB Manager
+     */
+    public void shutdown() {
+        LOG.info("Shutting down MongoDB manager");
+        this.client.close();
+    }
+
+    private void registerCollections() {
+        try {
+            registerCollection(IUserCollection.class);
+        } catch (InvalidClassException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            LOG.error("Bruh momento - Failed to register collections", e);
+            System.exit(-2);
+        }
     }
 }

@@ -65,30 +65,6 @@ public class UserImpl extends AbstractEntity implements IAccount, IUser {
         return this.email;
     }
 
-    /**
-     * <table summary="">
-     * <tr>
-     * <td>Bit 6</td>
-     * <td>Bit 5</td>
-     * <td>Bit 4</td>
-     * <td>Bit 3</td>
-     * <td>Bit 2</td>
-     * <td>Bit 1</td>
-     * <td>Bit 0</td>
-     * </tr>
-     * <tr>
-     * <td>TBD</td>
-     * <td>TBD</td>
-     * <td>TBD</td>
-     * <td>TBD</td>
-     * <td>TBD</td>
-     * <td>Instance Moderator</td>
-     * <td>Instance Admin</td>
-     * </tr>
-     * </table>
-     *
-     * @return The flags integer of this user
-     */
     @Override
     public int getFlags() {
         return this.flags;

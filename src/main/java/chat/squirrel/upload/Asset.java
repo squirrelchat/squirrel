@@ -71,5 +71,4 @@ public class Asset extends AbstractEntity {
     public void setBucket(Bucket bucket) {
         this.bucket = bucket;
     }
-
 }

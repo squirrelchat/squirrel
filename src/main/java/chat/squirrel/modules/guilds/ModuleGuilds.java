@@ -53,13 +53,13 @@ public class ModuleGuilds extends AbstractGuildModule {
         }
 
         if (!obj.containsKey("name")) {
-            this.fail(ctx, 400, "Missing fields", null);
+            this.fail(ctx, 400, "Incomplete payload", null);
             return;
         }
 
         final String name = obj.getString("name");
         if (name.length() < 3 || name.length() > 32) {
-            this.fail(ctx, 400, "name has invalid length", null);
+            this.fail(ctx, 400, "Field name has invalid length", null);
             return;
         }
 

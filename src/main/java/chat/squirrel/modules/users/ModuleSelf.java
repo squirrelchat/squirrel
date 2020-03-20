@@ -44,7 +44,7 @@ public class ModuleSelf extends AbstractModule {
         this.registerAuthedRoute(HttpMethod.GET, "/users/self", this::handleMe);
         this.registerAuthedRoute(HttpMethod.PATCH, "/users/self", this::notImplemented);
         // { disable: true } as payload to just disable the account
-        this.registerPasswordConfirmRoute(HttpMethod.DELETE, "/users/self", this::notImplemented);
+        this.registerPasswordConfirmRoute(HttpMethod.DELETE, "/users/self", this::notImplemented); // @todo: Require MFA
         this.registerFileUploadRoute(HttpMethod.POST, "/users/self/avatar", this::notImplemented);
     }
 

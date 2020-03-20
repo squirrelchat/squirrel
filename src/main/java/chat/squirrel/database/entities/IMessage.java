@@ -28,6 +28,7 @@
 package chat.squirrel.database.entities;
 
 import chat.squirrel.database.entities.channels.IChannel;
+import chat.squirrel.database.entities.impl.MessageImpl;
 import org.bson.types.ObjectId;
 
 /**
@@ -35,6 +36,10 @@ import org.bson.types.ObjectId;
  */
 
 public interface IMessage extends IEntity {
+    static IMessage create() {
+        return new MessageImpl();
+    }
+
     /**
      * Author of the message
      *

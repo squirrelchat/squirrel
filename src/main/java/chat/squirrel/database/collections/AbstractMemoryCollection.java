@@ -28,6 +28,7 @@
 package chat.squirrel.database.collections;
 
 import chat.squirrel.database.entities.IEntity;
+import chat.squirrel.database.memory.IMemoryAdapter;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertManyResult;
@@ -39,11 +40,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class AbstractCollection<T extends IEntity> implements ICollection<T> {
+public abstract class AbstractMemoryCollection<T extends IEntity> implements ICollection<T> { // TODO
     private MongoCollection<T> collection;
+    private IMemoryAdapter memoryAdapter;
 
-    protected AbstractCollection(final MongoCollection<T> collection) {
+    protected AbstractMemoryCollection(final MongoCollection<T> collection) {
         this.collection = collection;
+    }
+
+    protected AbstractMemoryCollection(final IMemoryAdapter memoryAdapter) {
+        this.memoryAdapter = memoryAdapter;
     }
 
     // CREATE

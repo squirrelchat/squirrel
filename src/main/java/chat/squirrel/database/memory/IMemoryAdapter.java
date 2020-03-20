@@ -25,7 +25,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.entities;
+package chat.squirrel.database.memory;
 
-public interface IPartialUser {
+public interface IMemoryAdapter {
 }

@@ -24,50 +24,12 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package chat.squirrel.database.entities;
 
-import chat.squirrel.database.entities.IGuild.Permissions;
-import chat.squirrel.database.entities.impl.MemberImpl;
-import org.bson.types.ObjectId;
+package chat.squirrel.database.entities.impl;
 
-import java.util.Collection;
-import java.util.concurrent.Future;
+import chat.squirrel.database.entities.AbstractEntity;
+import chat.squirrel.database.entities.IVoiceState;
 
-
-public interface IMember extends IEntity {
-    static IMember create() {
-        return new MemberImpl();
-    }
-
-    Future<IGuild> getGuild();
-
-    ObjectId getGuildId();
-
-    String getNickname();
-
-    Collection<Permissions> getPermissions();
-
-    Future<Collection<IRole>> getRoles();
-
-    Collection<ObjectId> getRolesIds();
-
-    Future<IUser> getUser();
-
-    ObjectId getUserId();
-
-    boolean hasEffectivePermission(Permissions perm);
-
-    boolean isOwner();
-
-    void setGuildId(ObjectId guildId);
-
-    void setNickname(String nickname);
-
-    void setOwner(boolean owner);
-
-    void setPermissions(Collection<Permissions> permissions);
-
-    void setRolesIds(Collection<ObjectId> roles);
-
-    void setUserId(ObjectId userId);
+// TODO
+public class VoiceStateImpl extends AbstractEntity implements IVoiceState {
 }

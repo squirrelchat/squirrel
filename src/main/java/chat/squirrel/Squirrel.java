@@ -29,6 +29,7 @@ package chat.squirrel;
 
 import chat.squirrel.auth.IAuthHandler;
 import chat.squirrel.auth.MongoAuthHandler;
+import chat.squirrel.database.DatabaseManager;
 import chat.squirrel.database.DatabaseManagerEditionBoomerware;
 import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
 import chat.squirrel.event.EventBus;
@@ -83,9 +84,12 @@ public final class Squirrel {
     private final WebClient httpClient;
 
     /**
-     * Call this if you want stuff to break
+     * Main entry point for Squirrel. Calling it manually is not recommended :^)
+     * Exit codes:
+     * -1: Config failed to load;
+     * -2: Failed to register default database collections;
      *
-     * @param args Command line arguments
+     * @param args CLI arguments
      */
     public static void main(final String[] args) {
         instance = new Squirrel();
@@ -104,8 +108,11 @@ public final class Squirrel {
             LOG.error("Fatal error, exiting");
             System.exit(-1);
         }
+
         LOG.info("Initializing managers");
         this.moduleManager = new ModuleManager();
+        new DatabaseManager(this.getProperty("mongo.con-string"), this.getProperty("mongo.db-name", "squirrel"));
+
         this.dbManager = new DatabaseManagerEditionBoomerware(this.getProperty("mongo.con-string"),
                 this.getProperty("mongo.db-name", "squirrel"));
 

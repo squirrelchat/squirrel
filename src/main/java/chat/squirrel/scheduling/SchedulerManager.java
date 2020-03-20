@@ -34,7 +34,7 @@ import java.util.LinkedList;
 
 public class SchedulerManager implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(SchedulerManager.class);
-    private LinkedList<ITask<?>> fifo = new LinkedList<ITask<?>>();
+    private LinkedList<ITask<?>> fifo = new LinkedList<>();
     private Thread executorThread;
     private long normalTime = 16;
 
@@ -62,6 +62,7 @@ public class SchedulerManager implements Runnable {
     @Override
     public void run() {
         try {
+            // noinspection InfiniteLoopStatement
             for (; ; ) {
                 if (fifo.size() == 0) {
                     Thread.sleep(normalTime);
@@ -85,7 +86,7 @@ public class SchedulerManager implements Runnable {
 
             }
         } catch (InterruptedException e) {
-            return;
+            // Yeet
         }
     }
 

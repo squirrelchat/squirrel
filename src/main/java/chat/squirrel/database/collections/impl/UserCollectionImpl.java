@@ -27,7 +27,7 @@
 
 package chat.squirrel.database.collections.impl;
 
-import chat.squirrel.database.collections.AbstractCollection;
+import chat.squirrel.database.collections.AbstractMongoCollection;
 import chat.squirrel.database.collections.IUserCollection;
 import chat.squirrel.database.entities.IUser;
 import com.mongodb.client.MongoCollection;
@@ -37,10 +37,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class UserCollectionImpl extends AbstractCollection<IUser> implements IUserCollection {
+public class UserCollectionImpl extends AbstractMongoCollection<IUser> implements IUserCollection {
     private final Random random = new Random();
 
-    protected UserCollectionImpl(MongoCollection<IUser> collection) {
+    public UserCollectionImpl(MongoCollection<IUser> collection) {
         super(collection);
     }
 

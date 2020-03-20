@@ -27,8 +27,30 @@
 
 package chat.squirrel.database.collections;
 
+import chat.squirrel.database.entities.IEntity;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Retention(RUNTIME)
+@Target(TYPE)
 public @interface SquirrelCollection {
+    Class<? extends ICollection<?>> NULL = NullCollection.class;
+
     String collection();
 
-    Class<? extends AbstractCollection<?>> impl();
+    StorageMethod storageMethod() default StorageMethod.PERSISTENT;
+
+    Class<? extends ICollection<?>> impl() default NULL;
+
+    enum StorageMethod {
+        PERSISTENT, MEMORY
+    }
+
+    // Java is a garbage language I stg - @formatter:off
+    abstract class NullCollection implements ICollection<IEntity> {}
+    // @formatter:on
 }

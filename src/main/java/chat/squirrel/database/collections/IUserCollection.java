@@ -30,7 +30,7 @@ package chat.squirrel.database.collections;
 import chat.squirrel.database.collections.impl.UserCollectionImpl;
 import chat.squirrel.database.entities.IUser;
 
-@SquirrelCollection(impl = UserCollectionImpl.class, collection = "users")
+@SquirrelCollection(collection = "users", impl = UserCollectionImpl.class)
 public interface IUserCollection extends ICollection<IUser> {
     /**
      * Method used to get an available discriminator for the specified username
