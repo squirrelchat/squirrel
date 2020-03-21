@@ -28,9 +28,7 @@
 package chat.squirrel.database;
 
 import chat.squirrel.Version;
-import chat.squirrel.database.collections.ICollection;
-import chat.squirrel.database.collections.IUserCollection;
-import chat.squirrel.database.collections.SquirrelCollection;
+import chat.squirrel.database.collections.*;
 import chat.squirrel.database.entities.IEntity;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -111,10 +109,10 @@ public class DatabaseManager {
             if (impl.equals(SquirrelCollection.NULL)) {
                 throw new InvalidClassException("An implementation class is required for abstract classes and interfaces");
             }
-            if (!impl.isAssignableFrom(collectionClass)) {
+            if (!collectionClass.isAssignableFrom(impl)) {
                 throw new InvalidClassException("Invalid implementation specified in @SquirrelCollection annotation");
             }
-            if (!impl.isInterface() || Modifier.isAbstract(impl.getModifiers())) {
+            if (impl.isInterface() || Modifier.isAbstract(impl.getModifiers())) {
                 throw new InvalidClassException("Implementation cannot be an interface or an abstract class");
             }
         } else {
@@ -147,7 +145,20 @@ public class DatabaseManager {
 
     private void registerCollections() {
         try {
+            // Mongo collections
             registerCollection(IUserCollection.class);
+            registerCollection(IGuildCollection.class);
+            registerCollection(IRoleCollection.class);
+            registerCollection(IAuditCollection.class);
+            registerCollection(IMemberCollection.class);
+            registerCollection(IChannelCollection.class);
+            registerCollection(IMessageCollection.class);
+            registerCollection(IMetricsCollection.class);
+            registerCollection(IConfigCollection.class);
+
+            // Memory collections
+            registerCollection(IPresenceCollection.class);
+            registerCollection(IVoiceStateCollection.class);
         } catch (InvalidClassException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             LOG.error("Bruh momento - Failed to register collections", e);
             System.exit(-2);

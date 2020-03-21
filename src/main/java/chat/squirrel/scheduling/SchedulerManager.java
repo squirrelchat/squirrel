@@ -53,7 +53,7 @@ public class SchedulerManager implements Runnable {
 
     public void addTask(ITask<?> task) {
         this.fifo.offer(task);
-    }
+    } // TODO: Planned tasks; Repeated tasks
 
     public void setTps(long tps) {
         this.normalTime = (long) (1 / (double) tps) * 1000L;

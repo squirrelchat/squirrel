@@ -25,32 +25,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.collections;
+package chat.squirrel.database.collections.impl;
 
-import chat.squirrel.database.entities.IEntity;
+import chat.squirrel.database.collections.AbstractMongoCollection;
+import chat.squirrel.database.collections.IConfigCollection;
+import chat.squirrel.database.entities.IConfig;
+import com.mongodb.client.MongoCollection;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-@Retention(RUNTIME)
-@Target(TYPE)
-public @interface SquirrelCollection {
-    Class<? extends ICollection<?>> NULL = NullCollection.class;
-
-    String collection();
-
-    StorageMethod storageMethod() default StorageMethod.PERSISTENT;
-
-    Class<? extends ICollection<?>> impl() default NullCollection.class;
-
-    enum StorageMethod {
-        PERSISTENT, MEMORY
+public class ConfigCollectionImpl extends AbstractMongoCollection<IConfig> implements IConfigCollection {
+    public ConfigCollectionImpl(MongoCollection<IConfig> collection) {
+        super(collection);
     }
-
-    // Java is a garbage language I stg - @formatter:off
-    abstract class NullCollection implements ICollection<IEntity> {}
-    // @formatter:on
 }

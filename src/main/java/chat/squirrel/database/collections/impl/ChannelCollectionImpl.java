@@ -25,59 +25,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.entities.impl;
+package chat.squirrel.database.collections.impl;
 
-import chat.squirrel.database.entities.AbstractEntity;
-import chat.squirrel.database.entities.IAuditLogEntry;
-import org.bson.types.ObjectId;
+import chat.squirrel.database.collections.AbstractMongoCollection;
+import chat.squirrel.database.collections.IChannelCollection;
+import chat.squirrel.database.entities.channels.IChannel;
+import com.mongodb.client.MongoCollection;
 
-import java.util.Date;
-
-/**
- * A guild audit log entry
- */
-public class AuditLogEntryImpl extends AbstractEntity implements IAuditLogEntry {
-    private ObjectId guild, user;
-    private Date date;
-    private AuditLogEntryType type;
-
-    @Override
-    public AuditLogEntryType getType() {
-        return type;
-    }
-
-    @Override
-    public void setType(AuditLogEntryType type) {
-        this.type = type;
-    }
-
-    @Override
-    public ObjectId getGuild() {
-        return guild;
-    }
-
-    @Override
-    public void setGuild(ObjectId guild) {
-        this.guild = guild;
-    }
-
-    @Override
-    public ObjectId getUser() {
-        return user;
-    }
-
-    @Override
-    public void setUser(ObjectId user) {
-        this.user = user;
-    }
-
-    @Override
-    public Date getDate() {
-        return date;
-    }
-
-    @Override
-    public void setDate(Date date) {
-        this.date = date;
+public class ChannelCollectionImpl extends AbstractMongoCollection<IChannel> implements IChannelCollection {
+    public ChannelCollectionImpl(MongoCollection<IChannel> collection) {
+        super(collection);
     }
 }

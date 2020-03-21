@@ -25,51 +25,59 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.modules.guilds;
+package chat.squirrel.database.entities.impl;
 
-import chat.squirrel.Squirrel;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
+import chat.squirrel.database.entities.AbstractEntity;
 import chat.squirrel.database.entities.IAudit;
-import chat.squirrel.database.entities.IAudit.AuditLogEntryType;
-import chat.squirrel.database.entities.IGuild;
-import chat.squirrel.modules.AbstractModule;
-import com.mongodb.client.model.Filters;
-import io.vertx.ext.web.RoutingContext;
 import org.bson.types.ObjectId;
 
 import java.util.Date;
 
-public abstract class AbstractGuildModule extends AbstractModule {
-    protected IGuild getGuild(final RoutingContext ctx) {
-        final IGuild guild = Squirrel.getInstance()
-                .getDatabaseManager()
-                .findFirstEntity(IGuild.class, DatabaseManagerEditionBoomerware.SquirrelCollection.GUILDS,
-                        Filters.eq(new ObjectId(ctx.pathParam("id"))));
+/**
+ * A guild audit log entry
+ */
+public class AuditImpl extends AbstractEntity implements IAudit {
+    private ObjectId guild, user;
+    private Date date;
+    private AuditLogEntryType type;
 
-        if (guild == null) {
-            this.fail(ctx, 404, "Guild not found", null);
-            return null;
-        }
+    @Override
+    public AuditLogEntryType getType() {
+        return type;
+    }
 
+    @Override
+    public void setType(AuditLogEntryType type) {
+        this.type = type;
+    }
+
+    @Override
+    public ObjectId getGuild() {
         return guild;
     }
 
-    protected void submitAudit(final ObjectId guild, final ObjectId user, final AuditLogEntryType type) {
-        this.submitAudit(guild, user, type, new Date());
+    @Override
+    public void setGuild(ObjectId guild) {
+        this.guild = guild;
     }
 
-    protected void submitAudit(final ObjectId guild, final ObjectId user, final AuditLogEntryType type,
-                               final Date date) {
-        final IAudit entry = IAudit.create();
-        entry.setGuild(guild);
-        entry.setUser(user);
-        entry.setType(type);
-        entry.setDate(date);
-        submitAudit(entry);
+    @Override
+    public ObjectId getUser() {
+        return user;
     }
 
-    protected void submitAudit(final IAudit entry) {
-        Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.AUDITS, entry);
+    @Override
+    public void setUser(ObjectId user) {
+        this.user = user;
+    }
+
+    @Override
+    public Date getDate() {
+        return date;
+    }
+
+    @Override
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

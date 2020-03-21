@@ -29,7 +29,7 @@ package chat.squirrel.modules.guilds;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
-import chat.squirrel.database.entities.IAuditLogEntry.AuditLogEntryType;
+import chat.squirrel.database.entities.IAudit.AuditLogEntryType;
 import chat.squirrel.database.entities.IGuild;
 import chat.squirrel.database.entities.IGuild.Permissions;
 import chat.squirrel.database.entities.IMember;

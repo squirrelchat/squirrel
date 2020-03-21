@@ -27,81 +27,10 @@
 
 package chat.squirrel.database.entities;
 
-import chat.squirrel.database.entities.impl.AuditLogEntryImpl;
-import org.bson.types.ObjectId;
+import chat.squirrel.database.entities.impl.PresenceImpl;
 
-import java.util.Date;
-
-/**
- * A guild audit log entry
- */
-public interface IAuditLogEntry extends IEntity {
-    static IAuditLogEntry create() {
-        return new AuditLogEntryImpl();
-    }
-
-    AuditLogEntryType getType();
-
-    void setType(AuditLogEntryType type);
-
-    ObjectId getGuild();
-
-    void setGuild(ObjectId guild);
-
-    ObjectId getUser();
-
-    void setUser(ObjectId user);
-
-    Date getDate();
-
-    void setDate(Date date);
-
-    /**
-     * Type of entry an audit is
-     */
-    enum AuditLogEntryType {
-        // Guild
-        GUILD_UPDATE,
-        // Channels
-        CHANNEL_CREATE,
-        CHANNEL_UPDATE,
-        CHANNEL_DELETE,
-        // Permission overrides
-        OVERRIDE_CREATE,
-        OVERRIDE_UPDATE,
-        OVERRIDE_DELETE,
-        // Integrations
-        INTEGRATION_CREATE,
-        INTEGRATION_UPDATE,
-        INTEGRATION_DELETE,
-        BOT_ADD,
-        // Webhooks
-        WEBHOOK_CREATE,
-        WEBHOOK_UPDATE,
-        WEBHOOK_DELETE,
-        // Invites
-        INVITE_CREATE,
-        INVITE_DELETE,
-        // Emojis
-        EMOJI_CREATE,
-        EMOJI_UPDATE,
-        EMOJI_DELETE,
-        // Members
-        MEMBER_UPDATE,
-        MEMBER_ROLE_UPDATE,
-        MEMBER_MUTE,
-        MEMBER_KICK,
-        MEMBER_TEMP_BAN,
-        MEMBER_BAN,
-        MEMBER_UNMUTE,
-        MEMBER_UNBAN,
-        // Messages
-        MESSAGE_DELETE,
-        MESSAGE_BULK_DELETE,
-        MESSAGE_PIN,
-        MESSGE_UNPIN,
-        // "Rich" messages
-        MESSAGE_POLL_RESET,
-        MESSAGE_POLL_STOP
+public interface IPresence extends IEntity {
+    static IPresence create() {
+        return new PresenceImpl();
     }
 }

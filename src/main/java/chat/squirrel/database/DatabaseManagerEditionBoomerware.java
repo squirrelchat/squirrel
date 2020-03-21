@@ -233,10 +233,6 @@ public class DatabaseManagerEditionBoomerware {
          */
         ASSETS("assets"),
         /**
-         * 'user_settings' collection. Contains UserSettings
-         */
-        USER_SETTINGS("user_settings"),
-        /**
          * 'metrics' collection. Contains Histogram
          */
         METRICS("metrics"),

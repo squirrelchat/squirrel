@@ -27,30 +27,9 @@
 
 package chat.squirrel.database.collections;
 
-import chat.squirrel.database.entities.IEntity;
+import chat.squirrel.database.collections.impl.VoiceStateCollectionImpl;
+import chat.squirrel.database.entities.IVoiceState;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-@Retention(RUNTIME)
-@Target(TYPE)
-public @interface SquirrelCollection {
-    Class<? extends ICollection<?>> NULL = NullCollection.class;
-
-    String collection();
-
-    StorageMethod storageMethod() default StorageMethod.PERSISTENT;
-
-    Class<? extends ICollection<?>> impl() default NullCollection.class;
-
-    enum StorageMethod {
-        PERSISTENT, MEMORY
-    }
-
-    // Java is a garbage language I stg - @formatter:off
-    abstract class NullCollection implements ICollection<IEntity> {}
-    // @formatter:on
+@SquirrelCollection(collection = "voice_states", impl = VoiceStateCollectionImpl.class, storageMethod = SquirrelCollection.StorageMethod.MEMORY)
+public interface IVoiceStateCollection extends ICollection<IVoiceState> {
 }
