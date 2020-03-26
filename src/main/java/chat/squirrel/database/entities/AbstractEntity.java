@@ -31,28 +31,27 @@ import io.vertx.core.json.JsonObject;
 import org.bson.types.ObjectId;
 
 public abstract class AbstractEntity implements IEntity {
-    protected ObjectId id;
+    protected ObjectId _id;
 
     /**
      * A new ObjectId is generated
      */
     public AbstractEntity() {
-        this.id = new ObjectId();
+        this._id = new ObjectId();
     }
 
     @Override
     public ObjectId getId() {
-        return this.id;
+        return this._id;
     }
 
     @Override
     public void setId(final ObjectId id) {
-        this.id = id;
+        this._id = id;
     }
 
     @Override
     public JsonObject toJson() {
         return JsonObject.mapFrom(this);
     }
-
 }

@@ -50,12 +50,13 @@ public class UserCollectionImpl extends AbstractMongoCollection<IUser> implement
             return -1;
         }
 
-        int dis;
         final List<Integer> used = new ArrayList<>();
         this.findEntities(Filters.eq("username", username)).forEach(u -> used.add(u.getDiscriminator()));
 
-        // noinspection StatementWithEmptyBody
-        while (used.indexOf(dis = this.random.nextInt(10000)) != -1) ;
+        int dis = this.random.nextInt(10000);
+        while (used.indexOf(dis) != -1) {
+            dis = this.random.nextInt(10000);
+        }
         return dis;
     }
 

@@ -28,5 +28,32 @@
 package chat.squirrel.upload;
 
 public enum Bucket {
-    AVATAR, BADGE, ATTACHMENT, EMOJI, ICON;
+    AVATAR(false),
+    BADGE(false),
+    EMOJI(false),
+    /**
+     * Icon is valid for:
+     * - Guild icons
+     * - Private groups icons
+     * - Application icons (OAuth)
+     */
+    ICON(false),
+    ATTACHMENT(true);
+
+    private boolean keepFilename;
+
+    Bucket(final boolean keepFilename) {
+        this.keepFilename = keepFilename;
+    }
+
+    /**
+     * When uploading, we have the choice of removing the original filename or to keep it
+     * If we remove it, we end up with {@code /:bucket/:resource_id/:uuid.:ext}
+     * If we keep it, we end up with {@code /:bucket/:resource_id/:uuid/:filename.:ext}
+     *
+     * @return if the filename should be kept
+     */
+    public boolean isKeepFilename() {
+        return this.keepFilename;
+    }
 }

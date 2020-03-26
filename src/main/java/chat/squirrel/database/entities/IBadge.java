@@ -27,13 +27,17 @@
 
 package chat.squirrel.database.entities;
 
-import chat.squirrel.upload.Asset;
+import chat.squirrel.database.entities.impl.BadgeImpl;
 
 /**
  * A badge is a server-wide entity and not attributed to a single guild
  */
 
 public interface IBadge extends IEntity {
+    static IBadge create() {
+        return new BadgeImpl();
+    }
+
     String getName();
 
     void setName(String name);
@@ -42,7 +46,7 @@ public interface IBadge extends IEntity {
 
     void setDescription(String description);
 
-    Asset getIcon();
+    String getIcon();
 
-    void setIcon(Asset asset);
+    void setIcon(String asset);
 }

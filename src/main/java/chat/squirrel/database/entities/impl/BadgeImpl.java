@@ -29,11 +29,9 @@ package chat.squirrel.database.entities.impl;
 
 import chat.squirrel.database.entities.AbstractEntity;
 import chat.squirrel.database.entities.IBadge;
-import chat.squirrel.upload.Asset;
 
 public class BadgeImpl extends AbstractEntity implements IBadge {
-    private String name, description;
-    private Asset icon;
+    private String name, description, icon;
 
     @Override
     public String getName() {
@@ -46,12 +44,12 @@ public class BadgeImpl extends AbstractEntity implements IBadge {
     }
 
     @Override
-    public Asset getIcon() {
+    public String getIcon() {
         return icon;
     }
 
     @Override
-    public void setIcon(Asset asset) {
+    public void setIcon(String asset) {
         this.icon = asset;
     }
 

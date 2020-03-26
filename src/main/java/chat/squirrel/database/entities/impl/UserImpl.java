@@ -30,7 +30,6 @@ package chat.squirrel.database.entities.impl;
 import chat.squirrel.database.entities.AbstractEntity;
 import chat.squirrel.database.entities.IUser;
 import chat.squirrel.database.entities.IUserSettings;
-import chat.squirrel.upload.Asset;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 import xyz.bowser65.tokenize.IAccount;
@@ -42,7 +41,7 @@ import java.util.Collections;
  * Server wide user account
  */
 public class UserImpl extends AbstractEntity implements IAccount, IUser {
-    private String username, email, customEmail, bio;
+    private String username, email, customEmail, bio, avatar;
     private int discriminator, flags;
     private boolean disabled, banned, deleted, mfa;
 
@@ -50,7 +49,6 @@ public class UserImpl extends AbstractEntity implements IAccount, IUser {
     private long tokenValidSince;
     private Collection<String> ips = Collections.emptySet();
     private Collection<ObjectId> badges = Collections.emptySet();
-    private Asset avatar;
     private IUserSettings settings;
 
     @Override
@@ -176,13 +174,13 @@ public class UserImpl extends AbstractEntity implements IAccount, IUser {
     }
 
     @Override
-    public Asset getAvatar() {
+    public String getAvatar() {
         return avatar;
     }
 
     @Override
-    public void setAvatar(Asset id) {
-        this.avatar = id;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     @Override

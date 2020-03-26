@@ -27,12 +27,33 @@
 
 package chat.squirrel.upload;
 
+import org.bson.types.ObjectId;
+
 import java.io.InputStream;
 
 public interface IUploadManager {
-    ActionResult upload(Bucket bucket, String type, InputStream input);
+    /**
+     * Handles an upload, validates its contents and saves it on disk.
+     *
+     * @param action Details of the action
+     * @return The result of the transaction.
+     */
+    ActionResult upload(UploadAction action);
 
-    InputStream retrieve(Asset asset);
+    /**
+     * Retrieves an uploaded file from storage.
+     *
+     * @param bucket     Bucket where the upload is saved.
+     * @param resourceId ID of the resource.
+     * @param assetId    ID of the asset.
+     * @param animated   Whether we want the animated version of the asset.
+     * @return An {@code InputStream}, or null if not found.
+     */
+    InputStream retrieve(Bucket bucket, ObjectId resourceId, String assetId, boolean animated);
 
-    ActionResult delete(Asset asset);
+    InputStream retrieveNamed(Bucket bucket, ObjectId resourceId, String assetId, String filename);
+
+    boolean delete(Bucket bucket, ObjectId resourceId, String assetId);
+
+    boolean deleteResource(Bucket bucket, ObjectId resourceId);
 }

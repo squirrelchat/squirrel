@@ -27,7 +27,6 @@
 package chat.squirrel.database.entities;
 
 import chat.squirrel.database.entities.impl.UserImpl;
-import chat.squirrel.upload.Asset;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 import xyz.bowser65.tokenize.IAccount;
@@ -41,7 +40,7 @@ public interface IUser extends IEntity, IAccount {
 
     String getCustomEmail();
 
-    Asset getAvatar();
+    String getAvatar();
 
     int getDiscriminator();
 
@@ -105,7 +104,7 @@ public interface IUser extends IEntity, IAccount {
 
     void setUsername(String username);
 
-    void setAvatar(Asset id);
+    void setAvatar(String id);
 
     String getBio();
 

@@ -29,173 +29,228 @@ package chat.squirrel.upload.managers;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.config.TableUserConfig;
-import chat.squirrel.upload.AbstractUploadManager;
 import chat.squirrel.upload.ActionResult;
-import chat.squirrel.upload.Asset;
 import chat.squirrel.upload.Bucket;
+import chat.squirrel.upload.IUploadManager;
+import chat.squirrel.upload.UploadAction;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.nio.file.Paths;
 
-public class LocalUploadManager extends AbstractUploadManager {
-    private final File uploadFolder;
+public class LocalUploadManager implements IUploadManager {
+    private static final Logger LOG = LoggerFactory.getLogger(LocalUploadManager.class);
+    private final File uploadTarget;
 
     public LocalUploadManager() {
         this(getDefaultUploadFolder());
     }
 
-    public LocalUploadManager(@Nonnull final File uploadFolder) {
-        if (uploadFolder.isDirectory()) {
-            throw new IllegalArgumentException("upload folder does not represent a directory");
+    public LocalUploadManager(@Nonnull final File uploadTarget) {
+        if (uploadTarget.isDirectory()) {
+            throw new IllegalArgumentException("Upload target is not a directory");
         }
 
-        this.uploadFolder = uploadFolder;
+        this.uploadTarget = uploadTarget;
     }
 
     @Override
-    public ActionResult upload(final Bucket bucket, final String type, final InputStream input) {
+    public ActionResult upload(final UploadAction action) {
         final ActionResult res = new ActionResult();
-
-        final ObjectId id = new ObjectId();
-        res.setAssetId(id.toHexString());
-
-        final File bucketFile = this.getBucketFolder(bucket);
-
-        final File outFile = new File(bucketFile, id.toHexString());
-
-        FileOutputStream out;
-        try {
-            out = new FileOutputStream(outFile);
-        } catch (final FileNotFoundException e) {
-            res.setErrorReason("Failed to open output stream: " + e.toString());
+        if (!action.isUsable()) {
+            LOG.error("Received an invalid upload action! This is likely due to an internal error.");
+            res.setErrorReason(ActionResult.ErrorReason.INTERNAL_ERROR);
             return res;
         }
 
         try {
-            final MessageDigest md;
+            if (action.getMaxFileSize() > 0 && action.getInput().available() > action.getMaxFileSize()) {
+                res.setErrorReason(ActionResult.ErrorReason.FILE_TOO_LARGE);
+                return res;
+            }
+        } catch (final IOException e) {
+            LOG.error("Failed to validate file size", e);
+            res.setErrorReason(ActionResult.ErrorReason.INTERNAL_ERROR);
+            return res;
+        }
+
+        if (action.getAllowedTypes() != null && action.getAllowedTypes().length != 0 && false) { // TODO
+            res.setErrorReason(ActionResult.ErrorReason.INVALID_TYPE);
+            return res;
+        }
+
+        File folder = this.getBaseFolderFor(action.getBucket(), action.getResourceId());
+        if (action.getBucket().isKeepFilename()) {
+            // If we keep the filename, we assume there is no processing or validation involved.
+            final String id = (action.isAllowAnimated() ? "a_" : "") + ObjectId.get().toHexString();
+            res.setAssetId(id);
+            folder = new File(folder, id);
+            mkdir(folder);
+
+            final File outFile = new File(folder, action.getFilename());
+            if (!saveFile(action.getInput(), outFile)) {
+                res.setErrorReason(ActionResult.ErrorReason.INTERNAL_ERROR);
+                return res;
+            }
+        } else {
+            final boolean isAnimated = false; // TODO: Check APNG/GIF
+            final String id = (isAnimated ? "a_" : "") + ObjectId.get().toHexString();
+            res.setAssetId(id);
+
+            BufferedImage image;
             try {
-                md = MessageDigest.getInstance("SHA-1");
-            } catch (final NoSuchAlgorithmException e1) {
-                throw new IllegalStateException("Should not be reached");
+                image = ImageIO.read(action.getInput());
+            } catch (IOException e) {
+                LOG.error("Failed to read image", e);
+                res.setErrorReason(ActionResult.ErrorReason.CORRUPTED_FILE);
+                return res;
             }
 
-            final byte[] buffer = new byte[4096];
-            try {
-                while (input.read(buffer) >= 0) {
-                    out.write(buffer);
-                    md.update(buffer);
+            if (action.getRatio() != null) {
+                final int width = image.getWidth();
+                final int height = image.getWidth();
+                final float ratioW = action.getRatio()[0];
+                final float ratioH = action.getRatio()[1];
+                if ((((width * ratioH) / ratioW) - height) == 0) {
+                    res.setErrorReason(ActionResult.ErrorReason.IMAGE_INVALID_RATIO);
+                    return res;
                 }
-            } catch (final IOException e1) {
-                res.setErrorReason("Could not write to output stream or digest: " + e1.toString());
+            }
+
+            if (action.getResizeWidth() != 0) {
+                // TODO: Resize
+            }
+
+            try {
+                ImageIO.write(image, "png", new File(folder, id + ".png"));
+            } catch (IOException e) {
+                LOG.error("Failed to save image", e);
+                res.setErrorReason(ActionResult.ErrorReason.INTERNAL_ERROR);
                 return res;
             }
 
-            final BigInteger num = new BigInteger(1, md.digest());
-            final String hashtext = num.toString(16);
-            res.setAssetHash(hashtext);
-        } finally {
-            try {
-                out.close();
-            } catch (final IOException e) {
-                res.setErrorReason("Failed to close output stream: " + e.toString());
-                return res;
+            if (isAnimated) {
+                // TODO: APNG/GIF processing
             }
         }
 
-        res.setSuccess(true);
-
-        final Asset asset = new Asset(res.getAssetId(), res.getAssetHash(), res.getAssetType(), bucket);
-        this.insertAsset(asset);
-
+        res.setSuccessful(true);
         return res;
     }
 
     @Override
-    public InputStream retrieve(final Asset req) {
-        final String id = req.getAssetId();
-        final String hash = req.getHash();
-        final Bucket bucket = req.getBucket();
+    public InputStream retrieve(final Bucket bucket, final ObjectId resourceId, final String assetId, final boolean animated) {
+        if (animated && !assetId.startsWith("a_")) return null;
+        return retrieve(new File(this.getBaseFolderFor(bucket, resourceId), assetId + '.' + (animated ? "gif" : "png")));
+    }
 
-        final Asset asset = this.retrieveAsset(id);
+    @Override
+    public InputStream retrieveNamed(final Bucket bucket, final ObjectId resourceId, final String assetId, final String filename) {
+        return retrieve(Paths.get(this.getBaseFolderFor(bucket, resourceId).getAbsolutePath(), assetId, filename).toFile());
+    }
 
-        if (asset == null) {
+    private InputStream retrieve(final File file) {
+        if (!file.exists()) return null;
+        if (!file.isFile()) {
+            // TODO: Should we attempt to fix the storage and delete this?
+            LOG.warn("Encountered an unexpected directory; Expected " + file.getAbsolutePath() + " to be a file.");
             return null;
         }
-
-        if (!asset.getHash().equals(hash)) { // in case the request hash is not correct. FIXME: might want to return
-            // something else
-            return null;
-        }
-
-        final File bucketFolder = this.getBucketFolder(bucket);
-
-        final File target = new File(bucketFolder, id);
-
-        if (!target.exists() || target.isDirectory()) {
-            return null;
-        }
-
         FileInputStream input;
         try {
-            input = new FileInputStream(target);
+            input = new FileInputStream(file);
         } catch (final FileNotFoundException e) {
+            // Should never be reached
             return null;
         }
         return input;
     }
 
     @Override
-    public ActionResult delete(final Asset req) {
-        final String id = req.getAssetId();
-        final Bucket bucket = req.getBucket();
-
-        final ActionResult res = new ActionResult();
-
-        final Asset asset = this.retrieveAsset(id);
-
-        if (asset == null) {
-            res.setSuccess(false);
-            return res;
+    public boolean delete(final Bucket bucket, final ObjectId resourceId, final String assetId) {
+        if (bucket.isKeepFilename()) {
+            return delete(Paths.get(this.getBaseFolderFor(bucket, resourceId).getAbsolutePath(), assetId).toFile());
         }
 
-        final File bucketFolder = this.getBucketFolder(bucket);
-
-        final File target = new File(bucketFolder, id);
-
-        final boolean success = target.delete();
-
-        res.setSuccess(success);
-
-        if (success) {
-            this.removeAsset(id);
-        }
-
-        return res;
+        final File png = Paths.get(this.getBaseFolderFor(bucket, resourceId).getAbsolutePath(), assetId + ".png").toFile();
+        final File gif = Paths.get(this.getBaseFolderFor(bucket, resourceId).getAbsolutePath(), assetId + ".gif").toFile();
+        if (png.exists()) return png.delete();
+        if (gif.exists()) return gif.delete();
+        return true;
     }
 
-    public File getUploadFolder() {
-        return this.uploadFolder;
+    @Override
+    public boolean deleteResource(final Bucket bucket, final ObjectId resourceId) {
+        return delete(this.getBaseFolderFor(bucket, resourceId));
     }
 
-    public File getBucketFolder(final Bucket bucket) {
-        final File f = new File(this.uploadFolder, bucket.toString().toLowerCase());
-        if (f.isDirectory()) {
-            throw new IllegalStateException(
-                    "directory " + f.getAbsolutePath() + " is supposed to be a folder but found file");
+    private boolean saveFile(final InputStream input, final File target) {
+        FileOutputStream out;
+        try {
+            out = new FileOutputStream(target);
+        } catch (final FileNotFoundException e) {
+            LOG.error("Failed to open output stream", e);
+            return false;
         }
-        if (!f.exists()) {
-            if (!f.mkdir()) {
-                throw new IllegalStateException("Failed to create bucket folder at " + f.getAbsolutePath());
+
+        try {
+            input.transferTo(out);
+        } catch (final IOException e) {
+            LOG.error("Failed to write to output stream", e);
+            return false;
+        } finally {
+            try {
+                out.close();
+            } catch (final IOException e) {
+                LOG.error("Failed to close output stream", e);
+                // noinspection ReturnInsideFinallyBlock
+                return false;
             }
         }
-        return f;
+        return true;
+    }
+
+    private void mkdir(final File file) {
+        if (file.isFile()) {
+            LOG.warn(file.getAbsolutePath() + " is supposed to be a folder but found a file instead. Deleting.");
+            if (!file.delete()) {
+                throw new IllegalStateException("Failed to delete file " + file.getAbsolutePath());
+            }
+        }
+        if (!file.exists() && !file.mkdir()) {
+            throw new IllegalStateException("Failed to create bucket folder at " + file.getAbsolutePath());
+        }
+    }
+
+    private File getBaseFolderFor(final Bucket bucket, final ObjectId resourceId) {
+        final File bucketFolder = new File(this.uploadTarget, bucket.toString().toLowerCase());
+        final File baseFolder = new File(bucketFolder, resourceId.toHexString());
+        mkdir(bucketFolder);
+        mkdir(baseFolder);
+        return baseFolder;
+    }
+
+    private boolean delete(final File file) {
+        if (file.isDirectory()) {
+            final File[] files = file.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (!delete(f)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return file.delete();
     }
 
     private static File getDefaultUploadFolder() {
+        // TODO: no
         final TableUserConfig conf = (TableUserConfig) Squirrel.getInstance()
                 .getUserConfig(LocalUploadManager.class, new TableUserConfig(LocalUploadManager.class));
         final Object rawUp = conf.getTable().get("upload_folder");
@@ -203,8 +258,8 @@ public class LocalUploadManager extends AbstractUploadManager {
             throw new IllegalStateException("upload folder not set as string in config");
         }
 
-        final String uploadFolder = (String) rawUp;
+        final String uploadTarget = (String) rawUp;
 
-        return new File(uploadFolder);
+        return new File(uploadTarget);
     }
 }

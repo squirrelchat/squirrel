@@ -27,31 +27,37 @@
 
 package chat.squirrel.upload;
 
-import chat.squirrel.Squirrel;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
-import com.mongodb.client.model.Filters;
-import org.bson.types.ObjectId;
+public enum FileType { // TODO: Add more types and add their magic bytes
+    // Images
+    JPG(null, "jpg"),
+    PNG(null, "png"),
+    GIF(null, "gif"),
+    WEBP(null, "webp"),
+    APNG(null, "png"),
+    // Audio
+    MP3(null, "mp3"),
+    // Video
+    MP4(null, "mp4");
 
-public abstract class AbstractUploadManager implements IUploadManager {
-    protected void insertAsset(final Asset asset) {
-        Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.ASSETS, asset);
+    public static FileType[] images = {JPG, PNG, WEBP, GIF, APNG};
+    public static FileType[] static_images = {JPG, PNG, WEBP};
+    public static FileType[] animated_images = {GIF, APNG};
+    public static FileType[] audio = {MP3};
+    public static FileType[] video = {MP4};
+
+    private final byte[] magicBytes;
+    private final String extension;
+
+    FileType(byte[] magicBytes, String extension) {
+        this.magicBytes = magicBytes;
+        this.extension = extension;
     }
 
-    protected Asset retrieveAsset(final String id) {
-        return this.retrieveAsset(new ObjectId(id));
+    public byte[] getMagicBytes() {
+        return magicBytes;
     }
 
-    protected Asset retrieveAsset(final ObjectId id) {
-        return Squirrel.getInstance()
-                .getDatabaseManager()
-                .findFirstEntity(Asset.class, SquirrelCollection.ASSETS, Filters.eq(id));
-    }
-
-    protected void removeAsset(final String id) {
-        this.removeAsset(new ObjectId(id));
-    }
-
-    protected void removeAsset(final ObjectId id) {
-        Squirrel.getInstance().getDatabaseManager().deleteEntity(SquirrelCollection.ASSETS, Filters.eq(id));
+    public String getExtension() {
+        return extension;
     }
 }

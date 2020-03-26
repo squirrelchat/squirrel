@@ -229,10 +229,6 @@ public class DatabaseManagerEditionBoomerware {
          */
         ROLES("roles"),
         /**
-         * 'assets'. Contains {@link chat.squirrel.upload.Asset}
-         */
-        ASSETS("assets"),
-        /**
          * 'metrics' collection. Contains Histogram
          */
         METRICS("metrics"),
