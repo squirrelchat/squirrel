@@ -25,23 +25,51 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.entities.channels.impl;
+package chat.squirrel.database.entities.messages.impl;
 
-import chat.squirrel.database.entities.IVoiceState;
-import chat.squirrel.database.entities.channels.IVoiceChannel;
+import chat.squirrel.database.entities.messages.AbstractMessage;
+import chat.squirrel.database.entities.messages.IEncryptedMessage;
 
-import java.util.Collection;
-
-public abstract class AbstractVoiceChannel extends AbstractChannel implements IVoiceChannel {
-    private Collection<IVoiceState> voiceStates;
+public class EncryptedMessageImpl extends AbstractMessage implements IEncryptedMessage {
+    private byte[] metadata, contents, embeds, gadgets;
 
     @Override
-    public Collection<IVoiceState> getVoiceStates() {
-        return voiceStates;
+    public byte[] getMetadata() {
+        return metadata;
     }
 
     @Override
-    public void setVoiceStates(final Collection<IVoiceState> voiceStates) {
-        this.voiceStates = voiceStates;
+    public void setMetadata(final byte[] metadata) {
+        this.metadata = metadata;
+    }
+
+    @Override
+    public byte[] getContents() {
+        return contents;
+    }
+
+    @Override
+    public void setContents(final byte[] contents) {
+        this.contents = contents;
+    }
+
+    @Override
+    public byte[] getEmbeds() {
+        return embeds;
+    }
+
+    @Override
+    public void setEmbeds(final byte[] embeds) {
+        this.embeds = embeds;
+    }
+
+    @Override
+    public byte[] getGadgets() {
+        return gadgets;
+    }
+
+    @Override
+    public void setGadgets(final byte[] gadgets) {
+        this.gadgets = gadgets;
     }
 }

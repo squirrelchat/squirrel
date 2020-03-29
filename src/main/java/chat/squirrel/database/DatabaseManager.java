@@ -131,8 +131,9 @@ public class DatabaseManager {
     }
 
     public <E extends IEntity, T extends ICollection<E>> T getCollection(Class<T> collectionClass) {
-        // noinspection unchecked TODO: Consider unshittifying this
-        return (T) this.collections.get(collectionClass.getCanonicalName());
+        @SuppressWarnings("unchecked")
+        final T collection = (T) this.collections.get(collectionClass.getCanonicalName());
+        return collection;
     }
 
     /**

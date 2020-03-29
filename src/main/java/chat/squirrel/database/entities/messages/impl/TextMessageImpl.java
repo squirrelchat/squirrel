@@ -25,8 +25,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.metrics;
+package chat.squirrel.database.entities.messages.impl;
 
-public interface IMetric {
-    String getType();
+import chat.squirrel.database.entities.messages.AbstractMessage;
+import chat.squirrel.database.entities.messages.IMessageEmbed;
+import chat.squirrel.database.entities.messages.IMessageGadget;
+import chat.squirrel.database.entities.messages.ITextMessage;
+
+import java.util.Collection;
+
+public class TextMessageImpl extends AbstractMessage implements ITextMessage {
+    private String contents;
+    private Collection<IMessageEmbed> embeds;
+    private Collection<IMessageGadget> gadgets;
+
+    @Override
+    public String getContents() {
+        return contents;
+    }
+
+    @Override
+    public void setContents(final String contents) {
+        this.contents = contents;
+    }
+
+    @Override
+    public Collection<IMessageEmbed> getEmbeds() {
+        return embeds;
+    }
+
+    @Override
+    public void setEmbeds(final Collection<IMessageEmbed> embeds) {
+        this.embeds = embeds;
+    }
+
+    @Override
+    public Collection<IMessageGadget> getGadgets() {
+        return gadgets;
+    }
+
+    @Override
+    public void setGadgets(final Collection<IMessageGadget> gadgets) {
+        this.gadgets = gadgets;
+    }
 }

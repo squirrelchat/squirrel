@@ -29,7 +29,6 @@ package chat.squirrel.database.entities;
 
 import chat.squirrel.database.entities.impl.VoiceStateImpl;
 
-// TODO
 public interface IVoiceState extends IEntity {
     static IVoiceState create() {
         return new VoiceStateImpl();

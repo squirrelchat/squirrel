@@ -25,38 +25,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.entities;
+package chat.squirrel.database.entities.config;
 
-import chat.squirrel.database.entities.channels.IChannel;
-import chat.squirrel.database.entities.impl.MessageImpl;
-import org.bson.types.ObjectId;
+import chat.squirrel.database.entities.AbstractEntity;
 
-/**
- * A general message in a {@link IChannel}
- */
-
-public interface IMessage extends IEntity {
-    static IMessage create() {
-        return new MessageImpl();
-    }
-
-    /**
-     * Author of the message
-     *
-     * @return ID of the author of the message
-     */
-    ObjectId getAuthor();
-
-    void setAuthor(ObjectId author);
-
-    /**
-     * @return The String content of the message
-     */
-    String getContent();
-
-    void setContent(String content);
-
-    ObjectId getOwningChannel();
-
-    void setOwningChannel(ObjectId channel);
+public abstract class AbstractConfig extends AbstractEntity implements IConfig {
 }

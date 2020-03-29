@@ -28,7 +28,7 @@
 package chat.squirrel.database.entities.impl;
 
 import chat.squirrel.database.entities.AbstractEntity;
-import chat.squirrel.database.entities.IConfig;
+import chat.squirrel.database.entities.IPlatformConnection;
 
-public class ConfigImpl extends AbstractEntity implements IConfig {
+public class PlatformConnectionImpl extends AbstractEntity implements IPlatformConnection {
 }

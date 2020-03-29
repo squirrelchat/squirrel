@@ -31,20 +31,22 @@ import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 import xyz.bowser65.tokenize.IAccount;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Map;
 
-public interface IUser extends IEntity, IAccount {
+public interface IUser extends IPartialUser, IAccount { // TODO: Cleanup this pile of hot garbage
     static IUser create() {
         return new UserImpl();
     }
 
-    String getCustomEmail();
+    String getUsername();
 
-    String getAvatar();
+    void setUsername(String username);
 
     int getDiscriminator();
 
-    String getEmail();
+    void setDiscriminator(int discriminator);
 
     /**
      * <table summary="">
@@ -72,51 +74,86 @@ public interface IUser extends IEntity, IAccount {
      */
     int getFlags();
 
-    Collection<String> getIps();
+    void setFlags(int flags);
 
-    String getUsername();
+    String getPassword();
 
-    boolean hasMfa();
+    void setPassword(String password);
 
-    boolean isBanned();
+    long getTokensValidSince();
 
-    boolean isDeleted();
+    void setTokensValidSince(long tokensValidSince);
 
-    boolean isDisabled();
-
-    void setBanned(boolean banned);
-
-    void setCustomEmail(String customEmail);
-
-    void setDeleted(boolean deleted);
-
-    void setDisabled(boolean disabled);
-
-    void setDiscriminator(int discriminator);
+    String getEmail();
 
     void setEmail(String email);
 
-    void setFlags(int flags);
+    String getAvatar();
+
+    void setAvatar(String avatar);
+
+    String getBiography();
+
+    void setBiography(String biography);
+
+    String getCustomEmail();
+
+    void setCustomEmail(String customEmail);
+
+    boolean isEmailVerified();
+
+    void setEmailVerified(boolean emailVerified);
+
+    boolean isLocked();
+
+    void setLocked(boolean locked);
+
+    boolean isDisabled();
+
+    void setDisabled(boolean disabled);
+
+    boolean isBanned();
+
+    void setBanned(boolean banned);
+
+    boolean isDeleted();
+
+    void setDeleted(boolean deleted);
+
+    boolean isMfaMobile();
+
+    void setMfaMobile(boolean mfaMobile);
+
+    boolean isMfaHardware();
+
+    void setMfaHardware(boolean mfaHardware);
+
+    Collection<ObjectId> getBadgeIds();
+
+    void setBadgeIds(Collection<ObjectId> badgeIds);
+
+    Map<String, String> getTokens();
+
+    void setTokens(Map<String, String> tokens);
+
+    Collection<String> getIps();
 
     void setIps(Collection<String> ips);
 
-    void setTokenValidSince(long tokenValidSince);
+    IUserSettings getUserSettings();
 
-    void setUsername(String username);
+    void setUserSettings(IUserSettings userSettings);
 
-    void setAvatar(String id);
+    // Aggregated entities
+    @Nullable
+    Collection<IBadge> getBadges();
 
-    String getBio();
+    void setBadges(Collection<IBadge> badges);
 
-    void setBio(String bio);
+    @Nullable
+    Collection<IPlatformConnection> getPlatformConnections();
 
-    Collection<ObjectId> getBadges();
-
-    void setBadges(Collection<ObjectId> badges);
-
-    IUserSettings getSettings();
-
-    void setSettings(IUserSettings settings);
+    void setPlatformConnections(Collection<IPlatformConnection> platformConnections);
 
     // STUFF
     @BsonIgnore

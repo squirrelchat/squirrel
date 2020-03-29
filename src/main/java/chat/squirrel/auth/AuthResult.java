@@ -32,23 +32,14 @@ import chat.squirrel.database.entities.IUser;
 public class AuthResult {
     private IUser user;
     private FailureReason reason = FailureReason.UNKNOWN;
-
     private String token;
-
-    public FailureReason getReason() {
-        return this.reason;
-    }
-
-    public String getToken() {
-        return this.token;
-    }
-
-    public IUser getUser() {
-        return this.user;
-    }
 
     public boolean isSuccess() {
         return this.reason == null;
+    }
+
+    public FailureReason getReason() {
+        return this.reason;
     }
 
     /**
@@ -58,8 +49,16 @@ public class AuthResult {
         this.reason = reason;
     }
 
+    public String getToken() {
+        return this.token;
+    }
+
     public void setToken(final String token) {
         this.token = token;
+    }
+
+    public IUser getUser() {
+        return this.user;
     }
 
     public void setUser(final IUser user) {

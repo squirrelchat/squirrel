@@ -30,6 +30,5 @@ package chat.squirrel.database.entities.impl;
 import chat.squirrel.database.entities.AbstractEntity;
 import chat.squirrel.database.entities.IVoiceState;
 
-// TODO
 public class VoiceStateImpl extends AbstractEntity implements IVoiceState {
 }

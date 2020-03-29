@@ -25,23 +25,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.entities.channels.impl;
+package chat.squirrel.database.entities.messages.impl;
 
-import chat.squirrel.database.entities.IVoiceState;
-import chat.squirrel.database.entities.channels.IVoiceChannel;
+import chat.squirrel.database.entities.AbstractEntity;
+import chat.squirrel.database.entities.messages.IMessageEmbed;
 
-import java.util.Collection;
-
-public abstract class AbstractVoiceChannel extends AbstractChannel implements IVoiceChannel {
-    private Collection<IVoiceState> voiceStates;
-
-    @Override
-    public Collection<IVoiceState> getVoiceStates() {
-        return voiceStates;
-    }
-
-    @Override
-    public void setVoiceStates(final Collection<IVoiceState> voiceStates) {
-        this.voiceStates = voiceStates;
-    }
+public class MessageEmbedImpl extends AbstractEntity implements IMessageEmbed {
 }

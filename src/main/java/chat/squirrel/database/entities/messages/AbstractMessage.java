@@ -25,83 +25,77 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.metrics;
+package chat.squirrel.database.entities.messages;
 
+import chat.squirrel.database.entities.AbstractEntity;
+import chat.squirrel.database.entities.IPartialUser;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
+import org.bson.types.ObjectId;
 
-import java.util.Random;
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Date;
 
-/**
- * Inspired from delight's UniformReservoir.
- *
- * @see <a href=
- * "https://github.com/javadelight/delight-metrics/blob/cdeb9513b42a930b58cf2930da2d3be8e8e5f6a9/src/main/java/com/codahale/metrics/UniformReservoir.java">delight-metrics
- * UniformReservoir</a>
- */
-public class UniformHistogram extends AbstractHistogram implements Histogram {
-    private int count = 0;
-    private final double[] values;
-    private final Random rng;
+public abstract class AbstractMessage extends AbstractEntity implements IMessage {
+    private ObjectId authorId, channelId;
+    private Date editedTimestamp;
+    private Collection<IAttachment> attachments;
 
-    public UniformHistogram() {
-        this(null);
-    }
+    // Aggregated entities
+    private IPartialUser author = null;
 
-    public UniformHistogram(String name) {
-        this(name, 1024);
-    }
-
-    public UniformHistogram(String name, int size) {
-        this(name, size, new Random());
-    }
-
-    public UniformHistogram(String name, int size, Random rng) {
-        super(name);
-        this.values = new double[size];
-        this.rng = rng;
+    @Override
+    public ObjectId getAuthorId() {
+        return authorId;
     }
 
     @Override
-    public void addValue(double value) {
-        count++;
-        if (count <= values.length) {
-            values[count - 1] = value;
-        } else {
-            final double r = nextDouble(count);
-            if (r < values.length) {
-                values[(int) r] = value;
-            }
-        }
+    public void setAuthorId(final ObjectId authorId) {
+        this.authorId = authorId;
     }
 
     @Override
-    public void addValue(long value) {
-        this.addValue((double) value); // XXX is this a good idea?
+    public ObjectId getChannelId() {
+        return channelId;
     }
 
     @Override
-    public int size() {
-        final int c = count;
-        if (c > values.length) {
-            return values.length;
-        }
-        return c;
+    public void setChannelId(final ObjectId channelId) {
+        this.channelId = channelId;
     }
 
-    /**
-     * Returns a random double
-     *
-     * @param max the exclusive maximum
-     * @return a random double between 0 (inclusive) and max (exclusive)
-     */
-    private double nextDouble(double max) {
-        return rng.nextDouble() * max;
+    @Nullable
+    @Override
+    public Date getEditedTimestamp() {
+        return editedTimestamp;
     }
 
     @Override
+    public void setEditedTimestamp(final Date editedTimestamp) {
+        this.editedTimestamp = editedTimestamp;
+    }
+
+    @Override
+    public Collection<IAttachment> getAttachments() {
+        return attachments;
+    }
+
+    @Override
+    public void setAttachments(final Collection<IAttachment> attachments) {
+        this.attachments = attachments;
+    }
+
+
+    // Aggregated entities
     @BsonIgnore
-    public Calculator getCalculator() {
-        return new UniformCalculator(values);
+    @Nullable
+    @Override
+    public IPartialUser getAuthor() {
+        return author;
     }
 
+    @Override
+    public void setAuthor(final IPartialUser author) {
+        this.author = author;
+    }
 }

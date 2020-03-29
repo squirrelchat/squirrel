@@ -43,12 +43,12 @@ public abstract class AbstractChannel extends AbstractEntity implements IChannel
     }
 
     @Override
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
     @Override
-    public Future<Boolean> hasAccess(ObjectId user) {
+    public Future<Boolean> hasAccess(final ObjectId user) {
         return CompletableFuture.supplyAsync(() -> {
             return true; // TODO: Actual fucking perm checks angry
         });

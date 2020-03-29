@@ -32,6 +32,7 @@ import chat.squirrel.database.entities.IBadge;
 
 public class BadgeImpl extends AbstractEntity implements IBadge {
     private String name, description, icon;
+    private int position;
 
     @Override
     public String getName() {
@@ -39,7 +40,7 @@ public class BadgeImpl extends AbstractEntity implements IBadge {
     }
 
     @Override
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -49,7 +50,7 @@ public class BadgeImpl extends AbstractEntity implements IBadge {
     }
 
     @Override
-    public void setIcon(String asset) {
+    public void setIcon(final String asset) {
         this.icon = asset;
     }
 
@@ -59,8 +60,17 @@ public class BadgeImpl extends AbstractEntity implements IBadge {
     }
 
     @Override
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
+    @Override
+    public int getPosition() {
+        return position;
+    }
+
+    @Override
+    public void setPosition(final int position) {
+        this.position = position;
+    }
 }

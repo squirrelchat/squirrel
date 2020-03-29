@@ -27,7 +27,7 @@
 
 package chat.squirrel;
 
-import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
+import chat.squirrel.database.collections.IUserCollection;
 import chat.squirrel.database.entities.IUser;
 import com.mongodb.client.model.Filters;
 import io.vertx.core.Handler;
@@ -96,9 +96,8 @@ public class WebAuthHandler implements Handler<RoutingContext> {
     }
 
     private IUser fetchAccount(final String id) {
-        return Squirrel.getInstance()
-                .getDatabaseManager()
-                .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(new ObjectId(id)));
+        return Squirrel.getInstance().getDatabaseManager().getCollection(IUserCollection.class)
+                .findEntity(Filters.eq(new ObjectId(id)));
     }
 
 }

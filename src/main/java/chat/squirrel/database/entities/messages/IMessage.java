@@ -25,21 +25,55 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.metrics;
+package chat.squirrel.database.entities.messages;
 
 import chat.squirrel.database.entities.IEntity;
-import org.bson.codecs.pojo.annotations.BsonIgnore;
+import chat.squirrel.database.entities.IPartialUser;
+import chat.squirrel.database.entities.channels.IChannel;
+import org.bson.types.ObjectId;
 
-public interface Histogram extends IEntity, IMetric {
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Date;
 
-    String getName();
+/**
+ * A general message in a {@link IChannel}
+ */
+public interface IMessage extends IEntity {
+    /**
+     * Author of the message
+     *
+     * @return ID of the author of the message
+     */
+    ObjectId getAuthorId();
 
-    void addValue(double value);
+    void setAuthorId(ObjectId author);
 
-    void addValue(long value);
+    ObjectId getChannelId();
 
-    int size();
+    void setChannelId(ObjectId channel);
 
-    @BsonIgnore
-    Calculator getCalculator();
+    /**
+     * @return The edit date, or null if the message never got edited.
+     */
+    @Nullable
+    Date getEditedTimestamp();
+
+    void setEditedTimestamp(Date editedTimestamp);
+
+    Collection<IAttachment> getAttachments();
+
+    void setAttachments(Collection<IAttachment> attachments);
+
+    // Aggregated entities
+
+    /**
+     * Populated only if the entity was fetched performing an aggregation.
+     *
+     * @return Members, or {@code null} if not aggregated during entity retrieval.
+     */
+    @Nullable
+    IPartialUser getAuthor();
+
+    void setAuthor(IPartialUser author);
 }

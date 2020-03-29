@@ -27,8 +27,6 @@
 
 package chat.squirrel.upload.managers;
 
-import chat.squirrel.Squirrel;
-import chat.squirrel.config.TableUserConfig;
 import chat.squirrel.upload.ActionResult;
 import chat.squirrel.upload.Bucket;
 import chat.squirrel.upload.IUploadManager;
@@ -250,16 +248,7 @@ public class LocalUploadManager implements IUploadManager {
     }
 
     private static File getDefaultUploadFolder() {
-        // TODO: no
-        final TableUserConfig conf = (TableUserConfig) Squirrel.getInstance()
-                .getUserConfig(LocalUploadManager.class, new TableUserConfig(LocalUploadManager.class));
-        final Object rawUp = conf.getTable().get("upload_folder");
-        if (!(rawUp instanceof String)) {
-            throw new IllegalStateException("upload folder not set as string in config");
-        }
-
-        final String uploadTarget = (String) rawUp;
-
-        return new File(uploadTarget);
+        // TODO: from config
+        return new File("./uploads");
     }
 }

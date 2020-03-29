@@ -41,7 +41,7 @@ public class GuildVoiceChannelImpl extends AbstractVoiceChannel implements IGuil
     }
 
     @Override
-    public void setGuild(ObjectId guild) {
+    public void setGuild(final ObjectId guild) {
         this.guildId = guild;
     }
 
@@ -52,7 +52,7 @@ public class GuildVoiceChannelImpl extends AbstractVoiceChannel implements IGuil
     }
 
     @Override
-    public void setCategory(String category) {
+    public void setCategory(final String category) {
         this.category = category;
     }
 
@@ -62,7 +62,7 @@ public class GuildVoiceChannelImpl extends AbstractVoiceChannel implements IGuil
     }
 
     @Override
-    public void setOrder(int order) {
+    public void setOrder(final int order) {
         this.order = order;
     }
 }

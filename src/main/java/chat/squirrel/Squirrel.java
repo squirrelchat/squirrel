@@ -35,7 +35,6 @@ import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollectio
 import chat.squirrel.event.EventBus;
 import chat.squirrel.mail.NotificationMailManager;
 import chat.squirrel.mail.SquirrelMailConfig;
-import chat.squirrel.metrics.MetricsManager;
 import chat.squirrel.modules.ModuleManager;
 import chat.squirrel.scheduling.SchedulerManager;
 import com.mongodb.client.model.Filters;
@@ -68,7 +67,8 @@ public final class Squirrel {
 
     // Managers
     private final ModuleManager moduleManager;
-    private final DatabaseManagerEditionBoomerware dbManager;
+    private final DatabaseManagerEditionBoomerware boomerDbManager;
+    private final DatabaseManager databaseManager;
     private final IAuthHandler authHandler;
     private final Tokenize tokenize;
     private final NotificationMailManager notifMail;
@@ -111,9 +111,8 @@ public final class Squirrel {
 
         LOG.info("Initializing managers");
         this.moduleManager = new ModuleManager();
-        new DatabaseManager(this.getProperty("mongo.con-string"), this.getProperty("mongo.db-name", "squirrel"));
-
-        this.dbManager = new DatabaseManagerEditionBoomerware(this.getProperty("mongo.con-string"),
+        this.databaseManager = new DatabaseManager(this.getProperty("mongo.con-string"), this.getProperty("mongo.db-name", "squirrel"));
+        this.boomerDbManager = new DatabaseManagerEditionBoomerware(this.getProperty("mongo.con-string"),
                 this.getProperty("mongo.db-name", "squirrel"));
 
         this.config = (SquirrelConfig) this.getUserConfig(Squirrel.class, new SquirrelConfig(this.getClass()));
@@ -152,7 +151,7 @@ public final class Squirrel {
         this.notifMail = new NotificationMailManager(vertx,
                 (SquirrelMailConfig) this.getUserConfig(NotificationMailManager.class, null));
 
-        MetricsManager.getInstance().load(this.dbManager);
+        // MetricsManager.getInstance().load(this.boomerDbManager);
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "squirrel-shutdown"));
     }
@@ -181,8 +180,12 @@ public final class Squirrel {
     /**
      * @return The DatabaseManager used by this server
      */
-    public DatabaseManagerEditionBoomerware getDatabaseManager() {
-        return this.dbManager;
+    public DatabaseManager getDatabaseManager() {
+        return this.databaseManager;
+    }
+
+    public DatabaseManagerEditionBoomerware getBoomerDatabaseManager() {
+        return this.boomerDbManager;
     }
 
     /**
@@ -229,17 +232,9 @@ public final class Squirrel {
         return scheduler;
     }
 
-    public UserConfig getUserConfig(final Class<?> owner) {
-        final UserConfig def = new UserConfig(owner);
-        final UserConfig retConf = this.getUserConfig(owner, def);
-        if (retConf == def) {
-            this.saveUserConfig(def);
-        }
-        return retConf;
-    }
-
     public UserConfig getUserConfig(final Class<?> owner, final UserConfig def) {
-        final UserConfig conf = this.dbManager.findFirstEntity(UserConfig.class, SquirrelCollection.CONFIG,
+        // TODO: wtf is this shit
+        final UserConfig conf = this.boomerDbManager.findFirstEntity(UserConfig.class, SquirrelCollection.CONFIG,
                 Filters.eq("owner", owner.toString()));
         if (conf == null) {
             return def;
@@ -248,19 +243,20 @@ public final class Squirrel {
     }
 
     public void saveUserConfig(final UserConfig conf) {
-        this.dbManager.replaceOne(SquirrelCollection.CONFIG, conf, Filters.eq(conf.getId()));
+        this.boomerDbManager.replaceOne(SquirrelCollection.CONFIG, conf, Filters.eq(conf.getId()));
     }
 
     /**
      * Stops the web server and gracefully shutdowns the managers
      */
     public void shutdown() {
-        LOG.info("Gracefully shutting down");
+        LOG.info("Shutting down");
         scheduler.shutdown();
         this.moduleManager.disableModules();
         this.server.close(e -> this.vertx.close());
-        MetricsManager.getInstance().save();
-        this.dbManager.shutdown();
+        // MetricsManager.getInstance().save();
+        this.boomerDbManager.shutdown();
+        this.databaseManager.shutdown();
         LOG.info("Shutdown successful, the process should end");
     }
 

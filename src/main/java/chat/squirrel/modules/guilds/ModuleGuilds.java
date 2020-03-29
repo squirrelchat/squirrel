@@ -28,14 +28,15 @@
 package chat.squirrel.modules.guilds;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
+import chat.squirrel.database.collections.IGuildCollection;
 import chat.squirrel.database.entities.IGuild;
 import chat.squirrel.database.entities.IMember;
 import chat.squirrel.database.entities.IUser;
-import chat.squirrel.metrics.MetricsManager;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+
+import java.util.Collections;
 
 public class ModuleGuilds extends AbstractGuildModule {
     @Override
@@ -65,17 +66,15 @@ public class ModuleGuilds extends AbstractGuildModule {
 
         final IUser user = this.getRequester(ctx);
         final IGuild newGuild = IGuild.create();
-        newGuild.setName(name);
-
         final IMember owner = IMember.create();
-        owner.setOwner(true);
         owner.setUserId(user.getId());
+        newGuild.setName(name);
+        newGuild.setMembers(Collections.singleton(owner));
+        newGuild.setOwnerId(user.getId());
 
-        newGuild.addMember(owner);
+        Squirrel.getInstance().getDatabaseManager().getCollection(IGuildCollection.class).insertOne(newGuild);
 
-        Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.GUILDS, newGuild);
-
-        MetricsManager.getInstance().happened("guild.create");
+        // MetricsManager.getInstance().happened("guild.create");
         ctx.response().setStatusCode(201).end(newGuild.toJson().encode());
     }
 }

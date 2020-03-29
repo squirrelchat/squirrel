@@ -25,24 +25,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.metrics;
+package chat.squirrel.database.entities.messages.impl;
 
 import chat.squirrel.database.entities.AbstractEntity;
+import chat.squirrel.database.entities.messages.IMessageGadget;
 
-public abstract class AbstractHistogram extends AbstractEntity implements Histogram {
-    protected final String name;
-
-    public AbstractHistogram(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getType() {
-        return "Histogram";
-    }
+public class MessageGadgetImpl extends AbstractEntity implements IMessageGadget {
 }

@@ -25,26 +25,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.config;
+package chat.squirrel.database.entities.messages;
 
-import chat.squirrel.UserConfig;
+import chat.squirrel.database.entities.IEntity;
+import chat.squirrel.database.entities.messages.impl.MessageGadgetImpl;
 
-import java.util.Hashtable;
-
-public class TableUserConfig extends UserConfig {
-    private Hashtable<String, Object> table;
-
-    public TableUserConfig(final Class<?> owner) {
-        super(owner);
-        this.table = new Hashtable<>();
+public interface IMessageGadget extends IEntity {
+    static IMessageGadget create() {
+        return new MessageGadgetImpl();
     }
-
-    public Hashtable<String, Object> getTable() {
-        return this.table;
-    }
-
-    public void setTable(final Hashtable<String, Object> table) {
-        this.table = table;
-    }
-
 }

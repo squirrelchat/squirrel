@@ -25,12 +25,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.entities;
+package chat.squirrel.database.entities.messages.impl;
 
-import chat.squirrel.database.entities.impl.ConfigImpl;
+import chat.squirrel.database.entities.AbstractEntity;
+import chat.squirrel.database.entities.messages.IAttachment;
 
-public interface IConfig extends IEntity {
-    static IConfig create() {
-        return new ConfigImpl();
-    }
+public class AttachmentImpl extends AbstractEntity implements IAttachment {
 }

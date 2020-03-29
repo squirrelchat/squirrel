@@ -30,11 +30,9 @@ package chat.squirrel.database.entities;
 import chat.squirrel.database.entities.impl.AuditImpl;
 import org.bson.types.ObjectId;
 
-import java.util.Date;
+import javax.annotation.Nullable;
+import java.util.Map;
 
-/**
- * A guild audit log entry
- */
 public interface IAudit extends IEntity {
     static IAudit create() {
         return new AuditImpl();
@@ -44,20 +42,26 @@ public interface IAudit extends IEntity {
 
     void setType(AuditLogEntryType type);
 
+    /**
+     * @return ID this audit belongs to. {@code null} for instance audits.
+     */
+    @Nullable
     ObjectId getGuild();
 
-    void setGuild(ObjectId guild);
+    void setGuild(@Nullable ObjectId guild);
 
     ObjectId getUser();
 
     void setUser(ObjectId user);
 
-    Date getDate();
+    Map<String, Object> getData();
 
-    void setDate(Date date);
+    void setData(Map<String, Object> data);
 
     /**
      * Type of entry an audit is
+     * TODO: Keep it as an enum?
+     * TODO: Instance audit types
      */
     enum AuditLogEntryType {
         // Guild

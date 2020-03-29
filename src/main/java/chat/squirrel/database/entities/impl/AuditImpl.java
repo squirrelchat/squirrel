@@ -31,15 +31,13 @@ import chat.squirrel.database.entities.AbstractEntity;
 import chat.squirrel.database.entities.IAudit;
 import org.bson.types.ObjectId;
 
-import java.util.Date;
+import javax.annotation.Nullable;
+import java.util.Map;
 
-/**
- * A guild audit log entry
- */
 public class AuditImpl extends AbstractEntity implements IAudit {
     private ObjectId guild, user;
-    private Date date;
     private AuditLogEntryType type;
+    private Map<String, Object> data;
 
     @Override
     public AuditLogEntryType getType() {
@@ -47,17 +45,18 @@ public class AuditImpl extends AbstractEntity implements IAudit {
     }
 
     @Override
-    public void setType(AuditLogEntryType type) {
+    public void setType(final AuditLogEntryType type) {
         this.type = type;
     }
 
+    @Nullable
     @Override
     public ObjectId getGuild() {
         return guild;
     }
 
     @Override
-    public void setGuild(ObjectId guild) {
+    public void setGuild(final ObjectId guild) {
         this.guild = guild;
     }
 
@@ -67,17 +66,17 @@ public class AuditImpl extends AbstractEntity implements IAudit {
     }
 
     @Override
-    public void setUser(ObjectId user) {
+    public void setUser(final ObjectId user) {
         this.user = user;
     }
 
     @Override
-    public Date getDate() {
-        return date;
+    public Map<String, Object> getData() {
+        return data;
     }
 
     @Override
-    public void setDate(Date date) {
-        this.date = date;
+    public void setData(final Map<String, Object> data) {
+        this.data = data;
     }
 }

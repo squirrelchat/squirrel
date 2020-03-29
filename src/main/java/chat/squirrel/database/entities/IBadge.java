@@ -32,7 +32,6 @@ import chat.squirrel.database.entities.impl.BadgeImpl;
 /**
  * A badge is a server-wide entity and not attributed to a single guild
  */
-
 public interface IBadge extends IEntity {
     static IBadge create() {
         return new BadgeImpl();
@@ -48,5 +47,9 @@ public interface IBadge extends IEntity {
 
     String getIcon();
 
-    void setIcon(String asset);
+    void setIcon(String icon);
+
+    int getPosition();
+
+    void setPosition(int position);
 }

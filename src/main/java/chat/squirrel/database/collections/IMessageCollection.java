@@ -28,7 +28,7 @@
 package chat.squirrel.database.collections;
 
 import chat.squirrel.database.collections.impl.MessageCollectionImpl;
-import chat.squirrel.database.entities.IMessage;
+import chat.squirrel.database.entities.messages.IMessage;
 
 @SquirrelCollection(collection = "messages", impl = MessageCollectionImpl.class)
 public interface IMessageCollection extends ICollection<IMessage> {

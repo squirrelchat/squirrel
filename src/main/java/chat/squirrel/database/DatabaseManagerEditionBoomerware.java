@@ -30,10 +30,10 @@ package chat.squirrel.database;
 import chat.squirrel.Version;
 import chat.squirrel.database.entities.IEntity;
 import chat.squirrel.database.entities.IGuild;
-import chat.squirrel.database.entities.IMessage;
 import chat.squirrel.database.entities.IUser;
 import chat.squirrel.database.entities.channels.IChannel;
 import chat.squirrel.database.entities.impl.UserImpl;
+import chat.squirrel.database.entities.messages.IMessage;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.FindIterable;
@@ -209,7 +209,7 @@ public class DatabaseManagerEditionBoomerware {
          */
         GUILDS("guilds"),
         /**
-         * 'config' collection. Contains {@link chat.squirrel.UserConfig}
+         * 'config' collection. Contains stuff maybe eventually.
          */
         CONFIG("config"),
         /**

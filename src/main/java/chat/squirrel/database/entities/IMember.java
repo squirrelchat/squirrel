@@ -26,12 +26,11 @@
  */
 package chat.squirrel.database.entities;
 
-import chat.squirrel.database.entities.IGuild.Permissions;
 import chat.squirrel.database.entities.impl.MemberImpl;
 import org.bson.types.ObjectId;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.concurrent.Future;
 
 
 public interface IMember extends IEntity {
@@ -39,35 +38,36 @@ public interface IMember extends IEntity {
         return new MemberImpl();
     }
 
-    Future<IGuild> getGuild();
+    ObjectId getUserId();
+
+    void setUserId(ObjectId userId);
 
     ObjectId getGuildId();
 
-    String getNickname();
-
-    Collection<Permissions> getPermissions();
-
-    Future<Collection<IRole>> getRoles();
-
-    Collection<ObjectId> getRolesIds();
-
-    Future<IUser> getUser();
-
-    ObjectId getUserId();
-
-    boolean hasEffectivePermission(Permissions perm);
-
-    boolean isOwner();
-
     void setGuildId(ObjectId guildId);
+
+    String getNickname();
 
     void setNickname(String nickname);
 
-    void setOwner(boolean owner);
+    /**
+     * Populated only if the entity was fetched performing an aggregation.
+     *
+     * @return Roles, or {@code null} if not aggregated during entity retrieval.
+     */
+    @Nullable
+    Collection<IRole> getRoles();
 
-    void setPermissions(Collection<Permissions> permissions);
+    void setRoles(Collection<IRole> roles);
 
-    void setRolesIds(Collection<ObjectId> roles);
+    /**
+     * Populated only if the entity was fetched performing an aggregation.
+     * Can safely be considered non-null if roles were fetched.
+     *
+     * @return Permissions, or {@code null} if not aggregated during entity retrieval.
+     */
+    @Nullable
+    Collection<String> getPermissions();
 
-    void setUserId(ObjectId userId);
+    void setPermissions(Collection<String> permissions);
 }

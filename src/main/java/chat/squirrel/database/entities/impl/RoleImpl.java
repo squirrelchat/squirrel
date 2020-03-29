@@ -28,61 +28,43 @@
 package chat.squirrel.database.entities.impl;
 
 import chat.squirrel.database.entities.AbstractEntity;
-import chat.squirrel.database.entities.IGuild;
 import chat.squirrel.database.entities.IRole;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 
-/**
- * A standard {@link IGuild} Role
- */
 public class RoleImpl extends AbstractEntity implements IRole {
     private int color;
     private String name;
     private Collection<String> permissions = Collections.emptySet();
 
-    /**
-     * @return The RGB color corresponding to this role
-     */
     @Override
     public int getColor() {
-        return this.color;
+        return color;
     }
 
-    /**
-     * @return The display name of this Role
-     */
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    @Nonnull
-    public Collection<String> getPermissions() {
-        return this.permissions;
-    }
-
-    /**
-     * @param color The RGB color corresponding to this role
-     */
     @Override
     public void setColor(final int color) {
         this.color = color;
     }
 
-    /**
-     * @param name The display name of this Role
-     */
+    @Override
+    public String getName() {
+        return name;
+    }
+
     @Override
     public void setName(final String name) {
         this.name = name;
     }
 
     @Override
-    public void setPermissions(@Nonnull final Collection<String> permissions) {
+    public Collection<String> getPermissions() {
+        return permissions;
+    }
+
+    @Override
+    public void setPermissions(final Collection<String> permissions) {
         this.permissions = permissions;
     }
 }

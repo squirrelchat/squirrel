@@ -25,22 +25,51 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.metrics;
+package chat.squirrel.database.entities.messages;
 
-public interface Calculator {
-    double getQuantile(double quantile);
+import chat.squirrel.database.entities.messages.impl.EncryptedMessageImpl;
 
-    double[] getValues();
-
-    double getMax();
-
-    double getMean();
-
-    double getMin();
-
-    double getStdDev();
-
-    default double getMedian() {
-        return getQuantile(0.5);
+/**
+ * An encrypted message
+ */
+public interface IEncryptedMessage extends IMessage {
+    static IEncryptedMessage create() {
+        return new EncryptedMessageImpl();
     }
+
+    /**
+     * Byte array representing an encrypted JSON object containing arbitrary data used client-side.
+     *
+     * @return Encrypted message metadata.
+     */
+    byte[] getMetadata();
+
+    void setMetadata(byte[] content);
+
+    /**
+     * Byte array representing an encrypted string.
+     *
+     * @return Encrypted message contents.
+     */
+    byte[] getContents();
+
+    void setContents(byte[] contents);
+
+    /**
+     * Byte array representing a JSON array of {@link IMessageEmbed}
+     *
+     * @return Encrypted message embeds.
+     */
+    byte[] getEmbeds();
+
+    void setEmbeds(byte[] embeds);
+
+    /**
+     * Byte array representing a JSON array of {@link IMessageGadget}
+     *
+     * @return Encrypted message embeds.
+     */
+    byte[] getGadgets();
+
+    void setGadgets(byte[] gadgets);
 }

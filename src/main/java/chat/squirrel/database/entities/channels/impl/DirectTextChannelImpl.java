@@ -38,31 +38,27 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 public class DirectTextChannelImpl extends AbstractTextChannel implements IDirectTextChannel {
-    private Collection<ObjectId> participants;
+    private Collection<ObjectId> participantIds;
 
     @Override
-    public Collection<ObjectId> getParticipants() {
-        return participants;
+    public Collection<ObjectId> getParticipantIds() {
+        return participantIds;
     }
 
     @Override
-    public void setParticipants(Collection<ObjectId> participants) {
-        this.participants = participants;
+    public void setParticipantIds(final Collection<ObjectId> participantIds) {
+        this.participantIds = participantIds;
     }
 
     public CompletableFuture<IUser> getRealFirstParticipant() {
-        return CompletableFuture.supplyAsync(() -> {
-            return Squirrel.getInstance()
-                    .getDatabaseManager()
-                    .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(/* getFirstParticipant() */ null));
-        });
+        return CompletableFuture.supplyAsync(() -> Squirrel.getInstance()
+                .getBoomerDatabaseManager()
+                .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(/* getFirstParticipant() */ null)));
     }
 
     public CompletableFuture<IUser> getRealSecondParticipant() {
-        return CompletableFuture.supplyAsync(() -> {
-            return Squirrel.getInstance()
-                    .getDatabaseManager()
-                    .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(/* getSecondParticipant() */ null));
-        });
+        return CompletableFuture.supplyAsync(() -> Squirrel.getInstance()
+                .getBoomerDatabaseManager()
+                .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(/* getSecondParticipant() */ null)));
     }
 }

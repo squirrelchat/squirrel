@@ -32,7 +32,7 @@ import org.bson.types.ObjectId;
 import java.util.Collection;
 
 public interface IDirectTextChannel extends ITextChannel {
-    Collection<ObjectId> getParticipants();
+    Collection<ObjectId> getParticipantIds();
 
-    void setParticipants(Collection<ObjectId> participants);
+    void setParticipantIds(Collection<ObjectId> participantIds);
 }

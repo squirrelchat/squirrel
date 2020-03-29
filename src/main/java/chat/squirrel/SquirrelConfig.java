@@ -29,6 +29,7 @@ package chat.squirrel;
 
 import java.security.SecureRandom;
 
+// TODO: IConfig
 public class SquirrelConfig extends UserConfig {
     private String orgName = "Squirrel Chat", srvDescription = "Default Squirrel Server", secret;
     private int maximumUsernameCount = -1;

@@ -27,11 +27,11 @@
 
 package chat.squirrel.database.entities.channels;
 
-import chat.squirrel.database.entities.IMessage;
+import chat.squirrel.database.entities.messages.IMessage;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface ITextChannel extends IChannel {
-    CompletableFuture<List<IMessage>> fetchMessages(int nbr);
+    CompletableFuture<List<IMessage>> fetchMessages(int count);
 }

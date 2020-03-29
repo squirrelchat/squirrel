@@ -27,11 +27,7 @@
 
 package chat.squirrel.modules.admin;
 
-import chat.squirrel.Squirrel;
 import chat.squirrel.database.entities.IUser;
-import chat.squirrel.metrics.Calculator;
-import chat.squirrel.metrics.Histogram;
-import chat.squirrel.metrics.MetricsManager;
 import chat.squirrel.modules.AbstractModule;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonArray;
@@ -40,78 +36,32 @@ import io.vertx.ext.web.RoutingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-
-// @todo: Make this be "ModuleMetrics"
-public class ModuleAdmin extends AbstractModule {
-    private static Logger LOG = LoggerFactory.getLogger(ModuleAdmin.class);
+public class ModuleMetrics extends AbstractModule {
+    private static Logger LOG = LoggerFactory.getLogger(ModuleMetrics.class);
 
     @Override
     public void initialize() {
-        // @todo: is this an endpoint worth having?
-        this.registerAuthedRoute(HttpMethod.POST, "/admin/shutdown", this::handleShutdown);
         this.registerAuthedRoute(HttpMethod.GET, "/admin/metrics", this::handleMetrics);
         this.registerAuthedRoute(HttpMethod.GET, "/admin/metrics/histogram/:hist", this::handleHistogram);
     }
 
     private void handleHistogram(final RoutingContext ctx) {
         final IUser user = this.getRequester(ctx);
-
         if (!user.isInstanceAdmin()) {
-            this.fail(ctx, 401, "Not server admin", null);
+            this.fail(ctx, 403, "Insufficient permissions", null);
             return;
         }
 
-        final String name = ctx.pathParam("hist");
-
-        final Histogram hist = MetricsManager.getInstance().getHistogram(name);
-
-        if (hist == null) {
-            this.fail(ctx, 404, "no histogram found with specified name", new JsonObject().put("name", name));
-            return;
-        }
-
-        final Calculator calc = hist.getCalculator();
-
-        final JsonArray arr = new JsonArray();
-
-        for (double d : calc.getValues())
-            arr.add(d);
-
-        ctx.response()
-                .end(new JsonObject().put("name", name)
-                        .put("id", hist.getId().toHexString())
-                        .put("values", arr)
-                        .encode());
+        ctx.response().end(new JsonObject().encode());
     }
 
     private void handleMetrics(final RoutingContext ctx) {
         final IUser user = this.getRequester(ctx);
-
         if (!user.isInstanceAdmin()) {
-            this.fail(ctx, 401, "Not server admin", null);
+            this.fail(ctx, 403, "Insufficient permissions", null);
             return;
         }
 
-        ctx.response()
-                .end(new JsonObject()
-                        .put("histograms",
-                                new JsonArray(Arrays.asList(MetricsManager.getInstance().getHistogramNames())))
-                        .encode());
-    }
-
-    private void handleShutdown(final RoutingContext ctx) {
-        final IUser user = this.getRequester(ctx);
-
-        if (!user.isInstanceAdmin()) {
-            this.fail(ctx, 401, "Not server admin", null);
-            return;
-        }
-
-        ctx.response().end(new JsonObject().put("shutdown", true).encode());
-
-        LOG.info("Server shutdown was requested by " + user.toString());
-        MetricsManager.getInstance().happened("admin.shutdown");
-        Squirrel.getInstance().shutdown();
+        ctx.response().end(new JsonObject().put("histograms", new JsonArray()).encode());
     }
 }

@@ -49,6 +49,7 @@ import java.util.regex.Pattern;
  * database.
  */
 public class MongoAuthHandler implements IAuthHandler {
+    // TODO: HANDLE WITH CARE - POTENTIAL TRACES OF SEVERAL DISEASES TO BE FOUND
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,8}$",
             Pattern.CASE_INSENSITIVE),
     /**
@@ -99,7 +100,7 @@ public class MongoAuthHandler implements IAuthHandler {
             final String hash = doc.getString("password");
             if (this.argon.verify(hash, password)) {
                 final IUser user = Squirrel.getInstance()
-                        .getDatabaseManager()
+                        .getBoomerDatabaseManager()
                         .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(doc.get("_id")));
                 res.setUser(user);
                 res.setReason(null);
@@ -140,7 +141,7 @@ public class MongoAuthHandler implements IAuthHandler {
             return res;
         }
 
-        final int discriminator = Squirrel.getInstance().getDatabaseManager().getFreeDiscriminator(username);
+        final int discriminator = Squirrel.getInstance().getBoomerDatabaseManager().getFreeDiscriminator(username);
         if (discriminator == -1) {
             res.setReason(FailureReason.OVERUSED_USERNAME);
             return res;
@@ -151,9 +152,9 @@ public class MongoAuthHandler implements IAuthHandler {
         user.setUsername(username);
         user.setDiscriminator(discriminator);
 
-        Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.USERS, user);
+        Squirrel.getInstance().getBoomerDatabaseManager().insertEntity(SquirrelCollection.USERS, user);
         final UpdateResult pwdUp = Squirrel.getInstance()
-                .getDatabaseManager()
+                .getBoomerDatabaseManager()
                 .updateEntity(SquirrelCollection.USERS, Filters.eq(user.getId()), Updates.set("password",
                         this.argon.hash(this.ARGON_ITERATION, this.ARGON_MEMORY, this.ARGON_PARALLELISM, password)));
         this.argon.wipeArray(password);
@@ -178,7 +179,7 @@ public class MongoAuthHandler implements IAuthHandler {
             final String hash = doc.getString("password");
             if (this.argon.verify(hash, password)) {
                 final IUser user = Squirrel.getInstance()
-                        .getDatabaseManager()
+                        .getBoomerDatabaseManager()
                         .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(doc.get("_id")));
                 res.setUser(user);
                 res.setReason(null);
@@ -192,20 +193,20 @@ public class MongoAuthHandler implements IAuthHandler {
     }
 
     private FindIterable<Document> fetchUsers(final Bson filters) {
-        return Squirrel.getInstance().getDatabaseManager().rawRequest(SquirrelCollection.USERS, filters);
+        return Squirrel.getInstance().getBoomerDatabaseManager().rawRequest(SquirrelCollection.USERS, filters);
     }
 
     private boolean hitMaxUsernameCount(final String username) {
         final int max = Squirrel.getInstance().getConfig().getMaximumUsernameCount();
         final long count = Squirrel.getInstance()
-                .getDatabaseManager()
+                .getBoomerDatabaseManager()
                 .countDocuments(SquirrelCollection.USERS, Filters.eq("username", username));
         return count >= 5000 || max != -1 && count >= max;
     }
 
     private boolean isEmailTaken(final String email) {
         return Squirrel.getInstance()
-                .getDatabaseManager()
+                .getBoomerDatabaseManager()
                 .countDocuments(SquirrelCollection.USERS, Filters.eq("email", email)) != 0;
     }
 

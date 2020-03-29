@@ -37,13 +37,13 @@ public interface IRole extends IEntity {
 
     int getColor();
 
-    String getName();
-
-    Collection<String> getPermissions();
-
     void setColor(int color);
 
+    String getName();
+
     void setName(String name);
+
+    Collection<String> getPermissions();
 
     void setPermissions(Collection<String> permissions);
 }

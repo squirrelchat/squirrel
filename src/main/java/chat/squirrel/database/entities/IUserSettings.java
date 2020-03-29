@@ -36,5 +36,5 @@ public interface IUserSettings extends IEntity {
 
     String getLanguage();
 
-    void setLanguage(final String language);
+    void setLanguage(String language);
 }

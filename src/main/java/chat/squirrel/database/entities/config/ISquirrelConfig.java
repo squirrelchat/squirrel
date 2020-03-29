@@ -25,57 +25,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.entities.impl;
+package chat.squirrel.database.entities.config;
 
-import chat.squirrel.database.entities.AbstractEntity;
-import chat.squirrel.database.entities.IMessage;
-import org.bson.types.ObjectId;
+import chat.squirrel.database.entities.config.impl.SquirrelConfigImpl;
 
-/**
- * A standard text message TODO: Rename to TextMessage
- */
-public class MessageImpl extends AbstractEntity implements IMessage {
-    private ObjectId author, channelId;
-    private String content;
-
-    @Override
-    public ObjectId getAuthor() {
-        return this.author;
-    }
-
-    @Override
-    public String getContent() {
-        return this.content;
-    }
-
-    @Override
-    public void setAuthor(ObjectId author) {
-        this.author = author;
-    }
-
-    @Override
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    @Override
-    public ObjectId getOwningChannel() {
-        return channelId;
-    }
-
-    @Override
-    public void setOwningChannel(ObjectId channel) {
-        this.channelId = channel;
+public interface ISquirrelConfig extends IConfig {
+    static ISquirrelConfig create() {
+        return new SquirrelConfigImpl();
     }
 }
-
-/*
-{
-  "gadgets": [
-    IMessageGadget
-  ],
-  "embeds": [
-
-  ]
-}
- */

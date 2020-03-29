@@ -43,7 +43,7 @@ import java.util.Date;
 public abstract class AbstractGuildModule extends AbstractModule {
     protected IGuild getGuild(final RoutingContext ctx) {
         final IGuild guild = Squirrel.getInstance()
-                .getDatabaseManager()
+                .getBoomerDatabaseManager()
                 .findFirstEntity(IGuild.class, DatabaseManagerEditionBoomerware.SquirrelCollection.GUILDS,
                         Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
@@ -56,20 +56,14 @@ public abstract class AbstractGuildModule extends AbstractModule {
     }
 
     protected void submitAudit(final ObjectId guild, final ObjectId user, final AuditLogEntryType type) {
-        this.submitAudit(guild, user, type, new Date());
-    }
-
-    protected void submitAudit(final ObjectId guild, final ObjectId user, final AuditLogEntryType type,
-                               final Date date) {
         final IAudit entry = IAudit.create();
         entry.setGuild(guild);
         entry.setUser(user);
         entry.setType(type);
-        entry.setDate(date);
         submitAudit(entry);
     }
 
     protected void submitAudit(final IAudit entry) {
-        Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.AUDITS, entry);
+        Squirrel.getInstance().getBoomerDatabaseManager().insertEntity(SquirrelCollection.AUDITS, entry);
     }
 }

@@ -27,179 +27,123 @@
 
 package chat.squirrel.database.entities.impl;
 
-import chat.squirrel.Squirrel;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
-import chat.squirrel.database.entities.AbstractEntity;
-import chat.squirrel.database.entities.IGuild;
-import chat.squirrel.database.entities.IMember;
-import chat.squirrel.database.entities.IRole;
+import chat.squirrel.database.entities.*;
 import chat.squirrel.database.entities.channels.IChannel;
-import com.mongodb.client.model.Filters;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
+import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
-/**
- * A basic Guild
- */
 public class GuildImpl extends AbstractEntity implements IGuild {
-    private String name;
-    private Collection<ObjectId> members = Collections.emptySet();
-    private Collection<ObjectId> roles = Collections.emptySet();
-    private Collection<ObjectId> channels = Collections.emptySet();
+    private String name, icon, region;
+    private ObjectId ownerId;
 
-    @Override
-    @Nonnull
-    public Collection<ObjectId> getChannels() {
-        return this.channels;
-    }
+    // Aggregated entities
+    private Collection<IMember> members = null;
+    private Collection<IChannel> channels = null;
+    private Collection<IRole> roles = null;
+    private Collection<IPresence> presences = null;
+    private Collection<IVoiceState> voiceStates = null;
 
-    /**
-     * @param user User ID
-     * @return The member corresponding to this user or null otherwise
-     */
-    @Override
-    public IMember getMemberForUser(final ObjectId user) {
-        try {
-            for (final IMember m : this.getRealMembers().get()) {
-                if (m.getUserId().equals(user)) {
-                    return m;
-                }
-            }
-        } catch (InterruptedException | ExecutionException e) { // Shouldn't be called
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public void addMember(final IMember m) {
-        m.setGuildId(this.getId());
-        Squirrel.getInstance().getDatabaseManager().insertEntity(SquirrelCollection.MEMBERS, m);
-    }
-
-    @Override
-    @BsonIgnore
-    public Future<Collection<IMember>> getRealMembers() {
-        return CompletableFuture.supplyAsync(() -> {
-            if (this.getMembers() == null) {
-                return Collections.emptyList();
-            }
-
-            final ArrayList<IMember> list = new ArrayList<>();
-
-            for (final ObjectId id : this.getMembers()) {
-                final IMember member = Squirrel.getInstance()
-                        .getDatabaseManager()
-                        .findFirstEntity(IMember.class, SquirrelCollection.MEMBERS, Filters.eq(id));
-                list.add(member);
-            }
-            return list;
-        });
-    }
-
-    /**
-     * @return The {@link IMember}s that are a part of this Guild
-     */
-    @Override
-    @Nonnull
-    public Collection<ObjectId> getMembers() {
-        return this.members;
-    }
-
-    /**
-     * @return The display name of the Guild
-     */
     @Override
     public String getName() {
-        return this.name;
+        return name;
     }
 
-    @Override
-    @BsonIgnore
-    public Future<Collection<IChannel>> getRealChannels() {
-        return CompletableFuture.supplyAsync(() -> {
-            if (this.getChannels() == null) {
-                return Collections.emptyList();
-            }
-
-            final ArrayList<IChannel> list = new ArrayList<>();
-
-            for (final ObjectId id : this.getChannels()) {
-                final IChannel chan = Squirrel.getInstance()
-                        .getDatabaseManager()
-                        .findFirstEntity(IChannel.class, SquirrelCollection.CHANNELS, Filters.eq(id));
-                list.add(chan);
-            }
-            return list;
-        });
-
-    }
-
-    @Override
-    @BsonIgnore
-    public Future<Collection<IRole>> getRealRoles() {
-        return CompletableFuture.supplyAsync(() -> {
-            if (this.getRoles() == null) {
-                return Collections.emptyList();
-            }
-
-            final ArrayList<IRole> list = new ArrayList<>();
-
-            for (final ObjectId id : this.getRoles()) {
-                final IRole chan = Squirrel.getInstance()
-                        .getDatabaseManager()
-                        .findFirstEntity(IRole.class, SquirrelCollection.ROLES, Filters.eq(id));
-                list.add(chan);
-            }
-            return list;
-        });
-
-    }
-
-    /**
-     * @return The {@link IRole}s that are created in this Guild
-     */
-    @Override
-    @Nonnull
-    public Collection<ObjectId> getRoles() {
-        return this.roles;
-    }
-
-    @Override
-    public void setChannels(@Nonnull final Collection<ObjectId> channels) {
-        this.channels = channels;
-    }
-
-    /**
-     * @param members The {@link IMember}s that are a part of this Guild
-     */
-    @Override
-    public void setMembers(@Nonnull final Collection<ObjectId> members) {
-        this.members = members;
-    }
-
-    /**
-     * @param name The display name of the Guild
-     */
     @Override
     public void setName(final String name) {
         this.name = name;
     }
 
-    /**
-     * @param roles The {@link IRole}s that are created in this Guild
-     */
     @Override
-    public void setRoles(@Nonnull final Collection<ObjectId> roles) {
+    public String getIcon() {
+        return icon;
+    }
+
+    @Override
+    public void setIcon(final String icon) {
+        this.icon = icon;
+    }
+
+    @Override
+    public ObjectId getOwnerId() {
+        return ownerId;
+    }
+
+    @Override
+    public void setOwnerId(final ObjectId ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    @Override
+    public String getRegion() {
+        return region;
+    }
+
+    @Override
+    public void setRegion(final String region) {
+        this.region = region;
+    }
+
+    // Aggregated entities
+    @BsonIgnore
+    @Nullable
+    @Override
+    public Collection<IMember> getMembers() {
+        return members;
+    }
+
+    @Override
+    public void setMembers(final Collection<IMember> members) {
+        this.members = members;
+    }
+
+    @BsonIgnore
+    @Nullable
+    @Override
+    public Collection<IChannel> getChannels() {
+        return channels;
+    }
+
+    @Override
+    public void setChannels(final Collection<IChannel> channels) {
+        this.channels = channels;
+    }
+
+    @BsonIgnore
+    @Nullable
+    @Override
+    public Collection<IRole> getRoles() {
+        return roles;
+    }
+
+    @Override
+    public void setRoles(final Collection<IRole> roles) {
         this.roles = roles;
     }
 
+    @BsonIgnore
+    @Nullable
+    @Override
+    public Collection<IPresence> getPresences() {
+        return presences;
+    }
+
+    @Override
+    public void setPresences(final Collection<IPresence> presences) {
+        this.presences = presences;
+    }
+
+    @BsonIgnore
+    @Nullable
+    @Override
+    public Collection<IVoiceState> getVoiceStates() {
+        return voiceStates;
+    }
+
+    @Override
+    public void setVoiceStates(final Collection<IVoiceState> voiceStates) {
+        this.voiceStates = voiceStates;
+    }
 }

@@ -28,7 +28,7 @@
 package chat.squirrel.modules.users;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
+import chat.squirrel.database.collections.IUserCollection;
 import chat.squirrel.database.entities.IUser;
 import chat.squirrel.modules.AbstractModule;
 import com.mongodb.client.model.Filters;
@@ -46,14 +46,14 @@ public class ModuleUsers extends AbstractModule {
 
     private void handleGetAccount(final RoutingContext ctx) {
         final IUser target = Squirrel.getInstance()
-                .getDatabaseManager()
-                .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(new ObjectId(ctx.pathParam("id"))));
+                .getDatabaseManager().getCollection(IUserCollection.class)
+                .findEntity(Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         ctx.response()
                 .end(new JsonObject().put("id", target.getId().toHexString())
                         .put("username", target.getUsername())
                         .put("discriminator", target.getDiscriminator())
-                        // .put("avatar", target.get())
+                        .put("avatar", target.getAvatar())
                         .encode());
     }
 }

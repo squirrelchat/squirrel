@@ -31,8 +31,8 @@ import chat.squirrel.database.entities.channels.IChannel;
 import chat.squirrel.database.entities.impl.GuildImpl;
 import org.bson.types.ObjectId;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.concurrent.Future;
 
 
 public interface IGuild extends IEntity {
@@ -40,34 +40,77 @@ public interface IGuild extends IEntity {
         return new GuildImpl();
     }
 
-    Collection<ObjectId> getChannels();
-
-    IMember getMemberForUser(ObjectId user);
-
-    void addMember(IMember m);
-
-    Future<Collection<IMember>> getRealMembers();
-
-    Collection<ObjectId> getMembers();
-
     String getName();
-
-    Future<Collection<IChannel>> getRealChannels();
-
-    Future<Collection<IRole>> getRealRoles();
-
-    Collection<ObjectId> getRoles();
-
-    void setChannels(Collection<ObjectId> channels);
-
-    void setMembers(Collection<ObjectId> members);
 
     void setName(String name);
 
-    void setRoles(Collection<ObjectId> roles);
+    String getIcon();
+
+    void setIcon(String icon);
+
+    ObjectId getOwnerId();
+
+    void setOwnerId(ObjectId ownerId);
+
+    String getRegion();
+
+    void setRegion(String region);
+
+    // Aggregated entities
+
+    /**
+     * Populated only if the entity was fetched performing an aggregation.
+     *
+     * @return Members, or {@code null} if not aggregated during entity retrieval.
+     */
+    @Nullable
+    Collection<IMember> getMembers();
+
+    void setMembers(Collection<IMember> members);
+
+    /**
+     * Populated only if the entity was fetched performing an aggregation.
+     *
+     * @return Channels, or {@code null} if not aggregated during entity retrieval.
+     */
+    @Nullable
+    Collection<IChannel> getChannels();
+
+    void setChannels(Collection<IChannel> channels);
+
+    /**
+     * Populated only if the entity was fetched performing an aggregation.
+     *
+     * @return Roles, or {@code null} if not aggregated during entity retrieval.
+     */
+    @Nullable
+    Collection<IRole> getRoles();
+
+    void setRoles(Collection<IRole> roles);
+
+    /**
+     * Populated only if the entity was fetched performing an aggregation.
+     *
+     * @return Presences, or {@code null} if not aggregated during entity retrieval.
+     */
+    @Nullable
+    Collection<IPresence> getPresences();
+
+    void setPresences(Collection<IPresence> presences);
+
+    /**
+     * Populated only if the entity was fetched performing an aggregation.
+     *
+     * @return Voice states, or {@code null} if not aggregated during entity retrieval.
+     */
+    @Nullable
+    Collection<IVoiceState> getVoiceStates();
+
+    void setVoiceStates(Collection<IVoiceState> voiceStates);
 
     /**
      * Permissions
+     * TODO: Keep it as an enum? Mah plugin ready :(
      */
     enum Permissions {
         /**

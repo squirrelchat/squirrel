@@ -29,11 +29,32 @@ package chat.squirrel.database.collections.impl;
 
 import chat.squirrel.database.collections.AbstractMongoCollection;
 import chat.squirrel.database.collections.IConfigCollection;
-import chat.squirrel.database.entities.IConfig;
+import chat.squirrel.database.entities.config.IConfig;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.result.UpdateResult;
+import org.bson.BsonDocument;
+import org.bson.BsonDocumentWrapper;
+import org.bson.BsonString;
 
 public class ConfigCollectionImpl extends AbstractMongoCollection<IConfig> implements IConfigCollection {
     public ConfigCollectionImpl(MongoCollection<IConfig> collection) {
         super(collection);
+    }
+
+    @Override
+    public <T extends IConfig> T findConfig(Class<T> clazz) {
+        return getRawCollection().find(Filters.eq("_class", clazz.getCanonicalName()), clazz).first();
+    }
+
+    @Override
+    public UpdateResult saveConfig(IConfig config) {
+        return getRawCollection().withDocumentClass(BsonDocument.class).replaceOne(
+                Filters.eq("_class", config.getClass().getCanonicalName()),
+                BsonDocumentWrapper.asBsonDocument(config, getRawCollection().getCodecRegistry())
+                        .append("_class", new BsonString(config.getClass().getCanonicalName())),
+                new ReplaceOptions().upsert(true)
+        );
     }
 }

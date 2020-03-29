@@ -28,7 +28,7 @@
 package chat.squirrel.modules.channels;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware;
+import chat.squirrel.database.collections.IChannelCollection;
 import chat.squirrel.database.entities.channels.IChannel;
 import chat.squirrel.modules.guilds.AbstractGuildModule;
 import com.mongodb.client.model.Filters;
@@ -38,9 +38,8 @@ import org.bson.types.ObjectId;
 public abstract class AbstractChannelModule extends AbstractGuildModule {
     protected IChannel getChannel(final RoutingContext ctx) {
         final IChannel channel = Squirrel.getInstance()
-                .getDatabaseManager()
-                .findFirstEntity(IChannel.class, DatabaseManagerEditionBoomerware.SquirrelCollection.CHANNELS,
-                        Filters.eq(new ObjectId(ctx.pathParam("id"))));
+                .getDatabaseManager().getCollection(IChannelCollection.class)
+                .findEntity(Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         if (channel == null) {
             this.fail(ctx, 404, "Channel not found", null);

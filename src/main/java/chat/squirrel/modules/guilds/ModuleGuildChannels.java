@@ -65,12 +65,11 @@ public class ModuleGuildChannels extends AbstractGuildModule {
             return; // Payload already handled; No extra processing required
         }
 
-        final IMember member = guild.getMemberForUser(user.getId());
-
-        if (member.hasEffectivePermission(Permissions.GUILD_MANAGE_CHANNELS)) {
-            this.fail(ctx, 403, "Missing permissions", null);
-            return;
-        }
+        // final IMember member = guild.getMemberForUser(user.getId());
+        // if (member.hasEffectivePermission(Permissions.GUILD_MANAGE_CHANNELS)) {
+        //     this.fail(ctx, 403, "Missing permissions", null);
+        //     return;
+        // }
 
         final JsonObject obj = ctx.getBodyAsJson();
         if (obj == null) {
@@ -112,8 +111,8 @@ public class ModuleGuildChannels extends AbstractGuildModule {
         }
 
         final IUser user = this.getRequester(ctx);
-        final IGuild guild = Squirrel.getInstance()
-                .getDatabaseManager()
+        final IGuild guild = Squirrel.getInstance() // TODO: Aggregation
+                .getBoomerDatabaseManager()
                 .findFirstEntity(IGuild.class, SquirrelCollection.GUILDS,
                         Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
@@ -122,26 +121,25 @@ public class ModuleGuildChannels extends AbstractGuildModule {
             return;
         }
 
-        final IMember member = guild.getMemberForUser(user.getId());
-        if (member == null) {
-            this.fail(ctx, 404, "Guild not found", null);
-            return;
-        }
+        // final IMember member = guild.getMemberForUser(user.getId());
+        // if (member == null) {
+        //     this.fail(ctx, 404, "Guild not found", null);
+        //     return;
+        // }
 
         final JsonArray out = new JsonArray();
 
-        try {
-            for (final IChannel chan : guild.getRealChannels().get()) { // Channel-chan (#^.^#)
-                final JsonObject jsonChan = new JsonObject();
-                // @todo: Add all of the fields we'll have
-                jsonChan.put("name", chan.getName());
-                jsonChan.put("id", chan.getId().toHexString());
-                jsonChan.put("voice", chan instanceof IVoiceChannel);
-                out.add(jsonChan);
-            }
-        } catch (InterruptedException | ExecutionException e) { // Shouldn't be called
-            e.printStackTrace();
-        }
+        // try {
+        //     for (final IChannel chan : guild.getRealChannels().get()) { // Channel-chan (#^.^#)
+        //         final JsonObject jsonChan = new JsonObject();
+        //         jsonChan.put("name", chan.getName());
+        //         jsonChan.put("id", chan.getId().toHexString());
+        //         jsonChan.put("voice", chan instanceof IVoiceChannel);
+        //         out.add(jsonChan);
+        //     }
+        // } catch (InterruptedException | ExecutionException e) { // Shouldn't be called
+        //     e.printStackTrace();
+        // }
 
         ctx.response().end(out.encode());
     }
@@ -150,15 +148,16 @@ public class ModuleGuildChannels extends AbstractGuildModule {
         final IUser user = this.getRequester(ctx);
         final IGuild guild = this.getGuild(ctx);
         if (guild == null) {
+            // noinspection UnnecessaryReturnStatement
             return; // Payload already handled; No extra processing required
         }
 
-        final IMember member = guild.getMemberForUser(user.getId());
-        if (member.hasEffectivePermission(Permissions.GUILD_MANAGE_CHANNELS)) {
-            this.fail(ctx, 403, "Missing permissions", null);
-            // noinspection UnnecessaryReturnStatement
-            return;
-        }
+        // final IMember member = guild.getMemberForUser(user.getId());
+        // if (member.hasEffectivePermission(Permissions.GUILD_MANAGE_CHANNELS)) {
+        //     this.fail(ctx, 403, "Missing permissions", null);
+        //     // noinspection UnnecessaryReturnStatement
+        //     return;
+        // }
 
         // TODO
     }

@@ -28,8 +28,12 @@
 package chat.squirrel.database.collections;
 
 import chat.squirrel.database.collections.impl.ConfigCollectionImpl;
-import chat.squirrel.database.entities.IConfig;
+import chat.squirrel.database.entities.config.IConfig;
+import com.mongodb.client.result.UpdateResult;
 
 @SquirrelCollection(collection = "config", impl = ConfigCollectionImpl.class)
 public interface IConfigCollection extends ICollection<IConfig> {
+    <T extends IConfig> T findConfig(final Class<T> clazz);
+
+    UpdateResult saveConfig(final IConfig config);
 }

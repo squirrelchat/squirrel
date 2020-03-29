@@ -29,7 +29,7 @@ package chat.squirrel.database.collections.impl;
 
 import chat.squirrel.database.collections.AbstractMongoCollection;
 import chat.squirrel.database.collections.IMessageCollection;
-import chat.squirrel.database.entities.IMessage;
+import chat.squirrel.database.entities.messages.IMessage;
 import com.mongodb.client.MongoCollection;
 
 public class MessageCollectionImpl extends AbstractMongoCollection<IMessage> implements IMessageCollection {

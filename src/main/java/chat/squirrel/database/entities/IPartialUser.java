@@ -25,23 +25,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.entities.channels.impl;
+package chat.squirrel.database.entities;
 
-import chat.squirrel.database.entities.IVoiceState;
-import chat.squirrel.database.entities.channels.IVoiceChannel;
+/**
+ * A partial user entity, only used as-is to perform aggregations.
+ */
+public interface IPartialUser extends IEntity {
+    String getUsername();
 
-import java.util.Collection;
+    int getDiscriminator();
 
-public abstract class AbstractVoiceChannel extends AbstractChannel implements IVoiceChannel {
-    private Collection<IVoiceState> voiceStates;
+    String getAvatar();
 
-    @Override
-    public Collection<IVoiceState> getVoiceStates() {
-        return voiceStates;
-    }
-
-    @Override
-    public void setVoiceStates(final Collection<IVoiceState> voiceStates) {
-        this.voiceStates = voiceStates;
-    }
+    int getFlags();
 }

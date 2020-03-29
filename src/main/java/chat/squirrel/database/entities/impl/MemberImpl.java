@@ -27,20 +27,14 @@
 
 package chat.squirrel.database.entities.impl;
 
-import chat.squirrel.Squirrel;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
-import chat.squirrel.database.entities.*;
-import chat.squirrel.database.entities.IGuild.Permissions;
-import com.mongodb.client.model.Filters;
+import chat.squirrel.database.entities.AbstractEntity;
+import chat.squirrel.database.entities.IMember;
+import chat.squirrel.database.entities.IRole;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
+import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 
 /**
  * Member of a guild
@@ -48,165 +42,62 @@ import java.util.concurrent.FutureTask;
 public class MemberImpl extends AbstractEntity implements IMember {
     private ObjectId userId, guildId;
     private String nickname;
-    private Collection<ObjectId> roles = Collections.emptySet();
 
-    // @todo: Wipe this and fetch them from roles
-    private Collection<Permissions> permissions = Collections.emptySet();
-    private boolean owner;
+    // Aggregated entities
+    private Collection<IRole> roles = null;
+    private Collection<String> permissions = null;
 
-    /**
-     * @return The {@link IGuild} that this Member is a part of
-     */
-    @Override
-    @BsonIgnore
-    public Future<IGuild> getGuild() {
-        // @todo: use an aggregation at query-time
-        return new FutureTask<>(() -> Squirrel.getInstance()
-                .getDatabaseManager()
-                .findFirstEntity(IGuild.class, SquirrelCollection.GUILDS, Filters.eq(this.getGuildId())));
-    }
-
-    /**
-     * @return The ID corresponding to the Guild this Member is apart of.
-     */
-    @Override
-    public ObjectId getGuildId() {
-        return this.guildId;
-    }
-
-    /**
-     * @return This user's nickname for this Guild
-     */
-    @Override
-    public String getNickname() {
-        return this.nickname;
-    }
-
-    // @todo: Fetch them from roles
-    @Override
-    @Nonnull
-    public Collection<Permissions> getPermissions() {
-        return this.permissions;
-    }
-
-    /**
-     * @return Get the roles this Member possesses.
-     */
-    @Override
-    @BsonIgnore
-    public Future<Collection<IRole>> getRoles() {
-        // @todo: use an aggregation at query-time
-        return new FutureTask<>(() -> { // XXX this is ugly
-            final IGuild guild = this.getGuild().get();
-            final Collection<ObjectId> ids = this.getRolesIds();
-            final Collection<IRole> realRoles = new ArrayList<>();
-            for (final IRole role : guild.getRealRoles().get()) {
-                if (ids.contains(role.getId())) {
-                    realRoles.add(role);
-                }
-            }
-            return realRoles;
-        });
-    }
-
-    /**
-     * @return The IDs corresponding to the Guild roles that the Member possesses.
-     */
-    @Override
-    public Collection<ObjectId> getRolesIds() {
-        return this.roles;
-    }
-
-    /**
-     * Async because DB request
-     *
-     * @return Future that will return the {@link IUser} corresponding to this
-     * Member.
-     */
-    @Override
-    @BsonIgnore
-    public Future<IUser> getUser() {
-        return new FutureTask<>(() -> Squirrel.getInstance()
-                .getDatabaseManager()
-                .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(this.getUserId())));
-    }
-
-    /**
-     * @return The ID corresponding to the {@link IUser} associated with this Member
-     */
     @Override
     public ObjectId getUserId() {
-        return this.userId;
+        return userId;
     }
 
     @Override
-    public boolean hasEffectivePermission(final Permissions perm) { // TODO: Rewrite this
-        if (this.isOwner()) {
-            return true;
-        }
-
-        if (this.getPermissions() == null) {
-            return false;
-        }
-
-        if (perm.name().startsWith("GUILD_MANAGE_") && this.getPermissions().contains(Permissions.GUILD_MANAGE)) {
-            return true;
-        }
-
-        // Perms are more complex than that with implicit permission removal (like with CHANNEL_ACCESS)
-        return this.getPermissions().contains(perm) || this.getPermissions().contains(Permissions.ADMINISTRATOR);
+    public void setUserId(final ObjectId userId) {
+        this.userId = userId;
     }
 
-    /**
-     * Sets whether this members is the owner of the server
-     *
-     * @return if the member is the owner of the guild
-     */
     @Override
-    public boolean isOwner() {
-        return this.owner;
+    public ObjectId getGuildId() {
+        return guildId;
     }
 
-    /**
-     * @param guildId The ID corresponding to the Guild this Member is apart of.
-     */
     @Override
     public void setGuildId(final ObjectId guildId) {
         this.guildId = guildId;
     }
 
-    /**
-     * @param nickname The user's nickname for this Guild
-     */
+    @Override
+    public String getNickname() {
+        return nickname;
+    }
+
     @Override
     public void setNickname(final String nickname) {
         this.nickname = nickname;
     }
 
+    @BsonIgnore
+    @Nullable
     @Override
-    public void setOwner(final boolean owner) {
-        this.owner = owner;
+    public Collection<IRole> getRoles() {
+        return roles;
     }
 
-    // @todo: Fetch them from roles
     @Override
-    public void setPermissions(@Nonnull final Collection<Permissions> permissions) {
-        this.permissions = permissions;
-    }
-
-    /**
-     * @param roles The IDs corresponding to the Guild roles that the Member possesses.
-     */
-    @Override
-    public void setRolesIds(@Nonnull final Collection<ObjectId> roles) {
+    public void setRoles(final Collection<IRole> roles) {
         this.roles = roles;
     }
 
-    /**
-     * @param userId The ID corresponding to the {@link IUser} associated with this Member.
-     */
+    @BsonIgnore
+    @Nullable
     @Override
-    public void setUserId(final ObjectId userId) {
-        this.userId = userId;
+    public Collection<String> getPermissions() {
+        return permissions;
+    }
+
+    @Override
+    public void setPermissions(final Collection<String> permissions) {
+        this.permissions = permissions;
     }
 }

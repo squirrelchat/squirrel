@@ -27,7 +27,6 @@
 
 package chat.squirrel;
 
-import chat.squirrel.metrics.MetricsManager;
 import io.vertx.core.Handler;
 import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
@@ -57,8 +56,6 @@ public class WebJsonHandler implements Handler<RoutingContext> {
             event.fail(400);
             return;
         }
-        // @todo: Do we really care
-        MetricsManager.getInstance().record("network.payloadsize", event.request().bytesRead());
         event.next();
     }
 }

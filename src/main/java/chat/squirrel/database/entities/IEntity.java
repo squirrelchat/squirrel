@@ -35,7 +35,7 @@ import org.bson.types.ObjectId;
  */
 public interface IEntity {
     /**
-     * @return The Mongo ID of this entity
+     * @return The ID of this entity
      */
     ObjectId getId();
 
