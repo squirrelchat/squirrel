@@ -32,6 +32,8 @@ import chat.squirrel.auth.MongoAuthHandler;
 import chat.squirrel.database.DatabaseManager;
 import chat.squirrel.database.DatabaseManagerEditionBoomerware;
 import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
+import chat.squirrel.database.memory.IMemoryAdapter;
+import chat.squirrel.database.memory.RedisMemoryAdapter;
 import chat.squirrel.event.EventBus;
 import chat.squirrel.mail.NotificationMailManager;
 import chat.squirrel.mail.SquirrelMailConfig;
@@ -86,7 +88,7 @@ public final class Squirrel {
     /**
      * Main entry point for Squirrel. Calling it manually is not recommended :^)
      * Exit codes:
-     * -1: Config failed to load;
+     * -1: Config failed to load or is invalid;
      * -2: Failed to register default database collections;
      *
      * @param args CLI arguments
@@ -111,9 +113,14 @@ public final class Squirrel {
 
         LOG.info("Initializing managers");
         this.moduleManager = new ModuleManager();
-        this.databaseManager = new DatabaseManager(this.getProperty("mongo.con-string"), this.getProperty("mongo.db-name", "squirrel"));
-        this.boomerDbManager = new DatabaseManagerEditionBoomerware(this.getProperty("mongo.con-string"),
-                this.getProperty("mongo.db-name", "squirrel"));
+
+        final String mongoConString = this.getProperty("database.mongo.con-string");
+        final String redisConString = this.getProperty("database.redis.con-string");
+        final String mongoDbName = this.getProperty("database.mongo.db-name", "squirrel");
+        final String memoryConfig = this.getProperty("database.memory", "MEMORY");
+        this.databaseManager = new DatabaseManager(mongoConString, redisConString, mongoDbName, memoryConfig);
+        this.boomerDbManager = new DatabaseManagerEditionBoomerware(this.getProperty("database.mongo.con-string"),
+                this.getProperty("database.mongo.db-name", "squirrel"));
 
         this.config = (SquirrelConfig) this.getUserConfig(Squirrel.class, new SquirrelConfig(this.getClass()));
 
@@ -178,7 +185,7 @@ public final class Squirrel {
     }
 
     /**
-     * @return The DatabaseManager used by this server
+     * @return The {@link DatabaseManager} used by this server
      */
     public DatabaseManager getDatabaseManager() {
         return this.databaseManager;

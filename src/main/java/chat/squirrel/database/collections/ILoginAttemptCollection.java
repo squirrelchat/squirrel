@@ -25,10 +25,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.memory;
+package chat.squirrel.database.collections;
 
-public class RedisMemoryAdapter implements IMemoryAdapter {
-    public RedisMemoryAdapter(final String conString) {
+import chat.squirrel.database.collections.impl.LoginAttemptCollectionImpl;
+import chat.squirrel.database.entities.ILoginAttempt;
 
-    }
+@SquirrelCollection(collection = "login_attempts", impl = LoginAttemptCollectionImpl.class)
+public interface ILoginAttemptCollection extends ICollection<ILoginAttempt> {
 }

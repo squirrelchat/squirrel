@@ -30,6 +30,9 @@ package chat.squirrel.database;
 import chat.squirrel.Version;
 import chat.squirrel.database.collections.*;
 import chat.squirrel.database.entities.IEntity;
+import chat.squirrel.database.memory.ClassicMemoryAdapter;
+import chat.squirrel.database.memory.IMemoryAdapter;
+import chat.squirrel.database.memory.RedisMemoryAdapter;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
@@ -56,17 +59,25 @@ import java.util.Map;
  */
 public class DatabaseManager {
     private static final Logger LOG = LoggerFactory.getLogger(DatabaseManager.class);
+    private final IMemoryAdapter memoryAdapter;
     private final MongoClient client;
     private final MongoDatabase db;
 
     private final CodecRegistry pojoCodecRegistry;
     private final Map<String, ICollection<? extends IEntity>> collections;
 
-    /**
-     * @param connectionString MongoDB Connection String
-     * @param dbName           The database to use
-     */
-    public DatabaseManager(final String connectionString, final String dbName) {
+    public DatabaseManager(final String mongoConString, final String redisConString, final String mongoDbName, final String memoryConfig) {
+        IMemoryAdapter memoryAdapter = null;
+        if (memoryConfig.equals("MEMORY")) {
+            memoryAdapter = new ClassicMemoryAdapter();
+        } else if (memoryConfig.equals("REDIS")) {
+            memoryAdapter = new RedisMemoryAdapter(redisConString);
+        } else {
+            LOG.error("Invalid memory database! Expected MEMORY or REDIS, got " + memoryConfig);
+            System.exit(-1);
+        }
+        this.memoryAdapter = memoryAdapter;
+
         final Convention entityConvention = classModelBuilder -> classModelBuilder.enableDiscriminator(true);
 
         this.pojoCodecRegistry = CodecRegistries.fromRegistries(
@@ -80,10 +91,9 @@ public class DatabaseManager {
                         ))
                         .build())
         );
+        final ConnectionString conStr = new ConnectionString(mongoConString);
 
-        final ConnectionString conStr = new ConnectionString(connectionString);
-
-        LOG.info("Connecting to MongoDB using con string: " + conStr.toString());
+        LOG.info("Connecting to MongoDB using con string: " + mongoConString);
         final MongoClientSettings set = MongoClientSettings.builder()
                 .applicationName("Squirrel (" + Version.VERSION + ")") // TODO: maybe consider adding a hash (scaled env)
                 .applyConnectionString(conStr)
@@ -91,7 +101,7 @@ public class DatabaseManager {
                 .build();
 
         this.client = MongoClients.create(set);
-        this.db = this.client.getDatabase(dbName);
+        this.db = this.client.getDatabase(mongoDbName);
         this.collections = new HashMap<>();
         this.registerCollections();
     }
@@ -123,7 +133,7 @@ public class DatabaseManager {
         if (annotation.storageMethod() == SquirrelCollection.StorageMethod.PERSISTENT) {
             instance = (ICollection<? extends IEntity>) constructor.newInstance(db.getCollection(annotation.collection()));
         } else if (annotation.storageMethod() == SquirrelCollection.StorageMethod.MEMORY) {
-            instance = null; // TODO
+            instance = (ICollection<? extends IEntity>) constructor.newInstance(memoryAdapter);
         } else {
             throw new IllegalStateException("My life is potato? (Invalid storage method");
         }
@@ -131,8 +141,7 @@ public class DatabaseManager {
     }
 
     public <E extends IEntity, T extends ICollection<E>> T getCollection(Class<T> collectionClass) {
-        @SuppressWarnings("unchecked")
-        final T collection = (T) this.collections.get(collectionClass.getCanonicalName());
+        @SuppressWarnings("unchecked") final T collection = (T) this.collections.get(collectionClass.getCanonicalName());
         return collection;
     }
 

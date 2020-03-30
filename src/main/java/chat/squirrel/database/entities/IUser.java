@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 
-public interface IUser extends IPartialUser, IAccount { // TODO: Cleanup this pile of hot garbage
+public interface IUser extends IPartialUser, IAccount {
     static IUser create() {
         return new UserImpl();
     }

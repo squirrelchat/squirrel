@@ -28,21 +28,23 @@
 package chat.squirrel.database.entities.impl;
 
 import chat.squirrel.database.entities.AbstractEntity;
-import chat.squirrel.database.entities.IMember;
-import chat.squirrel.database.entities.IRole;
-import org.bson.codecs.pojo.annotations.BsonIgnore;
+import chat.squirrel.database.entities.ILoginAttempt;
 import org.bson.types.ObjectId;
 
-import javax.annotation.Nullable;
-import java.util.Collection;
+public class LoginAttemptImpl extends AbstractEntity implements ILoginAttempt {
+    private boolean successful;
+    private ObjectId userId;
+    private String ipAddress, userAgent, approximateLocation;
 
-public class MemberImpl extends AbstractEntity implements IMember {
-    private ObjectId userId, guildId;
-    private String nickname;
+    @Override
+    public boolean isSuccessful() {
+        return successful;
+    }
 
-    // Aggregated entities
-    private Collection<IRole> roles = null;
-    private Collection<String> permissions = null;
+    @Override
+    public void setSuccessful(boolean successful) {
+        this.successful = successful;
+    }
 
     @Override
     public ObjectId getUserId() {
@@ -50,51 +52,37 @@ public class MemberImpl extends AbstractEntity implements IMember {
     }
 
     @Override
-    public void setUserId(final ObjectId userId) {
+    public void setUserId(ObjectId userId) {
         this.userId = userId;
     }
 
     @Override
-    public ObjectId getGuildId() {
-        return guildId;
+    public String getIpAddress() {
+        return ipAddress;
     }
 
     @Override
-    public void setGuildId(final ObjectId guildId) {
-        this.guildId = guildId;
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
     @Override
-    public String getNickname() {
-        return nickname;
+    public String getUserAgent() {
+        return userAgent;
     }
 
     @Override
-    public void setNickname(final String nickname) {
-        this.nickname = nickname;
-    }
-
-    @BsonIgnore
-    @Nullable
-    @Override
-    public Collection<IRole> getRoles() {
-        return roles;
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
     }
 
     @Override
-    public void setRoles(final Collection<IRole> roles) {
-        this.roles = roles;
-    }
-
-    @BsonIgnore
-    @Nullable
-    @Override
-    public Collection<String> getPermissions() {
-        return permissions;
+    public String getApproximateLocation() {
+        return approximateLocation;
     }
 
     @Override
-    public void setPermissions(final Collection<String> permissions) {
-        this.permissions = permissions;
+    public void setApproximateLocation(String approximateLocation) {
+        this.approximateLocation = approximateLocation;
     }
 }

@@ -25,76 +25,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.entities.impl;
+package chat.squirrel.database.entities;
 
-import chat.squirrel.database.entities.AbstractEntity;
-import chat.squirrel.database.entities.IMember;
-import chat.squirrel.database.entities.IRole;
-import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
-import javax.annotation.Nullable;
-import java.util.Collection;
+public interface ILoginAttempt extends IEntity {
+    boolean isSuccessful();
 
-public class MemberImpl extends AbstractEntity implements IMember {
-    private ObjectId userId, guildId;
-    private String nickname;
+    void setSuccessful(boolean successful);
 
-    // Aggregated entities
-    private Collection<IRole> roles = null;
-    private Collection<String> permissions = null;
+    ObjectId getUserId();
 
-    @Override
-    public ObjectId getUserId() {
-        return userId;
-    }
+    void setUserId(ObjectId userId);
 
-    @Override
-    public void setUserId(final ObjectId userId) {
-        this.userId = userId;
-    }
+    String getIpAddress();
 
-    @Override
-    public ObjectId getGuildId() {
-        return guildId;
-    }
+    void setIpAddress(String ipAddress);
 
-    @Override
-    public void setGuildId(final ObjectId guildId) {
-        this.guildId = guildId;
-    }
+    String getUserAgent();
 
-    @Override
-    public String getNickname() {
-        return nickname;
-    }
+    void setUserAgent(String userAgent);
 
-    @Override
-    public void setNickname(final String nickname) {
-        this.nickname = nickname;
-    }
+    String getApproximateLocation();
 
-    @BsonIgnore
-    @Nullable
-    @Override
-    public Collection<IRole> getRoles() {
-        return roles;
-    }
-
-    @Override
-    public void setRoles(final Collection<IRole> roles) {
-        this.roles = roles;
-    }
-
-    @BsonIgnore
-    @Nullable
-    @Override
-    public Collection<String> getPermissions() {
-        return permissions;
-    }
-
-    @Override
-    public void setPermissions(final Collection<String> permissions) {
-        this.permissions = permissions;
-    }
+    void setApproximateLocation(String approximateLocation);
 }
