@@ -27,7 +27,6 @@
 
 package chat.squirrel.modules.channels;
 
-import chat.squirrel.database.entities.channels.IChannel;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
@@ -47,7 +46,7 @@ public class ModuleMessages extends AbstractChannelModule {
             return;
         }
 
-        final IChannel channel = getChannel(ctx);
+        // final IChannel channel = getChannel(ctx);
         ctx.response().end();
     }
 }

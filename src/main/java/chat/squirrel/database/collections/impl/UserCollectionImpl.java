@@ -36,6 +36,8 @@ import com.mongodb.client.model.Filters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class UserCollectionImpl extends AbstractMongoCollection<IUser> implements IUserCollection {
     private final Random random = new Random();
@@ -45,26 +47,34 @@ public class UserCollectionImpl extends AbstractMongoCollection<IUser> implement
     }
 
     @Override
-    public int getFreeDiscriminator(final String username) {
-        if (this.countDocuments(Filters.eq("username", username)) >= 5000) {
-            return -1;
-        }
+    public CompletionStage<Integer> getFreeDiscriminator(final String username) {
+        final CompletableFuture<Integer> future = new CompletableFuture<>();
+        this.countDocuments(Filters.eq("username", username)).thenAccept(count -> {
+            if (count >= 5000) {
+                future.completeExceptionally(new IndexOutOfBoundsException());
+            }
 
-        final List<Integer> used = new ArrayList<>();
-        this.findEntities(Filters.eq("username", username)).forEach(u -> used.add(u.getDiscriminator()));
+            final List<Integer> used = new ArrayList<>();
+            this.findEntities(Filters.eq("username", username)).thenAccept(entities -> {
+                entities.forEach(u -> used.add(u.getDiscriminator()));
 
-        int dis = this.random.nextInt(10000);
-        while (used.indexOf(dis) != -1) {
-            dis = this.random.nextInt(10000);
-        }
-        return dis;
+                int dis = this.random.nextInt(10000);
+                while (used.indexOf(dis) != -1) {
+                    dis = this.random.nextInt(10000);
+                }
+                future.complete(dis);
+            });
+        });
+        return future;
     }
 
     @Override
-    public boolean isDiscriminatorTaken(final String username, final int discriminator) {
-        return this.findEntity(Filters.and(
+    public CompletionStage<Boolean> isDiscriminatorTaken(final String username, final int discriminator) {
+        final CompletableFuture<Boolean> future = new CompletableFuture<>();
+        this.findEntity(Filters.and(
                 Filters.eq("username", username),
                 Filters.eq("discriminator", discriminator)
-        )) != null;
+        )).thenAccept(u -> future.complete(u != null));
+        return future;
     }
 }

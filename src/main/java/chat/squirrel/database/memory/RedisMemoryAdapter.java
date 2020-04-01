@@ -27,8 +27,46 @@
 
 package chat.squirrel.database.memory;
 
-public class RedisMemoryAdapter implements IMemoryAdapter {
-    public RedisMemoryAdapter(final String conString) {
+import io.lettuce.core.KeyValue;
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.api.async.RedisAsyncCommands;
+import org.bson.BsonDocument;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
+public class RedisMemoryAdapter implements IMemoryAdapter {
+    private final RedisAsyncCommands<String, BsonDocument> redisCommands;
+
+    public RedisMemoryAdapter(final String conString) {
+        this.redisCommands = RedisClient.create(conString).connect(new RedisBsonCodec()).async();
+    }
+
+    @Override
+    public CompletionStage<BsonDocument> getEntity(final String key) {
+        return redisCommands.get(key);
+    }
+
+    @Override
+    public CompletionStage<List<KeyValue<String, BsonDocument>>> getEntities(final String... keys) {
+        return redisCommands.mget(keys);
+    }
+
+    @Override
+    public CompletionStage<Boolean> setEntity(final String key, final BsonDocument document) {
+        final CompletableFuture<Boolean> future = new CompletableFuture<>();
+        redisCommands.set(key, document).thenAccept(s -> future.complete(s.equals("OK")));
+        return future;
+    }
+
+    @Override
+    public CompletionStage<Long> deleteOne(final String key) {
+        return redisCommands.del(key);
+    }
+
+    @Override
+    public CompletionStage<Long> deleteMany(final String... keys) {
+        return redisCommands.del(keys);
     }
 }

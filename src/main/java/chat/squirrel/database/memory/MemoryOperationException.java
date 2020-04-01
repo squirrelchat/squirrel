@@ -25,26 +25,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.collections;
+package chat.squirrel.database.memory;
 
-import chat.squirrel.database.collections.impl.UserCollectionImpl;
-import chat.squirrel.database.entities.IUser;
-
-import java.util.concurrent.CompletionStage;
-
-@SquirrelCollection(collection = "users", impl = UserCollectionImpl.class)
-public interface IUserCollection extends ICollection<IUser> {
-    /**
-     * Method used to get an available discriminator for the specified username
-     *
-     * @return A free discriminator
-     */
-    CompletionStage<Integer> getFreeDiscriminator(final String username);
-
-    /**
-     * @param username      The username string to check
-     * @param discriminator The discriminator integer to check
-     * @return {@code true} if the discriminator is already used for this username, {@code false} otherwise
-     */
-    CompletionStage<Boolean> isDiscriminatorTaken(final String username, final int discriminator);
+public class MemoryOperationException extends Exception {
 }

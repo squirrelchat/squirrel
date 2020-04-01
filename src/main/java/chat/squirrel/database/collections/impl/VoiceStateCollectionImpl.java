@@ -33,7 +33,7 @@ import chat.squirrel.database.entities.IVoiceState;
 import chat.squirrel.database.memory.IMemoryAdapter;
 
 public class VoiceStateCollectionImpl extends AbstractMemoryCollection<IVoiceState> implements IVoiceStateCollection {
-    public VoiceStateCollectionImpl(IMemoryAdapter memoryAdapter) {
-        super(memoryAdapter);
+    protected VoiceStateCollectionImpl(final IMemoryAdapter memoryAdapter, final String collectionName) {
+        super(memoryAdapter, collectionName);
     }
 }

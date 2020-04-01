@@ -40,7 +40,6 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.Convention;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.slf4j.Logger;
@@ -63,7 +62,8 @@ public class DatabaseManager {
     private final MongoClient client;
     private final MongoDatabase db;
 
-    private final CodecRegistry pojoCodecRegistry;
+    private final PojoCodecProvider pojoCodecProvider;
+    private final CodecRegistry codecRegistry;
     private final Map<String, ICollection<? extends IEntity>> collections;
 
     public DatabaseManager(final String mongoConString, final String redisConString, final String mongoDbName, final String memoryConfig) {
@@ -78,18 +78,17 @@ public class DatabaseManager {
         }
         this.memoryAdapter = memoryAdapter;
 
-        final Convention entityConvention = classModelBuilder -> classModelBuilder.enableDiscriminator(true);
-
-        this.pojoCodecRegistry = CodecRegistries.fromRegistries(
+        this.pojoCodecProvider = PojoCodecProvider.builder()
+                .automatic(true)
+                .conventions(List.of( // Defaults + entityConvention
+                        classModelBuilder -> classModelBuilder.enableDiscriminator(true),
+                        Conventions.ANNOTATION_CONVENTION,
+                        Conventions.CLASS_AND_PROPERTY_CONVENTION
+                ))
+                .build();
+        this.codecRegistry = CodecRegistries.fromRegistries(
                 MongoClientSettings.getDefaultCodecRegistry(),
-                CodecRegistries.fromProviders(PojoCodecProvider.builder()
-                        .automatic(true)
-                        .conventions(List.of( // Defaults + entityConvention
-                                entityConvention,
-                                Conventions.ANNOTATION_CONVENTION,
-                                Conventions.CLASS_AND_PROPERTY_CONVENTION
-                        ))
-                        .build())
+                CodecRegistries.fromProviders(this.pojoCodecProvider)
         );
         final ConnectionString conStr = new ConnectionString(mongoConString);
 
@@ -97,7 +96,7 @@ public class DatabaseManager {
         final MongoClientSettings set = MongoClientSettings.builder()
                 .applicationName("Squirrel (" + Version.VERSION + ")") // TODO: maybe consider adding a hash (scaled env)
                 .applyConnectionString(conStr)
-                .codecRegistry(this.pojoCodecRegistry)
+                .codecRegistry(this.codecRegistry)
                 .build();
 
         this.client = MongoClients.create(set);
@@ -133,7 +132,7 @@ public class DatabaseManager {
         if (annotation.storageMethod() == SquirrelCollection.StorageMethod.PERSISTENT) {
             instance = (ICollection<? extends IEntity>) constructor.newInstance(db.getCollection(annotation.collection()));
         } else if (annotation.storageMethod() == SquirrelCollection.StorageMethod.MEMORY) {
-            instance = (ICollection<? extends IEntity>) constructor.newInstance(memoryAdapter);
+            instance = (ICollection<? extends IEntity>) constructor.newInstance(memoryAdapter, annotation.collection());
         } else {
             throw new IllegalStateException("My life is potato? (Invalid storage method");
         }
@@ -143,6 +142,14 @@ public class DatabaseManager {
     public <E extends IEntity, T extends ICollection<E>> T getCollection(Class<T> collectionClass) {
         @SuppressWarnings("unchecked") final T collection = (T) this.collections.get(collectionClass.getCanonicalName());
         return collection;
+    }
+
+    public PojoCodecProvider getPojoCodecProvider() {
+        return pojoCodecProvider;
+    }
+
+    public CodecRegistry getCodecRegistry() {
+        return codecRegistry;
     }
 
     /**

@@ -27,36 +27,52 @@
 
 package chat.squirrel.database.memory;
 
-import io.lettuce.core.KeyValue;
+import io.lettuce.core.codec.RedisCodec;
+import io.netty.util.CharsetUtil;
 import org.bson.BsonDocument;
+import org.bson.BsonDocumentWriter;
+import org.bson.BsonWriter;
+import org.bson.codecs.ByteArrayCodec;
+import org.bson.codecs.DecoderContext;
+import org.bson.codecs.EncoderContext;
 
-import java.util.List;
-import java.util.concurrent.CompletionStage;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
 
-// TODO
-public class ClassicMemoryAdapter implements IMemoryAdapter { // Aww memowwy NOM NOM NOM NOOOOOOOM
-    @Override
-    public CompletionStage<BsonDocument> getEntity(String key) {
-        return null;
+public class RedisBsonCodec implements RedisCodec<String, BsonDocument> {
+    private final ByteArrayCodec codec;
+
+    public RedisBsonCodec() {
+        this.codec = new ByteArrayCodec();
     }
 
     @Override
-    public CompletionStage<List<KeyValue<String, BsonDocument>>> getEntities(String... keys) {
-        return null;
+    public ByteBuffer encodeKey(final String key) {
+        final CharsetEncoder encoder = CharsetUtil.encoder(StandardCharsets.UTF_8);
+        final ByteBuffer buffer = ByteBuffer.allocate((int) (encoder.maxBytesPerChar() * key.length()));
+        buffer.put(key.getBytes(StandardCharsets.UTF_8));
+        return buffer;
     }
 
     @Override
-    public CompletionStage<Boolean> setEntity(String key, BsonDocument document) {
-        return null;
+    public String decodeKey(final ByteBuffer bytes) {
+        return StandardCharsets.UTF_8.decode(bytes).toString();
     }
 
     @Override
-    public CompletionStage<Long> deleteOne(String key) {
-        return null;
+    public ByteBuffer encodeValue(final BsonDocument document) {
+        final byte[] bytes = this.codec.decode(document.asBsonReader(), DecoderContext.builder().build());
+        final ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
+        buffer.put(bytes);
+        return buffer;
     }
 
     @Override
-    public CompletionStage<Long> deleteMany(String... keys) {
-        return null;
+    public BsonDocument decodeValue(final ByteBuffer bytes) {
+        final BsonDocument document = new BsonDocument();
+        final BsonWriter writer = new BsonDocumentWriter(document);
+        this.codec.encode(writer, bytes.array(), EncoderContext.builder().build());
+        return document;
     }
 }

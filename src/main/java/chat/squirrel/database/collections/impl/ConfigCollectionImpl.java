@@ -34,9 +34,13 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.result.UpdateResult;
+import io.vertx.core.Promise;
 import org.bson.BsonDocument;
 import org.bson.BsonDocumentWrapper;
 import org.bson.BsonString;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class ConfigCollectionImpl extends AbstractMongoCollection<IConfig> implements IConfigCollection {
     public ConfigCollectionImpl(MongoCollection<IConfig> collection) {
@@ -44,17 +48,42 @@ public class ConfigCollectionImpl extends AbstractMongoCollection<IConfig> imple
     }
 
     @Override
-    public <T extends IConfig> T findConfig(Class<T> clazz) {
-        return getRawCollection().find(Filters.eq("_class", clazz.getCanonicalName()), clazz).first();
+    public <T extends IConfig> CompletionStage<T> findConfig(final Class<T> clazz) {
+        final CompletableFuture<T> future = new CompletableFuture<>();
+        this.getWorker().executeBlocking(
+                (Promise<T> p) -> p.complete(getRawCollection().find(Filters.eq("_class", clazz.getCanonicalName()), clazz).first()),
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
     }
 
     @Override
-    public UpdateResult saveConfig(IConfig config) {
-        return getRawCollection().withDocumentClass(BsonDocument.class).replaceOne(
-                Filters.eq("_class", config.getClass().getCanonicalName()),
-                BsonDocumentWrapper.asBsonDocument(config, getRawCollection().getCodecRegistry())
-                        .append("_class", new BsonString(config.getClass().getCanonicalName())),
-                new ReplaceOptions().upsert(true)
-        );
+    public CompletionStage<UpdateResult> saveConfig(final IConfig config) {
+        final CompletableFuture<UpdateResult> future = new CompletableFuture<>();
+        this.getWorker().executeBlocking(
+                (Promise<UpdateResult> p) -> {
+                    final UpdateResult result = getRawCollection().withDocumentClass(BsonDocument.class)
+                            .replaceOne(
+                                    Filters.eq("_class", config.getClass().getCanonicalName()),
+                                    BsonDocumentWrapper
+                                            .asBsonDocument(config, getRawCollection().getCodecRegistry())
+                                            .append("_class", new BsonString(config.getClass().getCanonicalName())),
+                                    new ReplaceOptions().upsert(true)
+                            );
+                    p.complete(result);
+                },
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
     }
 }

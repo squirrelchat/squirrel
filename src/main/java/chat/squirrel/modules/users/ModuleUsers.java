@@ -29,7 +29,6 @@ package chat.squirrel.modules.users;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.database.collections.IUserCollection;
-import chat.squirrel.database.entities.IUser;
 import chat.squirrel.modules.AbstractModule;
 import com.mongodb.client.model.Filters;
 import io.vertx.core.http.HttpMethod;
@@ -45,15 +44,13 @@ public class ModuleUsers extends AbstractModule {
     }
 
     private void handleGetAccount(final RoutingContext ctx) {
-        final IUser target = Squirrel.getInstance()
-                .getDatabaseManager().getCollection(IUserCollection.class)
-                .findEntity(Filters.eq(new ObjectId(ctx.pathParam("id"))));
-
-        ctx.response()
-                .end(new JsonObject().put("id", target.getId().toHexString())
-                        .put("username", target.getUsername())
-                        .put("discriminator", target.getDiscriminator())
-                        .put("avatar", target.getAvatar())
-                        .encode());
+        Squirrel.getInstance().getDatabaseManager().getCollection(IUserCollection.class)
+                .findEntity(Filters.eq(new ObjectId(ctx.pathParam("id"))))
+                .thenAccept(user -> ctx.response()
+                        .end(new JsonObject().put("id", user.getId().toHexString())
+                                .put("username", user.getUsername())
+                                .put("discriminator", user.getDiscriminator())
+                                .put("avatar", user.getAvatar())
+                                .encode()));
     }
 }

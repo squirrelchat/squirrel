@@ -37,6 +37,7 @@ import org.bson.types.ObjectId;
 import xyz.bowser65.tokenize.Token;
 
 import java.security.SignatureException;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Vert.x handler to handle sessions before continuing down a chain
@@ -89,15 +90,17 @@ public class WebAuthHandler implements Handler<RoutingContext> {
 //            return;
 //        }
 
-//        user.setTokenValidSince(Tokenize.currentTokenTime());
         event.put(SQUIRREL_TOKEN_KEY, token);
-
         event.next();
     }
 
     private IUser fetchAccount(final String id) {
-        return Squirrel.getInstance().getDatabaseManager().getCollection(IUserCollection.class)
-                .findEntity(Filters.eq(new ObjectId(id)));
+        try {
+            return Squirrel.getInstance().getDatabaseManager().getCollection(IUserCollection.class)
+                    .findEntity(Filters.eq(new ObjectId(id)))
+                    .toCompletableFuture().get();
+        } catch (InterruptedException | ExecutionException e) {
+            return null;
+        }
     }
-
 }

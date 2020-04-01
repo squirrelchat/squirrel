@@ -32,8 +32,6 @@ import chat.squirrel.auth.MongoAuthHandler;
 import chat.squirrel.database.DatabaseManager;
 import chat.squirrel.database.DatabaseManagerEditionBoomerware;
 import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
-import chat.squirrel.database.memory.IMemoryAdapter;
-import chat.squirrel.database.memory.RedisMemoryAdapter;
 import chat.squirrel.event.EventBus;
 import chat.squirrel.mail.NotificationMailManager;
 import chat.squirrel.mail.SquirrelMailConfig;
@@ -163,6 +161,10 @@ public final class Squirrel {
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown, "squirrel-shutdown"));
     }
 
+    public Vertx getVertx() {
+        return vertx;
+    }
+
     /**
      * @return The Vert.x authentication handler the precedes protected routes.
      */
@@ -240,7 +242,7 @@ public final class Squirrel {
     }
 
     public UserConfig getUserConfig(final Class<?> owner, final UserConfig def) {
-        // TODO: wtf is this shit
+        // TODO: yeet this shit
         final UserConfig conf = this.boomerDbManager.findFirstEntity(UserConfig.class, SquirrelCollection.CONFIG,
                 Filters.eq("owner", owner.toString()));
         if (conf == null) {

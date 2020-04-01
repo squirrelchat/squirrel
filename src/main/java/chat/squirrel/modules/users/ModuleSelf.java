@@ -56,7 +56,7 @@ public class ModuleSelf extends AbstractModule {
                 .end(obj.put("id", user.getId().toHexString())
                         .put("username", user.getUsername())
                         .put("discriminator", user.getDiscriminator())
-                        .put("avatar", JsonObject.mapFrom(user.getAvatar()))
+                        .put("avatar", user.getAvatar())
                         .put("bot", false)
                         .put("email", user.getEmail())
                         .put("custom_email", user.getCustomEmail())

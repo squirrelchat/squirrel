@@ -27,5 +27,20 @@
 
 package chat.squirrel.database.memory;
 
+import io.lettuce.core.KeyValue;
+import org.bson.BsonDocument;
+
+import java.util.List;
+import java.util.concurrent.CompletionStage;
+
 public interface IMemoryAdapter {
+    CompletionStage<BsonDocument> getEntity(final String key);
+
+    CompletionStage<List<KeyValue<String, BsonDocument>>> getEntities(final String... keys);
+
+    CompletionStage<Boolean> setEntity(final String key, final BsonDocument document);
+
+    CompletionStage<Long> deleteOne(final String key);
+
+    CompletionStage<Long> deleteMany(final String... keys);
 }

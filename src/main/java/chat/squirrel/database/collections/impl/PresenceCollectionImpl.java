@@ -33,7 +33,7 @@ import chat.squirrel.database.entities.IPresence;
 import chat.squirrel.database.memory.IMemoryAdapter;
 
 public class PresenceCollectionImpl extends AbstractMemoryCollection<IPresence> implements IPresenceCollection {
-    public PresenceCollectionImpl(IMemoryAdapter memoryAdapter) {
-        super(memoryAdapter);
+    protected PresenceCollectionImpl(final IMemoryAdapter memoryAdapter, final String collectionName) {
+        super(memoryAdapter, collectionName);
     }
 }

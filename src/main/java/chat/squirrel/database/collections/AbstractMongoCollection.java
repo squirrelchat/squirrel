@@ -27,88 +27,212 @@
 
 package chat.squirrel.database.collections;
 
+import chat.squirrel.Squirrel;
 import chat.squirrel.database.entities.IEntity;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertManyResult;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
+import io.vertx.core.Promise;
+import io.vertx.core.WorkerExecutor;
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public abstract class AbstractMongoCollection<T extends IEntity> implements ICollection<T> {
-    private MongoCollection<T> collection;
+    private final MongoCollection<T> collection;
+    private final WorkerExecutor worker;
 
     protected AbstractMongoCollection(final MongoCollection<T> collection) {
         this.collection = collection;
+        this.worker = Squirrel.getInstance().getVertx().createSharedWorkerExecutor("dyatabwase nya~~");
     }
 
     // CREATE
     @Override
-    public InsertOneResult insertOne(final T entity) {
-        return collection.insertOne(entity);
+    public CompletionStage<InsertOneResult> insertOne(final T entity) {
+        final CompletableFuture<InsertOneResult> future = new CompletableFuture<>();
+        this.worker.executeBlocking(
+                (Promise<InsertOneResult> p) -> p.complete(collection.insertOne(entity)),
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
     }
 
     @Override
-    public InsertManyResult insertMany(final Collection<T> entities) {
-        return collection.insertMany(List.copyOf(entities));
+    public CompletionStage<InsertManyResult> insertMany(final Collection<T> entities) {
+        final CompletableFuture<InsertManyResult> future = new CompletableFuture<>();
+        this.worker.executeBlocking(
+                (Promise<InsertManyResult> p) -> p.complete(collection.insertMany(List.copyOf(entities))),
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
     }
 
     // READ
     @Override
-    public T findEntity(final Bson filters) {
-        return collection.find(filters).first();
+    public CompletionStage<T> findEntity(final Bson filters) {
+        final CompletableFuture<T> future = new CompletableFuture<>();
+        this.worker.executeBlocking(
+                (Promise<T> p) -> p.complete(collection.find(filters).first()),
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
     }
 
     @Override
-    public Collection<T> findEntities(final Bson filters) {
-        final List<T> entities = new ArrayList<>();
-        collection.find(filters).into(entities);
-        return entities;
+    public CompletionStage<Collection<T>> findEntities(final Bson filters) {
+        final CompletableFuture<Collection<T>> future = new CompletableFuture<>();
+        this.worker.executeBlocking(
+                (Promise<Collection<T>> p) -> {
+                    final List<T> entities = new ArrayList<>();
+                    collection.find(filters).into(entities);
+                    p.complete(entities);
+                },
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
+
     }
 
     @Override
-    public long countDocuments() {
-        return collection.countDocuments();
+    public CompletionStage<Long> countDocuments() {
+        final CompletableFuture<Long> future = new CompletableFuture<>();
+        this.worker.executeBlocking(
+                (Promise<Long> p) -> p.complete(collection.countDocuments()),
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
     }
 
     @Override
-    public long countDocuments(final Bson filters) {
-        return collection.countDocuments(filters);
+    public CompletionStage<Long> countDocuments(final Bson filters) {
+        final CompletableFuture<Long> future = new CompletableFuture<>();
+        this.worker.executeBlocking(
+                (Promise<Long> p) -> p.complete(collection.countDocuments(filters)),
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
     }
 
     // UPDATE
     @Override
-    public UpdateResult updateEntity(final Bson filter, final Bson ops) {
-        return collection.updateOne(filter, ops);
+    public CompletionStage<UpdateResult> updateEntity(final Bson filter, final Bson ops) {
+        final CompletableFuture<UpdateResult> future = new CompletableFuture<>();
+        this.worker.executeBlocking(
+                (Promise<UpdateResult> p) -> p.complete(collection.updateOne(filter, ops)),
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
     }
 
     @Override
-    public UpdateResult updateEntities(final Bson filter, final Bson ops) {
-        return collection.updateMany(filter, ops);
+    public CompletionStage<UpdateResult> updateEntities(final Bson filter, final Bson ops) {
+        final CompletableFuture<UpdateResult> future = new CompletableFuture<>();
+        this.worker.executeBlocking(
+                (Promise<UpdateResult> p) -> p.complete(collection.updateMany(filter, ops)),
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
     }
 
     @Override
-    public UpdateResult replaceEntity(final Bson filter, final T entity) {
-        return collection.replaceOne(filter, entity);
+    public CompletionStage<UpdateResult> replaceEntity(final Bson filter, final T entity) {
+        final CompletableFuture<UpdateResult> future = new CompletableFuture<>();
+        this.worker.executeBlocking(
+                (Promise<UpdateResult> p) -> p.complete(collection.replaceOne(filter, entity)),
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
     }
 
     // DELETE
     @Override
-    public DeleteResult deleteEntity(final Bson filter) {
-        return collection.deleteOne(filter);
+    public CompletionStage<DeleteResult> deleteEntity(final Bson filter) {
+        final CompletableFuture<DeleteResult> future = new CompletableFuture<>();
+        this.worker.executeBlocking(
+                (Promise<DeleteResult> p) -> p.complete(collection.deleteOne(filter)),
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
     }
 
     @Override
-    public DeleteResult deleteEntities(final Bson filter) {
-        return collection.deleteMany(filter);
+    public CompletionStage<DeleteResult> deleteEntities(final Bson filter) {
+        final CompletableFuture<DeleteResult> future = new CompletableFuture<>();
+        this.worker.executeBlocking(
+                (Promise<DeleteResult> p) -> p.complete(collection.deleteMany(filter)),
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
     }
 
     // YEET
     protected MongoCollection<T> getRawCollection() {
         return this.collection;
+    }
+
+    protected WorkerExecutor getWorker() {
+        return this.worker;
     }
 }

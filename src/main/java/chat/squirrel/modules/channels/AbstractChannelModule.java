@@ -35,17 +35,11 @@ import com.mongodb.client.model.Filters;
 import io.vertx.ext.web.RoutingContext;
 import org.bson.types.ObjectId;
 
+import java.util.concurrent.CompletionStage;
+
 public abstract class AbstractChannelModule extends AbstractGuildModule {
-    protected IChannel getChannel(final RoutingContext ctx) {
-        final IChannel channel = Squirrel.getInstance()
-                .getDatabaseManager().getCollection(IChannelCollection.class)
+    protected CompletionStage<IChannel> getChannel(final RoutingContext ctx) {
+        return Squirrel.getInstance().getDatabaseManager().getCollection(IChannelCollection.class)
                 .findEntity(Filters.eq(new ObjectId(ctx.pathParam("id"))));
-
-        if (channel == null) {
-            this.fail(ctx, 404, "Channel not found", null);
-            return null;
-        }
-
-        return channel;
     }
 }

@@ -34,7 +34,8 @@ public class ModuleRelationship extends AbstractModule {
     @Override
     public void initialize() {
         /*
-         * @todo: Write actual docs Let 2 users, User A (id 1) and User B (id 2)
+         * @todo: Write actual docs
+         * Let 2 users, User A (id 1) and User B (id 2)
          *
          * User A: POST /users/self/relationships with as body { username: 'User B',
          * discriminator: '0001' } - There is no type, so we assume it's a friend

@@ -34,32 +34,43 @@ import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.conversions.Bson;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
+import java.util.concurrent.CompletionStage;
 
 public interface ICollection<T extends IEntity> {
     // CREATE
-    InsertOneResult insertOne(final T entity);
+    CompletionStage<InsertOneResult> insertOne(final T entity);
 
-    InsertManyResult insertMany(final Collection<T> entities);
+    CompletionStage<InsertManyResult> insertMany(final Collection<T> entities);
 
     // READ
-    T findEntity(final Bson filters);
+    CompletionStage<T> findEntity(final Bson filters);
 
-    Collection<T> findEntities(final Bson filters);
+    CompletionStage<Collection<T>> findEntities(final Bson filters);
 
-    long countDocuments();
+    CompletionStage<Long> countDocuments();
 
-    long countDocuments(final Bson filters);
+    CompletionStage<Long> countDocuments(final Bson filters);
 
     // UPDATE
-    UpdateResult updateEntity(final Bson filter, final Bson ops);
+    CompletionStage<UpdateResult> updateEntity(final Bson filter, final Bson ops);
 
-    UpdateResult updateEntities(final Bson filter, final Bson ops);
+    CompletionStage<UpdateResult> updateEntities(final Bson filter, final Bson ops);
 
-    UpdateResult replaceEntity(final Bson filter, final T entity);
+    CompletionStage<UpdateResult> replaceEntity(final Bson filter, final T entity);
 
     // DELETE
-    DeleteResult deleteEntity(final Bson filter);
+    CompletionStage<DeleteResult> deleteEntity(final Bson filter);
 
-    DeleteResult deleteEntities(final Bson filter);
+    CompletionStage<DeleteResult> deleteEntities(final Bson filter);
+
+    // Stuff
+    default Class<T> getEntityClass() {
+        // Credits: https://stackoverflow.com/a/13974262/13154480
+        @SuppressWarnings("unchecked") final Class<T> clazz = (Class<T>) ((ParameterizedType)
+                this.getClass().getGenericInterfaces()[0])
+                .getActualTypeArguments()[0];
+        return clazz;
+    }
 }

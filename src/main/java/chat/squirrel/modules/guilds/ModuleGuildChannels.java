@@ -31,11 +31,8 @@ import chat.squirrel.Squirrel;
 import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
 import chat.squirrel.database.entities.IAudit.AuditLogEntryType;
 import chat.squirrel.database.entities.IGuild;
-import chat.squirrel.database.entities.IGuild.Permissions;
-import chat.squirrel.database.entities.IMember;
 import chat.squirrel.database.entities.IUser;
 import chat.squirrel.database.entities.channels.IChannel;
-import chat.squirrel.database.entities.channels.IVoiceChannel;
 import chat.squirrel.database.entities.channels.impl.GuildTextChannelImpl;
 import chat.squirrel.database.entities.channels.impl.GuildVoiceChannelImpl;
 import com.mongodb.client.model.Filters;
@@ -44,8 +41,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.bson.types.ObjectId;
-
-import java.util.concurrent.ExecutionException;
 
 public class ModuleGuildChannels extends AbstractGuildModule {
     @Override

@@ -27,9 +27,14 @@
 
 package chat.squirrel.database.entities;
 
+import chat.squirrel.database.entities.impl.LoginAttemptImpl;
 import org.bson.types.ObjectId;
 
 public interface ILoginAttempt extends IEntity {
+    static ILoginAttempt create() {
+        return new LoginAttemptImpl();
+    }
+
     boolean isSuccessful();
 
     void setSuccessful(boolean successful);

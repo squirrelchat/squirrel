@@ -38,8 +38,6 @@ import com.mongodb.client.model.Filters;
 import io.vertx.ext.web.RoutingContext;
 import org.bson.types.ObjectId;
 
-import java.util.Date;
-
 public abstract class AbstractGuildModule extends AbstractModule {
     protected IGuild getGuild(final RoutingContext ctx) {
         final IGuild guild = Squirrel.getInstance()
