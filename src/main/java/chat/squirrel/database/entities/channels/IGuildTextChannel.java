@@ -27,5 +27,10 @@
 
 package chat.squirrel.database.entities.channels;
 
+import chat.squirrel.database.entities.channels.impl.GuildTextChannelImpl;
+
 public interface IGuildTextChannel extends ITextChannel, IGuildChannel {
+    static IGuildTextChannel create() {
+        return new GuildTextChannelImpl();
+    }
 }

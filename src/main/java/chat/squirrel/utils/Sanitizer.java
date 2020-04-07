@@ -25,45 +25,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.mail;
+package chat.squirrel.utils;
 
-import io.vertx.ext.mail.MailConfig;
+import java.util.regex.Pattern;
 
-public class SquirrelMailConfig {
-    private MailConfig config;
-    private String templateLookupFolder, fromEmail;
-    private boolean enabled;
+public class Sanitizer {
+    private static final Pattern BLACKLISTED = Pattern.compile("[\u202D\u202E]", Pattern.CASE_INSENSITIVE);
+    private static final Pattern ZERO_WIDTH_SPACE = Pattern.compile("[\u200B\u200C\u200D\u2060\u180E]", Pattern.CASE_INSENSITIVE);
 
-    public String getFromEmail() {
-        return this.fromEmail;
+    /**
+     * Sanitizes a string without allowing zero width spaces (ZWS).
+     *
+     * @param string String to sanitize
+     * @return Sanitized string.
+     * @see Sanitizer#sanitize(String, boolean)
+     */
+    public static String sanitize(final String string) {
+        return sanitize(string, false);
     }
 
-    public void setFromEmail(final String fromEmail) {
-        this.fromEmail = fromEmail;
+    /**
+     * Sanitizes a string.
+     *
+     * @param string   String to sanitize
+     * @param allowZws Whether zero width spaces (ZWS) should be allowed or not.
+     * @return Sanitized string.
+     */
+    public static String sanitize(final String string, final boolean allowZws) {
+        final String sanitized = BLACKLISTED.matcher(string).replaceAll("");
+        if (!allowZws) {
+            return ZERO_WIDTH_SPACE.matcher(sanitized).replaceAll("");
+        }
+        return sanitized;
     }
-
-    public MailConfig getConfig() {
-        return this.config;
-    }
-
-    public void setConfig(final MailConfig config) {
-        this.config = config;
-    }
-
-    public String getTemplateLookupFolder() {
-        return this.templateLookupFolder;
-    }
-
-    public void setTemplateLookupFolder(final String templateLookupFolder) {
-        this.templateLookupFolder = templateLookupFolder;
-    }
-
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    public void setEnabled(final boolean enabled) {
-        this.enabled = enabled;
-    }
-
 }

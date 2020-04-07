@@ -38,6 +38,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import io.vertx.core.Vertx;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.Conventions;
@@ -61,12 +62,13 @@ public class DatabaseManager {
     private final IMemoryAdapter memoryAdapter;
     private final MongoClient client;
     private final MongoDatabase db;
+    private final Vertx vertx;
 
     private final PojoCodecProvider pojoCodecProvider;
     private final CodecRegistry codecRegistry;
     private final Map<String, ICollection<? extends IEntity>> collections;
 
-    public DatabaseManager(final String mongoConString, final String redisConString, final String mongoDbName, final String memoryConfig) {
+    public DatabaseManager(final String mongoConString, final String redisConString, final String mongoDbName, final String memoryConfig, final Vertx vertx) {
         IMemoryAdapter memoryAdapter = null;
         if (memoryConfig.equals("MEMORY")) {
             memoryAdapter = new ClassicMemoryAdapter();
@@ -76,8 +78,8 @@ public class DatabaseManager {
             LOG.error("Invalid memory database! Expected MEMORY or REDIS, got " + memoryConfig);
             System.exit(-1);
         }
+        this.vertx = vertx;
         this.memoryAdapter = memoryAdapter;
-
         this.pojoCodecProvider = PojoCodecProvider.builder()
                 .automatic(true)
                 .conventions(List.of( // Defaults + entityConvention
@@ -91,52 +93,25 @@ public class DatabaseManager {
                 CodecRegistries.fromProviders(this.pojoCodecProvider)
         );
         final ConnectionString conStr = new ConnectionString(mongoConString);
-
         LOG.info("Connecting to MongoDB using con string: " + mongoConString);
         final MongoClientSettings set = MongoClientSettings.builder()
                 .applicationName("Squirrel (" + Version.VERSION + ")") // TODO: maybe consider adding a hash (scaled env)
                 .applyConnectionString(conStr)
                 .codecRegistry(this.codecRegistry)
                 .build();
-
         this.client = MongoClients.create(set);
         this.db = this.client.getDatabase(mongoDbName);
         this.collections = new HashMap<>();
         this.registerCollections();
     }
 
-    public void registerCollection(Class<? extends ICollection<? extends IEntity>> collectionClass) throws InvalidClassException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        final SquirrelCollection[] annotations = collectionClass.getAnnotationsByType(SquirrelCollection.class);
-        if (annotations.length == 0) {
-            throw new InvalidClassException("Collection must be annotated with @SquirrelCollection!");
+    public void registerCollection(Class<? extends ICollection<? extends IEntity>> collectionClass) {
+        try {
+            this.registerCollection0(collectionClass);
+        } catch (InvalidClassException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            LOG.error("Bruh momento - Failed to register collection", e);
+            System.exit(-2);
         }
-        final SquirrelCollection annotation = annotations[0];
-
-        Class<? extends ICollection<?>> impl;
-        if (collectionClass.isInterface() || Modifier.isAbstract(collectionClass.getModifiers())) {
-            impl = annotation.impl();
-            if (impl.equals(SquirrelCollection.NULL)) {
-                throw new InvalidClassException("An implementation class is required for abstract classes and interfaces");
-            }
-            if (!collectionClass.isAssignableFrom(impl)) {
-                throw new InvalidClassException("Invalid implementation specified in @SquirrelCollection annotation");
-            }
-            if (impl.isInterface() || Modifier.isAbstract(impl.getModifiers())) {
-                throw new InvalidClassException("Implementation cannot be an interface or an abstract class");
-            }
-        } else {
-            impl = collectionClass;
-        }
-        ICollection<? extends IEntity> instance;
-        Constructor<?> constructor = impl.getDeclaredConstructors()[0];
-        if (annotation.storageMethod() == SquirrelCollection.StorageMethod.PERSISTENT) {
-            instance = (ICollection<? extends IEntity>) constructor.newInstance(db.getCollection(annotation.collection()));
-        } else if (annotation.storageMethod() == SquirrelCollection.StorageMethod.MEMORY) {
-            instance = (ICollection<? extends IEntity>) constructor.newInstance(memoryAdapter, annotation.collection());
-        } else {
-            throw new IllegalStateException("My life is potato? (Invalid storage method");
-        }
-        collections.put(collectionClass.getCanonicalName(), instance);
     }
 
     public <E extends IEntity, T extends ICollection<E>> T getCollection(Class<T> collectionClass) {
@@ -161,24 +136,53 @@ public class DatabaseManager {
     }
 
     private void registerCollections() {
-        try {
-            // Mongo collections
-            registerCollection(IUserCollection.class);
-            registerCollection(IGuildCollection.class);
-            registerCollection(IRoleCollection.class);
-            registerCollection(IAuditCollection.class);
-            registerCollection(IMemberCollection.class);
-            registerCollection(IChannelCollection.class);
-            registerCollection(IMessageCollection.class);
-            registerCollection(IMetricsCollection.class);
-            registerCollection(IConfigCollection.class);
+        // Mongo collections
+        registerCollection(IUserCollection.class);
+        registerCollection(IGuildCollection.class);
+        registerCollection(IRoleCollection.class);
+        registerCollection(IAuditCollection.class);
+        registerCollection(IMemberCollection.class);
+        registerCollection(IChannelCollection.class);
+        registerCollection(IMessageCollection.class);
+        registerCollection(IMetricsCollection.class);
+        registerCollection(IConfigCollection.class);
 
-            // Memory collections
-            registerCollection(IPresenceCollection.class);
-            registerCollection(IVoiceStateCollection.class);
-        } catch (InvalidClassException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            LOG.error("Bruh momento - Failed to register collections", e);
-            System.exit(-2);
+        // Memory collections
+        //registerCollection(IPresenceCollection.class);
+        registerCollection(IVoiceStateCollection.class);
+    }
+
+    private void registerCollection0(Class<? extends ICollection<? extends IEntity>> collectionClass) throws InvalidClassException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        final SquirrelCollection[] annotations = collectionClass.getAnnotationsByType(SquirrelCollection.class);
+        if (annotations.length == 0) {
+            throw new InvalidClassException("Collection must be annotated with @SquirrelCollection!");
         }
+        final SquirrelCollection annotation = annotations[0];
+
+        Class<? extends ICollection<?>> impl;
+        if (collectionClass.isInterface() || Modifier.isAbstract(collectionClass.getModifiers())) {
+            impl = annotation.impl();
+            if (impl.equals(SquirrelCollection.NULL)) {
+                throw new InvalidClassException("An implementation class is required for abstract classes and interfaces");
+            }
+            if (!collectionClass.isAssignableFrom(impl)) {
+                throw new InvalidClassException("Invalid implementation specified in @SquirrelCollection annotation");
+            }
+            if (impl.isInterface() || Modifier.isAbstract(impl.getModifiers())) {
+                throw new InvalidClassException("Implementation cannot be an interface or an abstract class");
+            }
+        } else {
+            impl = collectionClass;
+        }
+        ICollection<? extends IEntity> instance;
+        Constructor<?> constructor = impl.getDeclaredConstructors()[0];
+        if (annotation.storageMethod() == SquirrelCollection.StorageMethod.PERSISTENT) {
+            instance = (ICollection<? extends IEntity>) constructor.newInstance(db.getCollection(annotation.collection(), IEntity.class), vertx.createSharedWorkerExecutor("Mongo Collection " + annotation.collection()));
+        } else if (annotation.storageMethod() == SquirrelCollection.StorageMethod.MEMORY) {
+            instance = (ICollection<? extends IEntity>) constructor.newInstance(memoryAdapter, annotation.collection());
+        } else {
+            throw new IllegalStateException("My life is potato? (Invalid storage method");
+        }
+        collections.put(collectionClass.getCanonicalName(), instance);
     }
 }

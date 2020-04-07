@@ -31,9 +31,10 @@ import chat.squirrel.database.collections.AbstractMongoCollection;
 import chat.squirrel.database.collections.IMetricsCollection;
 import chat.squirrel.database.entities.IMetric;
 import com.mongodb.client.MongoCollection;
+import io.vertx.core.WorkerExecutor;
 
 public class MetricsCollectionImpl extends AbstractMongoCollection<IMetric> implements IMetricsCollection {
-    public MetricsCollectionImpl(MongoCollection<IMetric> collection) {
-        super(collection);
+    public MetricsCollectionImpl(final MongoCollection<IMetric> collection, final WorkerExecutor worker) {
+        super(collection, worker);
     }
 }

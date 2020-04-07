@@ -30,13 +30,13 @@ package chat.squirrel.database.entities.channels;
 import org.bson.types.ObjectId;
 
 public interface IGuildChannel extends IChannel {
-    ObjectId getGuild();
+    ObjectId getGuildId();
 
-    void setGuild(ObjectId guild);
+    void setGuildId(ObjectId guildId);
 
-    String getCategory();
+    String getCategory(); // TODO: Proper category management
 
-    void setCategory(String cat);
+    void setCategory(String category);
 
     int getOrder();
 

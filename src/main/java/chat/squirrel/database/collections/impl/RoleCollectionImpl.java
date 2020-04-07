@@ -31,9 +31,10 @@ import chat.squirrel.database.collections.AbstractMongoCollection;
 import chat.squirrel.database.collections.IRoleCollection;
 import chat.squirrel.database.entities.IRole;
 import com.mongodb.client.MongoCollection;
+import io.vertx.core.WorkerExecutor;
 
 public class RoleCollectionImpl extends AbstractMongoCollection<IRole> implements IRoleCollection {
-    public RoleCollectionImpl(MongoCollection<IRole> collection) {
-        super(collection);
+    public RoleCollectionImpl(final MongoCollection<IRole> collection, final WorkerExecutor worker) {
+        super(collection, worker);
     }
 }

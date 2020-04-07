@@ -27,5 +27,10 @@
 
 package chat.squirrel.database.entities.channels;
 
+import chat.squirrel.database.entities.channels.impl.GuildVoiceChannelImpl;
+
 public interface IGuildVoiceChannel extends IGuildChannel, IVoiceChannel {
+    static IGuildVoiceChannel create() {
+        return new GuildVoiceChannelImpl();
+    }
 }

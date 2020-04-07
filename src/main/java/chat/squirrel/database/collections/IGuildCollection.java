@@ -29,7 +29,27 @@ package chat.squirrel.database.collections;
 
 import chat.squirrel.database.collections.impl.GuildCollectionImpl;
 import chat.squirrel.database.entities.IGuild;
+import org.bson.conversions.Bson;
+
+import java.util.concurrent.CompletionStage;
 
 @SquirrelCollection(collection = "guilds", impl = GuildCollectionImpl.class)
 public interface IGuildCollection extends ICollection<IGuild> {
+    /**
+     * Fetches a guild and its members, channels, roles, presences and voice states.
+     * NOTE: Members and presences are capped at 1000. This is to avoid putting too much
+     * pressure on the database and because we'll never send more membres through the websocket.
+     *
+     * @param filters Query filters.
+     * @return The guild.
+     */
+    CompletionStage<IGuild> findGuildAggregated(final Bson filters);
+
+    /**
+     * Fetches ALL members and their presences. Uses a stream to
+     *
+     * @param filters Query filters.
+     * @return The guild.
+     */
+    CompletionStage<Void> findMembersAndPresences(final Bson filters);
 }

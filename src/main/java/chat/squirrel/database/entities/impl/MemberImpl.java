@@ -30,6 +30,8 @@ package chat.squirrel.database.entities.impl;
 import chat.squirrel.database.entities.AbstractEntity;
 import chat.squirrel.database.entities.IMember;
 import chat.squirrel.database.entities.IRole;
+import chat.squirrel.database.entities.IUser;
+import io.vertx.core.json.JsonObject;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 
@@ -41,6 +43,7 @@ public class MemberImpl extends AbstractEntity implements IMember {
     private String nickname;
 
     // Aggregated entities
+    private IUser user = null;
     private Collection<IRole> roles = null;
     private Collection<String> permissions = null;
 
@@ -74,6 +77,19 @@ public class MemberImpl extends AbstractEntity implements IMember {
         this.nickname = nickname;
     }
 
+    // Aggregated entities
+    @BsonIgnore
+    @Nullable
+    @Override
+    public IUser getUser() {
+        return user;
+    }
+
+    @Override
+    public void setUser(final IUser user) {
+        this.user = user;
+    }
+
     @BsonIgnore
     @Nullable
     @Override
@@ -96,5 +112,10 @@ public class MemberImpl extends AbstractEntity implements IMember {
     @Override
     public void setPermissions(final Collection<String> permissions) {
         this.permissions = permissions;
+    }
+
+    @Override
+    public JsonObject toJson() {
+        return super.toJson(); // TODO: Filter some user fields
     }
 }

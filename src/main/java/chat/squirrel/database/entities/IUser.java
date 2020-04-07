@@ -33,6 +33,7 @@ import xyz.bowser65.tokenize.IAccount;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 public interface IUser extends IPartialUser, IAccount {
@@ -104,10 +105,6 @@ public interface IUser extends IPartialUser, IAccount {
 
     void setEmailVerified(boolean emailVerified);
 
-    boolean isLocked();
-
-    void setLocked(boolean locked);
-
     boolean isDisabled();
 
     void setDisabled(boolean disabled);
@@ -154,6 +151,10 @@ public interface IUser extends IPartialUser, IAccount {
     Collection<IPlatformConnection> getPlatformConnections();
 
     void setPlatformConnections(Collection<IPlatformConnection> platformConnections);
+
+    Date getDeletionScheduledAt();
+
+    void setDeletionScheduledAt(Date deletionScheduledAt);
 
     // STUFF
     @BsonIgnore

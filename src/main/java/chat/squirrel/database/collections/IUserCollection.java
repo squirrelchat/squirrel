@@ -34,17 +34,16 @@ import java.util.concurrent.CompletionStage;
 
 @SquirrelCollection(collection = "users", impl = UserCollectionImpl.class)
 public interface IUserCollection extends ICollection<IUser> {
+    CompletionStage<IUser> findByUsernameOrEmail(final String username);
+
+    CompletionStage<Boolean> isUsernameAvailable(final String username);
+
+    CompletionStage<Boolean> isEmailUsed(final String email);
+
     /**
      * Method used to get an available discriminator for the specified username
      *
      * @return A free discriminator
      */
     CompletionStage<Integer> getFreeDiscriminator(final String username);
-
-    /**
-     * @param username      The username string to check
-     * @param discriminator The discriminator integer to check
-     * @return {@code true} if the discriminator is already used for this username, {@code false} otherwise
-     */
-    CompletionStage<Boolean> isDiscriminatorTaken(final String username, final int discriminator);
 }

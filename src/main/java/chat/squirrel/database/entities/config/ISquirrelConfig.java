@@ -33,4 +33,40 @@ public interface ISquirrelConfig extends IConfig {
     static ISquirrelConfig create() {
         return new SquirrelConfigImpl();
     }
+
+    String getServerName();
+
+    void setServerName(final String serverName);
+
+    String getServerDescription();
+
+    void setServerDescription(final String serverDescription);
+
+    byte[] getSecret();
+
+    void setSecret(final byte[] secret);
+
+    boolean isRegisterEnabled();
+
+    void setRegisterEnabled(final boolean registerEnabled);
+
+    /**
+     * If disabled, this disables some security features but can improve users privacy.
+     * Disables known-IP-only login and detailed login attempt logging.
+     *
+     * @return Whether the instance logs users IP addresses or not.
+     */
+    boolean isIpLogging();
+
+    void setIpLogging(final boolean ipLogging);
+
+    int getMaximumDiscriminatorsPerUsername();
+
+    void setMaximumDiscriminatorsPerUsername(final int maximumDiscriminatorsPerUsername);
+
+    long getSessionTimeout();
+
+    void setSessionTimeout(final long sessionTimeout);
+
+    void regenerateSecret();
 }

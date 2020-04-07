@@ -31,9 +31,10 @@ import chat.squirrel.database.collections.AbstractMongoCollection;
 import chat.squirrel.database.collections.ILoginAttemptCollection;
 import chat.squirrel.database.entities.ILoginAttempt;
 import com.mongodb.client.MongoCollection;
+import io.vertx.core.WorkerExecutor;
 
 public class LoginAttemptCollectionImpl extends AbstractMongoCollection<ILoginAttempt> implements ILoginAttemptCollection {
-    public LoginAttemptCollectionImpl(MongoCollection<ILoginAttempt> collection) {
-        super(collection);
+    public LoginAttemptCollectionImpl(final MongoCollection<ILoginAttempt> collection, final WorkerExecutor worker) {
+        super(collection, worker);
     }
 }

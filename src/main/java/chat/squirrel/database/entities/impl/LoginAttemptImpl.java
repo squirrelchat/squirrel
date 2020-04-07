@@ -32,18 +32,18 @@ import chat.squirrel.database.entities.ILoginAttempt;
 import org.bson.types.ObjectId;
 
 public class LoginAttemptImpl extends AbstractEntity implements ILoginAttempt {
-    private boolean successful;
+    private LoginAttemptResult result;
     private ObjectId userId;
     private String ipAddress, userAgent, approximateLocation;
 
     @Override
-    public boolean isSuccessful() {
-        return successful;
+    public LoginAttemptResult getResult() {
+        return result;
     }
 
     @Override
-    public void setSuccessful(boolean successful) {
-        this.successful = successful;
+    public void setResult(final LoginAttemptResult successful) {
+        this.result = successful;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class LoginAttemptImpl extends AbstractEntity implements ILoginAttempt {
     }
 
     @Override
-    public void setUserId(ObjectId userId) {
+    public void setUserId(final ObjectId userId) {
         this.userId = userId;
     }
 
@@ -62,7 +62,7 @@ public class LoginAttemptImpl extends AbstractEntity implements ILoginAttempt {
     }
 
     @Override
-    public void setIpAddress(String ipAddress) {
+    public void setIpAddress(final String ipAddress) {
         this.ipAddress = ipAddress;
     }
 
@@ -72,7 +72,7 @@ public class LoginAttemptImpl extends AbstractEntity implements ILoginAttempt {
     }
 
     @Override
-    public void setUserAgent(String userAgent) {
+    public void setUserAgent(final String userAgent) {
         this.userAgent = userAgent;
     }
 
@@ -82,7 +82,7 @@ public class LoginAttemptImpl extends AbstractEntity implements ILoginAttempt {
     }
 
     @Override
-    public void setApproximateLocation(String approximateLocation) {
+    public void setApproximateLocation(final String approximateLocation) {
         this.approximateLocation = approximateLocation;
     }
 }

@@ -48,7 +48,7 @@ public class ModuleMetrics extends AbstractModule {
     private void handleHistogram(final RoutingContext ctx) {
         final IUser user = this.getRequester(ctx);
         if (!user.isInstanceAdmin()) {
-            this.fail(ctx, 403, "Insufficient permissions", null);
+            this.end(ctx, 403, "Insufficient permissions", null);
             return;
         }
 
@@ -58,7 +58,7 @@ public class ModuleMetrics extends AbstractModule {
     private void handleMetrics(final RoutingContext ctx) {
         final IUser user = this.getRequester(ctx);
         if (!user.isInstanceAdmin()) {
-            this.fail(ctx, 403, "Insufficient permissions", null);
+            this.end(ctx, 403, "Insufficient permissions", null);
             return;
         }
 

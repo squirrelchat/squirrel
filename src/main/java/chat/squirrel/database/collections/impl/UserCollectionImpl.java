@@ -27,11 +27,14 @@
 
 package chat.squirrel.database.collections.impl;
 
+import chat.squirrel.Squirrel;
 import chat.squirrel.database.collections.AbstractMongoCollection;
 import chat.squirrel.database.collections.IUserCollection;
 import chat.squirrel.database.entities.IUser;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import io.vertx.core.WorkerExecutor;
+import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +45,39 @@ import java.util.concurrent.CompletionStage;
 public class UserCollectionImpl extends AbstractMongoCollection<IUser> implements IUserCollection {
     private final Random random = new Random();
 
-    public UserCollectionImpl(MongoCollection<IUser> collection) {
-        super(collection);
+    public UserCollectionImpl(final MongoCollection<IUser> collection, final WorkerExecutor worker) {
+        super(collection, worker);
+    }
+
+    @Override
+    public CompletionStage<IUser> findByUsernameOrEmail(String username) {
+        Bson filter;
+        if (username.contains("@")) {
+            filter = Filters.eq("email", username);
+        } else if (username.contains("#")) {
+            String[] split = username.split("#");
+            filter = Filters.and(Filters.eq("username", split[0]), Filters.eq("discriminator", Integer.parseInt(split[1])));
+        } else {
+            return CompletableFuture.completedStage(null);
+        }
+        return this.findEntity(Filters.and(filter, Filters.eq("deleted", false)));
+    }
+
+    @Override
+    public CompletionStage<Boolean> isUsernameAvailable(String username) {
+        final CompletableFuture<Boolean> future = new CompletableFuture<>();
+        this.countDocuments(Filters.eq("username", username)).thenAccept(count -> {
+            final int max = Squirrel.getInstance().getConfig().getMaximumDiscriminatorsPerUsername();
+            future.complete(count <= (max == -1 ? 5000 : max));
+        });
+        return future;
+    }
+
+    @Override
+    public CompletionStage<Boolean> isEmailUsed(String email) {
+        final CompletableFuture<Boolean> future = new CompletableFuture<>();
+        this.countDocuments(Filters.eq("email", email)).thenAccept(count -> future.complete(count != 0));
+        return future;
     }
 
     @Override
@@ -65,16 +99,6 @@ public class UserCollectionImpl extends AbstractMongoCollection<IUser> implement
                 future.complete(dis);
             });
         });
-        return future;
-    }
-
-    @Override
-    public CompletionStage<Boolean> isDiscriminatorTaken(final String username, final int discriminator) {
-        final CompletableFuture<Boolean> future = new CompletableFuture<>();
-        this.findEntity(Filters.and(
-                Filters.eq("username", username),
-                Filters.eq("discriminator", discriminator)
-        )).thenAccept(u -> future.complete(u != null));
         return future;
     }
 }

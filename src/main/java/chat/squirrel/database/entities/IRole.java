@@ -27,6 +27,7 @@
 package chat.squirrel.database.entities;
 
 import chat.squirrel.database.entities.impl.RoleImpl;
+import org.bson.types.ObjectId;
 
 import java.util.Collection;
 
@@ -34,6 +35,10 @@ public interface IRole extends IEntity {
     static IRole create() {
         return new RoleImpl();
     }
+
+    ObjectId getGuildId();
+
+    void setGuildId(ObjectId guildId);
 
     int getColor();
 

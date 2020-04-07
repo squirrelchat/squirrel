@@ -31,28 +31,21 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * This handler catches invalid JSON
+ * Handler in charge of JSON format validation
  */
 public class WebJsonHandler implements Handler<RoutingContext> {
-    private static final Logger LOG = LoggerFactory.getLogger(WebJsonHandler.class);
-
     @Override
     public void handle(final RoutingContext event) {
-        final String ip = Squirrel.getInstance().getConfig().isSaveIP() ? event.request().remoteAddress().host() : "-";
         final JsonObject obj;
         try {
             obj = event.getBodyAsJson();
         } catch (final DecodeException e) {
-            LOG.info("Received invalid json from " + ip);
             event.fail(400);
             return;
         }
         if (obj == null) {
-            LOG.info("Received invalid json from " + ip);
             event.fail(400);
             return;
         }

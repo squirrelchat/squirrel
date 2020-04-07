@@ -29,8 +29,6 @@ package chat.squirrel.modules;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.WebAuthHandler;
-import chat.squirrel.auth.AuthResult;
-import chat.squirrel.auth.IAuthHandler;
 import chat.squirrel.database.entities.IUser;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
@@ -70,19 +68,19 @@ public abstract class AbstractModule {
     }
 
     protected void notImplemented(final RoutingContext ctx) {
-        this.fail(ctx, 501, "Not implemented", null);
+        this.end(ctx, 501, "Not implemented", null);
     }
 
     /**
-     * Ends the context with a safe failure to the client.
+     * Ends the context with an informative payload to the client.
      *
-     * @param ctx    The RoutingContext to end
-     * @param status The HTTP status code
-     * @param desc   The error description
-     * @param extra  The extra informations to provide, may be null
+     * @param ctx    The RoutingContext to end.
+     * @param status The HTTP status code.
+     * @param desc   The payload description.
+     * @param extra  Additional information that'll be sent to the client.
      */
-    protected void fail(final RoutingContext ctx, final int status, final String desc,
-                        @Nullable final JsonObject extra) {
+    protected void end(final RoutingContext ctx, final int status, final String desc,
+                       @Nullable final JsonObject extra) {
         final JsonObject out = new JsonObject();
         out.put("status", status);
         out.put("desc", desc);
@@ -94,29 +92,30 @@ public abstract class AbstractModule {
     }
 
     protected Route registerPasswordConfirmRoute(final HttpMethod method, final String path,
-                                                 final Handler<RoutingContext> handler) {
-        final Route rt = this.registerAuthedRoute(method, path, ctx -> {
-            final IAuthHandler auth = Squirrel.getInstance().getAuthHandler();
-            final JsonObject obj = ctx.getBodyAsJson();
-            final String password = obj.getString("password");
+                                                 final Handler<RoutingContext> handler) { // TODO
+        // final Route rt = this.registerAuthedRoute(method, path, ctx -> {
+        //     final IAuthHandler auth = Squirrel.getInstance().getAuthHandler();
+        //     final JsonObject obj = ctx.getBodyAsJson();
+        //     final String password = obj.getString("password");
 
-            if (password == null) {
-                this.fail(ctx, 400, "Missing password parameter for confirmation", null);
-                return;
-            }
+        //     if (password == null) {
+        //         this.end(ctx, 400, "Missing password parameter for confirmation", null);
+        //         return;
+        //     }
 
-            final IUser user = getRequester(ctx);
+        //     final IUser user = getRequester(ctx);
 
-            final AuthResult res = auth.confirmPassword(user.getId(), password.toCharArray());
-            if (res.isSuccess()) {
-                ctx.next();
-            } else {
-                this.fail(ctx, 401, "Error while confirming password",
-                        new JsonObject().put("failure_reason", res.getReason()));
-            }
-        });
-        rt.handler(handler);
-        return rt;
+        //     final AuthResult res = auth.confirmPassword(user.getId(), password.toCharArray());
+        //     if (res.isSuccess()) {
+        //         ctx.next();
+        //     } else {
+        //         this.end(ctx, 401, "Error while confirming password",
+        //                 new JsonObject().put("failure_reason", res.getReason()));
+        //     }
+        // });
+        // rt.handler(handler);
+        // return rt;
+        return this.registerAuthedRoute(method, path, handler);
     }
 
     /**

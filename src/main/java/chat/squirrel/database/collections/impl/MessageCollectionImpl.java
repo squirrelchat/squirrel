@@ -31,9 +31,10 @@ import chat.squirrel.database.collections.AbstractMongoCollection;
 import chat.squirrel.database.collections.IMessageCollection;
 import chat.squirrel.database.entities.messages.IMessage;
 import com.mongodb.client.MongoCollection;
+import io.vertx.core.WorkerExecutor;
 
 public class MessageCollectionImpl extends AbstractMongoCollection<IMessage> implements IMessageCollection {
-    public MessageCollectionImpl(MongoCollection<IMessage> collection) {
-        super(collection);
+    public MessageCollectionImpl(final MongoCollection<IMessage> collection, final WorkerExecutor worker) {
+        super(collection, worker);
     }
 }

@@ -25,23 +25,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel;
+package chat.squirrel.database.entities.presences;
 
-import chat.squirrel.database.entities.AbstractEntity;
+import chat.squirrel.database.entities.IEntity;
+import chat.squirrel.database.entities.presences.impl.PresenceImpl;
 
-public class UserConfig extends AbstractEntity {
-    private Class<?> owner;
+import javax.annotation.Nullable;
 
-    public UserConfig(final Class<?> owner) {
-        this.owner = owner;
+public interface IPresence extends IEntity {
+    static IPresence create() {
+        return new PresenceImpl();
     }
 
-    public Class<?> getOwner() {
-        return this.owner;
-    }
+    OnlineStatus getOnlineStatus();
 
-    public void setOwner(final Class<?> owner) {
-        this.owner = owner;
-    }
+    void setOnlineStatus(OnlineStatus onlineStatus);
 
+    @Nullable
+    IActivity getActivity();
+
+    void setActivity(IActivity activity);
+
+    enum OnlineStatus {
+        ONLINE, IDLE, DND,
+        OFFLINE
+    }
 }

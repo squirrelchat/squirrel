@@ -27,17 +27,14 @@
 
 package chat.squirrel;
 
-import chat.squirrel.auth.IAuthHandler;
-import chat.squirrel.auth.MongoAuthHandler;
 import chat.squirrel.database.DatabaseManager;
 import chat.squirrel.database.DatabaseManagerEditionBoomerware;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
+import chat.squirrel.database.collections.IConfigCollection;
+import chat.squirrel.database.entities.config.ISquirrelConfig;
 import chat.squirrel.event.EventBus;
 import chat.squirrel.mail.NotificationMailManager;
-import chat.squirrel.mail.SquirrelMailConfig;
 import chat.squirrel.modules.ModuleManager;
 import chat.squirrel.scheduling.SchedulerManager;
-import com.mongodb.client.model.Filters;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
@@ -50,8 +47,9 @@ import xyz.bowser65.tokenize.Tokenize;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Properties;
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
 /**
  * The main Squirrel Class. This class is the core of the server, it supervises
@@ -61,15 +59,15 @@ public final class Squirrel {
     // Stuff
     private static Squirrel instance;
     private static final Logger LOG = LoggerFactory.getLogger(Squirrel.class);
+    private final String runtimeHash = Integer.toHexString(new Random().nextInt(0xeffffff + 1) + 0x1000000);
     private final WebExceptionHandler webExceptionHandler;
     private final Properties properties;
-    private final SquirrelConfig config;
+    private final ISquirrelConfig config;
 
     // Managers
     private final ModuleManager moduleManager;
     private final DatabaseManagerEditionBoomerware boomerDbManager;
     private final DatabaseManager databaseManager;
-    private final IAuthHandler authHandler;
     private final Tokenize tokenize;
     private final NotificationMailManager notifMail;
     private final SchedulerManager scheduler;
@@ -105,36 +103,38 @@ public final class Squirrel {
             this.properties.load(new FileInputStream("./squirrel.properties"));
         } catch (final IOException e) {
             LOG.error("Error while loading settings from squirrel.properties", e);
-            LOG.error("Fatal error, exiting");
             System.exit(-1);
         }
 
-        LOG.info("Initializing managers");
-        this.moduleManager = new ModuleManager();
+        LOG.info("Initializing vert.x");
+        vertx = Vertx.vertx();
 
-        final String mongoConString = this.getProperty("database.mongo.con-string");
+        final String mongoConString = this.getProperty("database.mongo.con-string", "mongodb://127.0.0.1");
         final String redisConString = this.getProperty("database.redis.con-string");
         final String mongoDbName = this.getProperty("database.mongo.db-name", "squirrel");
         final String memoryConfig = this.getProperty("database.memory", "MEMORY");
-        this.databaseManager = new DatabaseManager(mongoConString, redisConString, mongoDbName, memoryConfig);
+        this.databaseManager = new DatabaseManager(mongoConString, redisConString, mongoDbName, memoryConfig, vertx);
         this.boomerDbManager = new DatabaseManagerEditionBoomerware(this.getProperty("database.mongo.con-string"),
                 this.getProperty("database.mongo.db-name", "squirrel"));
 
-        this.config = (SquirrelConfig) this.getUserConfig(Squirrel.class, new SquirrelConfig(this.getClass()));
+        ISquirrelConfig config = null;
+        try {
+            config = databaseManager.getCollection(IConfigCollection.class).findConfig(ISquirrelConfig.class).toCompletableFuture().get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Error while loading configuration", e);
+            System.exit(-1);
+        }
+        this.config = config == null ? ISquirrelConfig.create() : config;
 
-        this.eventBus = new EventBus();
-
+        LOG.info("Initializing managers");
+        this.moduleManager = new ModuleManager();
         this.scheduler = new SchedulerManager();
         this.scheduler.start();
-
-        this.authHandler = new MongoAuthHandler(); // TODO: make customizable when there'll be more
-
-        this.tokenize = new Tokenize(this.config.getTokenSecret().getBytes(StandardCharsets.UTF_16));
+        this.eventBus = new EventBus();
+        this.tokenize = new Tokenize(this.config.getSecret());
 
         LOG.info("Loading modules");
         this.moduleManager.scanPackage("chat.squirrel.modules");
-        LOG.info("Initializing vert.x");
-        vertx = Vertx.vertx();
 
         this.server = vertx.createHttpServer();
 
@@ -153,8 +153,7 @@ public final class Squirrel {
 
         this.httpClient = WebClient.create(vertx);
 
-        this.notifMail = new NotificationMailManager(vertx,
-                (SquirrelMailConfig) this.getUserConfig(NotificationMailManager.class, null));
+        this.notifMail = new NotificationMailManager(vertx, null);
 
         // MetricsManager.getInstance().load(this.boomerDbManager);
 
@@ -173,16 +172,9 @@ public final class Squirrel {
     }
 
     /**
-     * @return The AuthHandler that manages authentication to the database
+     * @return The {@link ISquirrelConfig} for this instance
      */
-    public IAuthHandler getAuthHandler() {
-        return this.authHandler;
-    }
-
-    /**
-     * @return The SquirrelConfig object for this instance
-     */
-    public SquirrelConfig getConfig() {
+    public ISquirrelConfig getConfig() {
         return this.config;
     }
 
@@ -241,18 +233,15 @@ public final class Squirrel {
         return scheduler;
     }
 
-    public UserConfig getUserConfig(final Class<?> owner, final UserConfig def) {
-        // TODO: yeet this shit
-        final UserConfig conf = this.boomerDbManager.findFirstEntity(UserConfig.class, SquirrelCollection.CONFIG,
-                Filters.eq("owner", owner.toString()));
-        if (conf == null) {
-            return def;
-        }
-        return conf;
+    /**
+     * @return The main Squirrel instance running on this JVM
+     */
+    public static Squirrel getInstance() {
+        return instance;
     }
 
-    public void saveUserConfig(final UserConfig conf) {
-        this.boomerDbManager.replaceOne(SquirrelCollection.CONFIG, conf, Filters.eq(conf.getId()));
+    public String getRuntimeHash() {
+        return runtimeHash;
     }
 
     /**
@@ -277,25 +266,6 @@ public final class Squirrel {
         this.moduleManager.loadModules();
 
         LOG.info("Starting server");
-        this.server.listen(8080);
+        this.server.listen(Integer.parseInt(this.getProperty("http.port", "80")));
     }
-
-    /**
-     * @param dis The discriminator integer to format
-     * @return String format of integer with up to 4 leading zeros
-     */
-    public static String formatDiscriminator(final int dis) {
-        if (dis < 0 || dis > 9999) {
-            throw new IllegalArgumentException("Discriminator to be formatted is out of bounds");
-        }
-        return String.format("%04d", dis);
-    }
-
-    /**
-     * @return The main Squirrel instance running on this JVM
-     */
-    public static Squirrel getInstance() {
-        return instance;
-    }
-
 }

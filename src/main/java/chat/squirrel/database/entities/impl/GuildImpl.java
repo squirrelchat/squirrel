@@ -29,6 +29,7 @@ package chat.squirrel.database.entities.impl;
 
 import chat.squirrel.database.entities.*;
 import chat.squirrel.database.entities.channels.IChannel;
+import chat.squirrel.database.entities.presences.IPresence;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.types.ObjectId;
 

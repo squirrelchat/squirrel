@@ -29,14 +29,26 @@ package chat.squirrel.database.entities.impl;
 
 import chat.squirrel.database.entities.AbstractEntity;
 import chat.squirrel.database.entities.IRole;
+import org.bson.types.ObjectId;
 
 import java.util.Collection;
 import java.util.Collections;
 
 public class RoleImpl extends AbstractEntity implements IRole {
+    private ObjectId guildId;
     private int color;
     private String name;
     private Collection<String> permissions = Collections.emptySet();
+
+    @Override
+    public ObjectId getGuildId() {
+        return guildId;
+    }
+
+    @Override
+    public void setGuildId(ObjectId guildId) {
+        this.guildId = guildId;
+    }
 
     @Override
     public int getColor() {

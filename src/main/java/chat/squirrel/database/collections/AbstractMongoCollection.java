@@ -27,7 +27,6 @@
 
 package chat.squirrel.database.collections;
 
-import chat.squirrel.Squirrel;
 import chat.squirrel.database.entities.IEntity;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.DeleteResult;
@@ -48,9 +47,9 @@ public abstract class AbstractMongoCollection<T extends IEntity> implements ICol
     private final MongoCollection<T> collection;
     private final WorkerExecutor worker;
 
-    protected AbstractMongoCollection(final MongoCollection<T> collection) {
+    protected AbstractMongoCollection(final MongoCollection<T> collection, final WorkerExecutor worker) {
         this.collection = collection;
-        this.worker = Squirrel.getInstance().getVertx().createSharedWorkerExecutor("dyatabwase nya~~");
+        this.worker = worker;
     }
 
     // CREATE
@@ -62,7 +61,10 @@ public abstract class AbstractMongoCollection<T extends IEntity> implements ICol
                 r -> {
                     if (r.failed()) {
                         future.completeExceptionally(r.cause());
+                        System.out.println(r.cause().getMessage());
                     } else {
+                        System.out.println(r.result().getInsertedId());
+                        System.out.println(r.result().wasAcknowledged());
                         future.complete(r.result());
                     }
                 });

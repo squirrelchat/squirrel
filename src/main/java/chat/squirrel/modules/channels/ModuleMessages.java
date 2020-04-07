@@ -42,7 +42,7 @@ public class ModuleMessages extends AbstractChannelModule {
         final String content = obj.getString("content");
 
         if (content == null) {
-            this.fail(ctx, 400, "Missing message content", null);
+            this.end(ctx, 400, "Missing message content", null);
             return;
         }
 

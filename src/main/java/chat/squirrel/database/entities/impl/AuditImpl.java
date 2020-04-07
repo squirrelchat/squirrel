@@ -37,6 +37,7 @@ import java.util.Map;
 public class AuditImpl extends AbstractEntity implements IAudit {
     private ObjectId guild, user;
     private AuditLogEntryType type;
+    private String customType;
     private Map<String, Object> data;
 
     @Override
@@ -47,6 +48,17 @@ public class AuditImpl extends AbstractEntity implements IAudit {
     @Override
     public void setType(final AuditLogEntryType type) {
         this.type = type;
+    }
+
+    @Nullable
+    @Override
+    public String getCustomType() {
+        return customType;
+    }
+
+    @Override
+    public void setCustomType(String customType) {
+        this.customType = customType;
     }
 
     @Nullable

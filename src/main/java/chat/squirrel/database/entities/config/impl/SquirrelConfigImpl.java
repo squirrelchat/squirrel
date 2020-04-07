@@ -30,5 +30,95 @@ package chat.squirrel.database.entities.config.impl;
 import chat.squirrel.database.entities.config.AbstractConfig;
 import chat.squirrel.database.entities.config.ISquirrelConfig;
 
+import java.security.SecureRandom;
+
 public class SquirrelConfigImpl extends AbstractConfig implements ISquirrelConfig {
+    private String serverName = "Squirrel Chat";
+    private String serverDescription = "Next-gen, open-source and enterprise-ready chat platform";
+    private byte[] secret = null;
+    private boolean registerEnabled = true;
+    private boolean ipLogging = true;
+    private int maximumDiscriminatorsPerUsername = -1;
+    private long sessionTimeout = -1;
+
+    @Override
+    public String getServerName() {
+        return serverName;
+    }
+
+    @Override
+    public void setServerName(final String serverName) {
+        this.serverName = serverName;
+    }
+
+    @Override
+    public String getServerDescription() {
+        return serverDescription;
+    }
+
+    @Override
+    public void setServerDescription(final String serverDescription) {
+        this.serverDescription = serverDescription;
+    }
+
+    @Override
+    public byte[] getSecret() {
+        if (this.secret == null) {
+            this.regenerateSecret();
+        }
+        return secret;
+    }
+
+    @Override
+    public void setSecret(final byte[] secret) {
+        this.secret = secret;
+    }
+
+    @Override
+    public boolean isRegisterEnabled() {
+        return registerEnabled;
+    }
+
+    @Override
+    public void setRegisterEnabled(final boolean registerEnabled) {
+        this.registerEnabled = registerEnabled;
+    }
+
+    @Override
+    public boolean isIpLogging() {
+        return ipLogging;
+    }
+
+    @Override
+    public void setIpLogging(final boolean ipLogging) {
+        this.ipLogging = ipLogging;
+    }
+
+    @Override
+    public int getMaximumDiscriminatorsPerUsername() {
+        return maximumDiscriminatorsPerUsername;
+    }
+
+    @Override
+    public void setMaximumDiscriminatorsPerUsername(final int maximumDiscriminatorsPerUsername) {
+        this.maximumDiscriminatorsPerUsername = maximumDiscriminatorsPerUsername;
+    }
+
+    @Override
+    public long getSessionTimeout() {
+        return sessionTimeout;
+    }
+
+    @Override
+    public void setSessionTimeout(final long sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
+    }
+
+    @Override
+    public void regenerateSecret() {
+        final SecureRandom secureRandom = new SecureRandom();
+        final byte[] secret = new byte[128];
+        secureRandom.nextBytes(secret);
+        this.secret = secret;
+    }
 }

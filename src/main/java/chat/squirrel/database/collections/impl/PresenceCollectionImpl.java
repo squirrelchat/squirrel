@@ -29,11 +29,11 @@ package chat.squirrel.database.collections.impl;
 
 import chat.squirrel.database.collections.AbstractMemoryCollection;
 import chat.squirrel.database.collections.IPresenceCollection;
-import chat.squirrel.database.entities.IPresence;
+import chat.squirrel.database.entities.presences.IPresence;
 import chat.squirrel.database.memory.IMemoryAdapter;
 
 public class PresenceCollectionImpl extends AbstractMemoryCollection<IPresence> implements IPresenceCollection {
-    protected PresenceCollectionImpl(final IMemoryAdapter memoryAdapter, final String collectionName) {
+    public PresenceCollectionImpl(final IMemoryAdapter memoryAdapter, final String collectionName) {
         super(memoryAdapter, collectionName);
     }
 }

@@ -31,9 +31,10 @@ import chat.squirrel.database.collections.AbstractMongoCollection;
 import chat.squirrel.database.collections.IAuditCollection;
 import chat.squirrel.database.entities.IAudit;
 import com.mongodb.client.MongoCollection;
+import io.vertx.core.WorkerExecutor;
 
 public class AuditCollectionImpl extends AbstractMongoCollection<IAudit> implements IAuditCollection {
-    public AuditCollectionImpl(MongoCollection<IAudit> collection) {
-        super(collection);
+    public AuditCollectionImpl(final MongoCollection<IAudit> collection, final WorkerExecutor worker) {
+        super(collection, worker);
     }
 }

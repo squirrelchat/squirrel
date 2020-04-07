@@ -46,7 +46,7 @@ public abstract class AbstractGuildModule extends AbstractModule {
                         Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         if (guild == null) {
-            this.fail(ctx, 404, "Guild not found", null);
+            this.end(ctx, 404, "Guild not found", null);
             return null;
         }
 

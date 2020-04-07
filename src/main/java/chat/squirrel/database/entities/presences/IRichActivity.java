@@ -25,30 +25,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.auth;
+package chat.squirrel.database.entities.presences;
 
-import org.bson.types.ObjectId;
-
-public interface IAuthHandler {
-    /**
-     * Attempts a login.
-     * <b>NB: WIPES password ARRAY ON FAILURE AND SUCCESS</b>
-     *
-     * @param credential Can be either full email or full username with discriminator
-     * @param password   Clear text password. In a char array because JVM Security memes
-     * @return AuthResult
-     */
-    AuthResult attemptLogin(String credential, final char[] password);
-
-    /**
-     * Attempts to register a new account.
-     * <b>NB: WIPES password ARRAY ON FAILURE AND SUCCESS</b>
-     *
-     * @param email    The new user's email address
-     * @param password The clear text password. In a char array because JVM Security memes
-     * @return AuthResult
-     */
-    AuthResult register(String email, String username, final char[] password);
-
-    AuthResult confirmPassword(final ObjectId id, final char[] password);
+public interface IRichActivity extends IActivity {
 }

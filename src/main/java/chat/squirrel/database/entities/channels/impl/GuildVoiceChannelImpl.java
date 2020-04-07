@@ -36,13 +36,13 @@ public class GuildVoiceChannelImpl extends AbstractVoiceChannel implements IGuil
     private int order;
 
     @Override
-    public ObjectId getGuild() {
+    public ObjectId getGuildId() {
         return guildId;
     }
 
     @Override
-    public void setGuild(final ObjectId guild) {
-        this.guildId = guild;
+    public void setGuildId(final ObjectId guildId) {
+        this.guildId = guildId;
     }
 
     // TODO: Dedupe this garbage

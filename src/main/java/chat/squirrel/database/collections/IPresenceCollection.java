@@ -28,7 +28,7 @@
 package chat.squirrel.database.collections;
 
 import chat.squirrel.database.collections.impl.PresenceCollectionImpl;
-import chat.squirrel.database.entities.IPresence;
+import chat.squirrel.database.entities.presences.IPresence;
 
 @SquirrelCollection(collection = "presences", impl = PresenceCollectionImpl.class, storageMethod = SquirrelCollection.StorageMethod.MEMORY)
 public interface IPresenceCollection extends ICollection<IPresence> {

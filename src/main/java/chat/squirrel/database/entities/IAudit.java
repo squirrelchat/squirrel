@@ -43,6 +43,14 @@ public interface IAudit extends IEntity {
     void setType(AuditLogEntryType type);
 
     /**
+     * @return The custom audit log type. Always {@code null} for non-CUSTOM audits.
+     */
+    @Nullable
+    String getCustomType();
+
+    void setCustomType(String customType);
+
+    /**
      * @return ID this audit belongs to. {@code null} for instance audits.
      */
     @Nullable
@@ -106,6 +114,9 @@ public interface IAudit extends IEntity {
         MESSGE_UNPIN,
         // "Rich" messages
         MESSAGE_POLL_RESET,
-        MESSAGE_POLL_STOP
+        MESSAGE_POLL_STOP,
+
+        // For plugins
+        CUSTOM
     }
 }

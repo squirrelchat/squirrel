@@ -68,18 +68,18 @@ public class ModuleGuildChannels extends AbstractGuildModule {
 
         final JsonObject obj = ctx.getBodyAsJson();
         if (obj == null) {
-            this.fail(ctx, 400, "Invalid JSON payload", null);
+            this.end(ctx, 400, "Invalid JSON payload", null);
             return;
         }
 
         if (!(obj.containsKey("name") && obj.containsKey("voice"))) {
-            this.fail(ctx, 400, "Missing fields", null);
+            this.end(ctx, 400, "Missing fields", null);
             return;
         }
 
         final String name = obj.getString("name");
         if (name.length() < 3 || name.length() > 32) {
-            this.fail(ctx, 400, "name has invalid length", null);
+            this.end(ctx, 400, "name has invalid length", null);
             return;
         }
 
@@ -101,7 +101,7 @@ public class ModuleGuildChannels extends AbstractGuildModule {
     private void handleListChannels(final RoutingContext ctx) {
         final JsonObject obj = ctx.getBodyAsJson();
         if (obj == null) {
-            this.fail(ctx, 400, "Invalid JSON payload", null);
+            this.end(ctx, 400, "Invalid JSON payload", null);
             return;
         }
 
@@ -112,7 +112,7 @@ public class ModuleGuildChannels extends AbstractGuildModule {
                         Filters.eq(new ObjectId(ctx.pathParam("id"))));
 
         if (guild == null) {
-            this.fail(ctx, 404, "Guild not found", null);
+            this.end(ctx, 404, "Guild not found", null);
             return;
         }
 

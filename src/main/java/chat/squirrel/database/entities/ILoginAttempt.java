@@ -35,9 +35,9 @@ public interface ILoginAttempt extends IEntity {
         return new LoginAttemptImpl();
     }
 
-    boolean isSuccessful();
+    LoginAttemptResult getResult();
 
-    void setSuccessful(boolean successful);
+    void setResult(LoginAttemptResult result);
 
     ObjectId getUserId();
 
@@ -54,4 +54,10 @@ public interface ILoginAttempt extends IEntity {
     String getApproximateLocation();
 
     void setApproximateLocation(String approximateLocation);
+
+    enum LoginAttemptResult {
+        SUCCESS, TOTP_REQUIRED, HARDWARE_REQUIRED,
+        UNKNOWN_IP, INVALID_PASSWORD,
+        TOTP_FAILED, HARDWARE_FAILED
+    }
 }

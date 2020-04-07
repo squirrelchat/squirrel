@@ -71,7 +71,7 @@ dependencies {
     // implementation 'org.javadelight:delight-metrics:0.0.6'
 
     // Unit (lol like we're going to test this)
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.6.1'
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -115,6 +115,10 @@ compileJava {
 shadowJar {
     // noinspection GroovyAssignabilityCheck, GroovyAccessibility
     archiveVersion = versionObj.toString()
+}
+
+test {
+    useJUnitPlatform()
 }
 
 // Utils

@@ -31,9 +31,10 @@ import chat.squirrel.database.collections.AbstractMongoCollection;
 import chat.squirrel.database.collections.IChannelCollection;
 import chat.squirrel.database.entities.channels.IChannel;
 import com.mongodb.client.MongoCollection;
+import io.vertx.core.WorkerExecutor;
 
 public class ChannelCollectionImpl extends AbstractMongoCollection<IChannel> implements IChannelCollection {
-    public ChannelCollectionImpl(MongoCollection<IChannel> collection) {
-        super(collection);
+    public ChannelCollectionImpl(final MongoCollection<IChannel> collection, final WorkerExecutor worker) {
+        super(collection, worker);
     }
 }

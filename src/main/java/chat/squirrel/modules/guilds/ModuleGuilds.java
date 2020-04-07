@@ -49,18 +49,18 @@ public class ModuleGuilds extends AbstractGuildModule {
     private void handleCreate(final RoutingContext ctx) {
         final JsonObject obj = ctx.getBodyAsJson();
         if (obj == null) {
-            this.fail(ctx, 400, "Invalid JSON payload", null);
+            this.end(ctx, 400, "Invalid JSON payload", null);
             return;
         }
 
         if (!obj.containsKey("name")) {
-            this.fail(ctx, 400, "Incomplete payload", null);
+            this.end(ctx, 400, "Incomplete payload", null);
             return;
         }
 
         final String name = obj.getString("name");
         if (name.length() < 3 || name.length() > 32) {
-            this.fail(ctx, 400, "Field name has invalid length", null);
+            this.end(ctx, 400, "Field name has invalid length", null);
             return;
         }
 

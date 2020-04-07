@@ -31,9 +31,56 @@ import chat.squirrel.database.collections.AbstractMongoCollection;
 import chat.squirrel.database.collections.IGuildCollection;
 import chat.squirrel.database.entities.IGuild;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Field;
+import io.vertx.core.Promise;
+import io.vertx.core.WorkerExecutor;
+import org.bson.conversions.Bson;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
+import static com.mongodb.client.model.Accumulators.first;
+import static com.mongodb.client.model.Accumulators.push;
+import static com.mongodb.client.model.Aggregates.*;
 
 public class GuildCollectionImpl extends AbstractMongoCollection<IGuild> implements IGuildCollection {
-    public GuildCollectionImpl(MongoCollection<IGuild> collection) {
-        super(collection);
+    public GuildCollectionImpl(final MongoCollection<IGuild> collection, final WorkerExecutor worker) {
+        super(collection, worker);
+    }
+
+    @Override
+    public CompletionStage<IGuild> findGuildAggregated(Bson filters) {
+        final CompletableFuture<IGuild> future = new CompletableFuture<>();
+        this.getWorker().executeBlocking(
+                (Promise<IGuild> p) -> {
+                    // Thanks mongodb-compass for existing. Seriously.
+                    final List<Bson> aggregation = Arrays.asList(
+                            lookup("members", "_id", "guildId", "members"),
+                            unwind("$members"),
+                            lookup("users", "members.userId", "_id", "members.user"),
+                            unwind("$members.user"),
+                            group("$_id", first("_root", "$$ROOT"), push("members", "$members")),
+                            addFields(new Field<>("_root.members", "$members")),
+                            replaceRoot("$_root"),
+                            lookup("channels", "_id", "guildId", "channels"),
+                            lookup("roles", "_id", "guildId", "roles")
+                    );
+                    p.complete(getRawCollection().aggregate(aggregation).first());
+                },
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
+    }
+
+    @Override
+    public CompletionStage<Void> findMembersAndPresences(Bson filters) {
+        return null; // TODO
     }
 }

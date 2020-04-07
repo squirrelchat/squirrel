@@ -32,7 +32,6 @@ import org.bson.types.ObjectId;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
-
 public interface IMember extends IEntity {
     static IMember create() {
         return new MemberImpl();
@@ -49,6 +48,16 @@ public interface IMember extends IEntity {
     String getNickname();
 
     void setNickname(String nickname);
+
+    /**
+     * Populated only if the entity was fetched performing an aggregation.
+     *
+     * @return Associated user, or {@code null} if not aggregated during entity retrieval.
+     */
+    @Nullable
+    IUser getUser();
+
+    void setUser(IUser user);
 
     /**
      * Populated only if the entity was fetched performing an aggregation.

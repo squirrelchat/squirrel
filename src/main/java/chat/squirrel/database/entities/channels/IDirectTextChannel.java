@@ -27,11 +27,16 @@
 
 package chat.squirrel.database.entities.channels;
 
+import chat.squirrel.database.entities.channels.impl.DirectTextChannelImpl;
 import org.bson.types.ObjectId;
 
 import java.util.Collection;
 
 public interface IDirectTextChannel extends ITextChannel {
+    static IDirectTextChannel create() {
+        return new DirectTextChannelImpl();
+    }
+
     Collection<ObjectId> getParticipantIds();
 
     void setParticipantIds(Collection<ObjectId> participantIds);

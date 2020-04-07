@@ -25,35 +25,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.test;
+package chat.squirrel.database.entities.presences.impl;
 
-import chat.squirrel.Squirrel;
-import chat.squirrel.auth.MongoAuthHandler;
-import org.junit.Test;
+import chat.squirrel.database.entities.AbstractEntity;
+import chat.squirrel.database.entities.presences.IActivity;
+import chat.squirrel.database.entities.presences.IPresence;
 
-import static org.junit.Assert.*;
+import javax.annotation.Nullable;
 
-public class TestFormatting {
-    @Test
-    public void testDiscriminator() {
-        assertEquals("0069", Squirrel.formatDiscriminator(69));
-        assertEquals("0420", Squirrel.formatDiscriminator(420));
-        assertEquals("0121", Squirrel.formatDiscriminator(121));
-        assertEquals("0000", Squirrel.formatDiscriminator(0));
-        assertEquals("0001", Squirrel.formatDiscriminator(1));
+public class PresenceImpl extends AbstractEntity implements IPresence {
+    private OnlineStatus onlineStatus;
+    private IActivity activity;
+
+    @Override
+    public OnlineStatus getOnlineStatus() {
+        return onlineStatus;
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testDiscriminatorFail() {
-        Squirrel.formatDiscriminator(99999);
+    @Override
+    public void setOnlineStatus(OnlineStatus onlineStatus) {
+        this.onlineStatus = onlineStatus;
     }
 
-    @Test
-    public void testUsernames() {
-        assertTrue(MongoAuthHandler.isValidUsername("Charles Hatant"));
-        assertFalse(MongoAuthHandler.isValidUsername("    owo spaces \t"));
-        assertFalse(MongoAuthHandler.isValidUsername("\bo\n\t\rols"));
-        assertFalse(MongoAuthHandler.isValidUsername("hayyaya#0003"));
-        assertFalse(MongoAuthHandler.isValidUsername("line\nb\reak"));
+    @Nullable
+    @Override
+    public IActivity getActivity() {
+        return activity;
+    }
+
+    @Override
+    public void setActivity(IActivity activity) {
+        this.activity = activity;
     }
 }

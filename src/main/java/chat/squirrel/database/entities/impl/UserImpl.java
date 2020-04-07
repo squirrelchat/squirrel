@@ -35,20 +35,19 @@ import xyz.bowser65.tokenize.IAccount;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
-/**
- * Server wide user account
- */
 public class UserImpl extends AbstractEntity implements IAccount, IUser {
     private String username, password, email, avatar, biography, customEmail;
     private int discriminator, flags;
     private long tokensValidSince;
-    private boolean emailVerified, locked, disabled, banned, deleted, mfaMobile, mfaHardware;
+    private boolean emailVerified, disabled, banned, deleted, mfaMobile, mfaHardware;
     private Collection<ObjectId> badgeIds;
     private Map<String, String> tokens;
     private Collection<String> ips;
     private IUserSettings userSettings;
+    private Date deletionScheduledAt;
 
     // Aggregated entities
     private Collection<IBadge> badges;
@@ -155,16 +154,6 @@ public class UserImpl extends AbstractEntity implements IAccount, IUser {
     }
 
     @Override
-    public boolean isLocked() {
-        return locked;
-    }
-
-    @Override
-    public void setLocked(final boolean locked) {
-        this.locked = locked;
-    }
-
-    @Override
     public boolean isDisabled() {
         return disabled;
     }
@@ -265,6 +254,16 @@ public class UserImpl extends AbstractEntity implements IAccount, IUser {
     @Override
     public void setBadges(final Collection<IBadge> badges) {
         this.badges = badges;
+    }
+
+    @Override
+    public Date getDeletionScheduledAt() {
+        return deletionScheduledAt;
+    }
+
+    @Override
+    public void setDeletionScheduledAt(Date deletionScheduledAt) {
+        this.deletionScheduledAt = deletionScheduledAt;
     }
 
     @BsonIgnore

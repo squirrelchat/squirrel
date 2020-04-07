@@ -54,7 +54,11 @@ public class WebExceptionHandler implements Handler<RoutingContext> {
         obj.put("error", event.response().getStatusCode());
         event.failure().printStackTrace();
         // MetricsManager.getInstance().happened("error.statuscode." + event.response().getStatusCode());
-        LOG.error("An unknown error has been caught in routing: " + obj.encode());
+        LOG.error("An unknown error occurred handling an HTTP request", event.failure());
+        LOG.error("  - Route: " + event.request().method() + " " + event.normalisedPath());
+        if (event.getBody() != null) {
+            LOG.error("  - Request body: " + event.getBody().toJsonObject());
+        }
         event.response().end(obj.toBuffer());
     }
 }

@@ -25,10 +25,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package chat.squirrel.database.entities.impl;
+package chat.squirrel.database.entities.presences;
 
-import chat.squirrel.database.entities.AbstractEntity;
-import chat.squirrel.database.entities.IPresence;
+import chat.squirrel.database.entities.IEntity;
 
-public class PresenceImpl extends AbstractEntity implements IPresence {
+public interface IActivity extends IEntity {
 }

@@ -35,6 +35,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.result.UpdateResult;
 import io.vertx.core.Promise;
+import io.vertx.core.WorkerExecutor;
 import org.bson.BsonDocument;
 import org.bson.BsonDocumentWrapper;
 import org.bson.BsonString;
@@ -43,8 +44,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 public class ConfigCollectionImpl extends AbstractMongoCollection<IConfig> implements IConfigCollection {
-    public ConfigCollectionImpl(MongoCollection<IConfig> collection) {
-        super(collection);
+    public ConfigCollectionImpl(final MongoCollection<IConfig> collection, final WorkerExecutor worker) {
+        super(collection, worker);
     }
 
     @Override
@@ -67,12 +68,19 @@ public class ConfigCollectionImpl extends AbstractMongoCollection<IConfig> imple
         final CompletableFuture<UpdateResult> future = new CompletableFuture<>();
         this.getWorker().executeBlocking(
                 (Promise<UpdateResult> p) -> {
+                    String clazz = config.getClass().getCanonicalName();
+                    for (final Class<?> interfaceCls : config.getClass().getInterfaces()) {
+                        if (interfaceCls != IConfig.class && interfaceCls.isAssignableFrom(IConfig.class)) {
+                            clazz = config.getClass().getCanonicalName();
+                            break;
+                        }
+                    }
                     final UpdateResult result = getRawCollection().withDocumentClass(BsonDocument.class)
                             .replaceOne(
                                     Filters.eq("_class", config.getClass().getCanonicalName()),
                                     BsonDocumentWrapper
                                             .asBsonDocument(config, getRawCollection().getCodecRegistry())
-                                            .append("_class", new BsonString(config.getClass().getCanonicalName())),
+                                            .append("_class", new BsonString(clazz)),
                                     new ReplaceOptions().upsert(true)
                             );
                     p.complete(result);
