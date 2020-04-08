@@ -48,7 +48,7 @@ public enum FileType { // TODO: Add more types and add their magic bytes
     private final byte[] magicBytes;
     private final String extension;
 
-    FileType(byte[] magicBytes, String extension) {
+    FileType(final byte[] magicBytes, final String extension) {
         this.magicBytes = magicBytes;
         this.extension = extension;
     }

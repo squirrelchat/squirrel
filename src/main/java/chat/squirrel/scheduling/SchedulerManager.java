@@ -34,8 +34,8 @@ import java.util.LinkedList;
 
 public class SchedulerManager implements Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(SchedulerManager.class);
-    private LinkedList<ITask<?>> fifo = new LinkedList<>();
-    private Thread executorThread;
+    private final LinkedList<ITask<?>> fifo = new LinkedList<>();
+    private final Thread executorThread;
     private long normalTime = 16;
 
     public SchedulerManager() {
@@ -51,7 +51,7 @@ public class SchedulerManager implements Runnable {
         executorThread.interrupt();
     }
 
-    public void addTask(ITask<?> task) {
+    public void addTask(final ITask<?> task) {
         this.fifo.offer(task);
     } // TODO: Planned tasks; Repeated tasks
 
@@ -85,7 +85,7 @@ public class SchedulerManager implements Runnable {
                 }
 
             }
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             // Yeet
         }
     }

@@ -54,17 +54,17 @@ public class ModuleGuildRoles extends AbstractCrudChildEntity<IRole, IGuild> {
     }
 
     @Override
-    protected boolean hasPermission(RoutingContext ctx, CrudContext context) {
+    protected boolean hasPermission(final RoutingContext ctx, final CrudContext context) {
         return false;
     }
 
     @Override
-    protected IRole createEntity(RoutingContext ctx) {
+    protected IRole createEntity(final RoutingContext ctx) {
         return null;
     }
 
     @Override
-    protected Bson composeUpdate(RoutingContext ctx) {
+    protected Bson composeUpdate(final RoutingContext ctx) {
         return null;
     }
 }

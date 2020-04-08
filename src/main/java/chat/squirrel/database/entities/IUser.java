@@ -41,10 +41,12 @@ public interface IUser extends IPartialUser, IAccount {
         return new UserImpl();
     }
 
+    @Override
     String getUsername();
 
     void setUsername(String username);
 
+    @Override
     int getDiscriminator();
 
     void setDiscriminator(int discriminator);
@@ -73,6 +75,7 @@ public interface IUser extends IPartialUser, IAccount {
      *
      * @return The flags integer of this user
      */
+    @Override
     int getFlags();
 
     void setFlags(int flags);
@@ -89,6 +92,7 @@ public interface IUser extends IPartialUser, IAccount {
 
     void setEmail(String email);
 
+    @Override
     String getAvatar();
 
     void setAvatar(String avatar);

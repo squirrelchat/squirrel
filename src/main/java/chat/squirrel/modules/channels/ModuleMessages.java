@@ -55,7 +55,7 @@ public class ModuleMessages extends AbstractCrudChildEntity<IMessage, IChannel> 
 
     @Override
     @SuppressWarnings("DuplicateBranchesInSwitch")
-    protected boolean hasPermission(RoutingContext ctx, CrudContext context) {
+    protected boolean hasPermission(final RoutingContext ctx, final CrudContext context) {
         switch (context) {
             case CREATE:
                 return true; // TODO: Has permission?
@@ -71,7 +71,7 @@ public class ModuleMessages extends AbstractCrudChildEntity<IMessage, IChannel> 
     }
 
     @Override
-    protected IMessage createEntity(RoutingContext ctx) {
+    protected IMessage createEntity(final RoutingContext ctx) {
         final JsonObject obj = ctx.getBodyAsJson();
         if (obj == null || !obj.containsKey("content")) {
             return null;
@@ -90,7 +90,7 @@ public class ModuleMessages extends AbstractCrudChildEntity<IMessage, IChannel> 
     }
 
     @Override
-    protected Bson composeUpdate(RoutingContext ctx) {
+    protected Bson composeUpdate(final RoutingContext ctx) {
         return null; // TODO: Update message
     }
 }

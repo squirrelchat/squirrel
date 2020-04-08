@@ -103,7 +103,7 @@ public class LocalUploadManager implements IUploadManager {
             BufferedImage image;
             try {
                 image = ImageIO.read(action.getInput());
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 LOG.error("Failed to read image", e);
                 res.setErrorReason(ActionResult.ErrorReason.CORRUPTED_FILE);
                 return res;
@@ -126,7 +126,7 @@ public class LocalUploadManager implements IUploadManager {
 
             try {
                 ImageIO.write(image, "png", new File(folder, id + ".png"));
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 LOG.error("Failed to save image", e);
                 res.setErrorReason(ActionResult.ErrorReason.INTERNAL_ERROR);
                 return res;
@@ -237,7 +237,7 @@ public class LocalUploadManager implements IUploadManager {
         if (file.isDirectory()) {
             final File[] files = file.listFiles();
             if (files != null) {
-                for (File f : files) {
+                for (final File f : files) {
                     if (!delete(f)) {
                         return false;
                     }

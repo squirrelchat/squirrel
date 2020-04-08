@@ -58,7 +58,7 @@ public class ModuleGuildChannels extends AbstractCrudChildEntity<IChannel, IGuil
 
     @Override
     @SuppressWarnings("DuplicateBranchesInSwitch")
-    protected boolean hasPermission(RoutingContext ctx, CrudContext context) {
+    protected boolean hasPermission(final RoutingContext ctx, final CrudContext context) {
         switch (context) {
             case CREATE:
                 return true; // TODO: Has permission?
@@ -74,7 +74,7 @@ public class ModuleGuildChannels extends AbstractCrudChildEntity<IChannel, IGuil
     }
 
     @Override
-    protected IChannel createEntity(RoutingContext ctx) {
+    protected IChannel createEntity(final RoutingContext ctx) {
         final JsonObject obj = ctx.getBodyAsJson();
         if (obj == null || !obj.containsKey("name")) {
             return null;
@@ -97,7 +97,7 @@ public class ModuleGuildChannels extends AbstractCrudChildEntity<IChannel, IGuil
     }
 
     @Override
-    protected Bson composeUpdate(RoutingContext ctx) {
+    protected Bson composeUpdate(final RoutingContext ctx) {
         return null; // TODO: Update channels
     }
 }

@@ -262,7 +262,7 @@ public class UserImpl extends AbstractEntity implements IAccount, IUser {
     }
 
     @Override
-    public void setDeletionScheduledAt(Date deletionScheduledAt) {
+    public void setDeletionScheduledAt(final Date deletionScheduledAt) {
         this.deletionScheduledAt = deletionScheduledAt;
     }
 

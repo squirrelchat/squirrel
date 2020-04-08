@@ -46,7 +46,7 @@ public class RoleImpl extends AbstractEntity implements IRole {
     }
 
     @Override
-    public void setGuildId(ObjectId guildId) {
+    public void setGuildId(final ObjectId guildId) {
         this.guildId = guildId;
     }
 

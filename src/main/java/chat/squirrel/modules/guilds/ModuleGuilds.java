@@ -52,7 +52,7 @@ public class ModuleGuilds extends AbstractCrudModule<IGuild> {
     }
 
     @Override
-    protected boolean hasPermission(RoutingContext ctx, AbstractCrudModule.CrudContext context) {
+    protected boolean hasPermission(final RoutingContext ctx, final AbstractCrudModule.CrudContext context) {
         switch (context) {
             case CREATE:
                 return true; // TODO: Max guild cap
@@ -68,7 +68,7 @@ public class ModuleGuilds extends AbstractCrudModule<IGuild> {
     }
 
     @Override
-    protected IGuild createEntity(RoutingContext ctx) {
+    protected IGuild createEntity(final RoutingContext ctx) {
         final JsonObject obj = ctx.getBodyAsJson();
         if (obj == null || !obj.containsKey("name")) {
             return null;
@@ -92,7 +92,7 @@ public class ModuleGuilds extends AbstractCrudModule<IGuild> {
     }
 
     @Override
-    protected CompletionStage<InsertOneResult> insertEntity(IGuild entity) {
+    protected CompletionStage<InsertOneResult> insertEntity(final IGuild entity) {
         final IMember member = IMember.create();
         member.setUserId(entity.getOwnerId());
         member.setGuildId(entity.getId());

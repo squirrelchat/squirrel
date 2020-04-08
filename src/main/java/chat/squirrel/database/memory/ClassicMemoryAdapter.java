@@ -36,27 +36,27 @@ import java.util.concurrent.CompletionStage;
 // TODO
 public class ClassicMemoryAdapter implements IMemoryAdapter { // Aww memowwy NOM NOM NOM NOOOOOOOM
     @Override
-    public CompletionStage<BsonDocument> getEntity(String key) {
+    public CompletionStage<BsonDocument> getEntity(final String key) {
         return null;
     }
 
     @Override
-    public CompletionStage<List<KeyValue<String, BsonDocument>>> getEntities(String... keys) {
+    public CompletionStage<List<KeyValue<String, BsonDocument>>> getEntities(final String... keys) {
         return null;
     }
 
     @Override
-    public CompletionStage<Boolean> setEntity(String key, BsonDocument document) {
+    public CompletionStage<Boolean> setEntity(final String key, final BsonDocument document) {
         return null;
     }
 
     @Override
-    public CompletionStage<Long> deleteOne(String key) {
+    public CompletionStage<Long> deleteOne(final String key) {
         return null;
     }
 
     @Override
-    public CompletionStage<Long> deleteMany(String... keys) {
+    public CompletionStage<Long> deleteMany(final String... keys) {
         return null;
     }
 }

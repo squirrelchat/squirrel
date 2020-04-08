@@ -53,7 +53,7 @@ public abstract class AbstractCrudChildEntity<T extends IEntity, P extends IEnti
     }
 
     @Override
-    protected void registerCrud(String route) {
+    protected void registerCrud(final String route) {
         super.registerCrud(route);
         this.registerAuthedRoute(HttpMethod.GET, route, this::handleReadAll);
     }

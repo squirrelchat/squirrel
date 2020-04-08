@@ -48,7 +48,7 @@ public class UploadAction {
         return input;
     }
 
-    public void setInput(InputStream input) {
+    public void setInput(final InputStream input) {
         this.input = input;
     }
 
@@ -56,7 +56,7 @@ public class UploadAction {
         return filename;
     }
 
-    public void setFilename(String filename) {
+    public void setFilename(final String filename) {
         this.filename = filename;
     }
 
@@ -64,7 +64,7 @@ public class UploadAction {
         return bucket;
     }
 
-    public void setBucket(Bucket bucket) {
+    public void setBucket(final Bucket bucket) {
         this.bucket = bucket;
     }
 
@@ -72,7 +72,7 @@ public class UploadAction {
         return resourceId;
     }
 
-    public void setResourceId(ObjectId resourceId) {
+    public void setResourceId(final ObjectId resourceId) {
         this.resourceId = resourceId;
     }
 
@@ -80,7 +80,7 @@ public class UploadAction {
         return maxFileSize;
     }
 
-    public void setMaxFileSize(int maxFileSize) {
+    public void setMaxFileSize(final int maxFileSize) {
         if (maxFileSize < 0) throw new IllegalArgumentException();
         this.maxFileSize = maxFileSize;
     }
@@ -89,7 +89,7 @@ public class UploadAction {
         return allowedTypes;
     }
 
-    public void setAllowedTypes(FileType... allowedTypes) {
+    public void setAllowedTypes(final FileType... allowedTypes) {
         this.allowedTypes = allowedTypes;
     }
 
@@ -97,7 +97,7 @@ public class UploadAction {
         return allowAnimated;
     }
 
-    public void setAllowAnimated(boolean allowAnimated) {
+    public void setAllowAnimated(final boolean allowAnimated) {
         this.allowAnimated = allowAnimated;
     }
 
@@ -105,7 +105,7 @@ public class UploadAction {
         return resizeWidth;
     }
 
-    public void setResizeWidth(int resizeWidth) {
+    public void setResizeWidth(final int resizeWidth) {
         if (resizeWidth < 0) throw new IllegalArgumentException();
         this.resizeWidth = resizeWidth;
     }
@@ -114,7 +114,7 @@ public class UploadAction {
         return ratio;
     }
 
-    public void setRatio(int w, int h) {
+    public void setRatio(final int w, final int h) {
         if (w < 0 || h < 0) throw new IllegalArgumentException();
         this.ratio = new int[]{w, h};
     }
