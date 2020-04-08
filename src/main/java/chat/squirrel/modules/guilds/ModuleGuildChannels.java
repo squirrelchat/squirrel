@@ -28,132 +28,76 @@
 package chat.squirrel.modules.guilds;
 
 import chat.squirrel.Squirrel;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
-import chat.squirrel.database.entities.IAudit.AuditLogEntryType;
+import chat.squirrel.database.collections.IChannelCollection;
+import chat.squirrel.database.collections.IGuildCollection;
 import chat.squirrel.database.entities.IGuild;
-import chat.squirrel.database.entities.IUser;
 import chat.squirrel.database.entities.channels.IChannel;
-import chat.squirrel.database.entities.channels.impl.GuildTextChannelImpl;
-import chat.squirrel.database.entities.channels.impl.GuildVoiceChannelImpl;
-import com.mongodb.client.model.Filters;
+import chat.squirrel.database.entities.channels.IGuildChannel;
+import chat.squirrel.database.entities.channels.IGuildTextChannel;
+import chat.squirrel.database.entities.channels.IGuildVoiceChannel;
+import chat.squirrel.modules.AbstractCrudChildEntity;
 import io.vertx.core.http.HttpMethod;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-import org.bson.types.ObjectId;
+import org.bson.conversions.Bson;
 
-public class ModuleGuildChannels extends AbstractGuildModule {
-    @Override
-    public void initialize() {
-        this.registerAuthedRoute(HttpMethod.POST, "/guilds/:id/channels", this::handleCreateChannel);
-        this.registerAuthedRoute(HttpMethod.GET, "/guilds/:id/channels", this::handleListChannels);
-        this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id/channels", this::notImplemented); // Channel order
-        this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id/channels/:chanId", this::notImplemented);
-        this.registerAuthedRoute(HttpMethod.DELETE, "/guilds/:id/channels/:chanId", this::handleDeleteChannel);
+public class ModuleGuildChannels extends AbstractCrudChildEntity<IChannel, IGuild> {
+    public ModuleGuildChannels() {
+        super(
+                Squirrel.getInstance().getDatabaseManager().getCollection(IChannelCollection.class),
+                Squirrel.getInstance().getDatabaseManager().getCollection(IGuildCollection.class),
+                "guildId", "guild_id"
+        );
     }
 
-    private void handleCreateChannel(final RoutingContext ctx) {
-        final IUser user = this.getRequester(ctx);
-        final IGuild guild = this.getGuild(ctx);
+    @Override
+    public void initialize() {
+        registerCrud("/guilds/:guild_id/channels");
+        this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:guild_id/channels", this::notImplemented); // Channel order
+    }
 
-        if (guild == null) {
-            return; // Payload already handled; No extra processing required
+    @Override
+    @SuppressWarnings("DuplicateBranchesInSwitch")
+    protected boolean hasPermission(RoutingContext ctx, CrudContext context) {
+        switch (context) {
+            case CREATE:
+                return true; // TODO: Has permission?
+            case READ:
+                return true; // TODO: Has permission?
+            case UPDATE:
+                return true; // TODO: Has permissions?
+            case DELETE:
+                return ctx.<IGuild>get("parent").getOwnerId().equals(getRequester(ctx).getId());
+            default:
+                return false;
         }
+    }
 
-        // final IMember member = guild.getMemberForUser(user.getId());
-        // if (member.hasEffectivePermission(Permissions.GUILD_MANAGE_CHANNELS)) {
-        //     this.fail(ctx, 403, "Missing permissions", null);
-        //     return;
-        // }
-
+    @Override
+    protected IChannel createEntity(RoutingContext ctx) {
         final JsonObject obj = ctx.getBodyAsJson();
-        if (obj == null) {
-            this.end(ctx, 400, "Invalid JSON payload", null);
-            return;
-        }
-
-        if (!(obj.containsKey("name") && obj.containsKey("voice"))) {
-            this.end(ctx, 400, "Missing fields", null);
-            return;
+        if (obj == null || !obj.containsKey("name")) {
+            return null;
         }
 
         final String name = obj.getString("name");
-        if (name.length() < 3 || name.length() > 32) {
-            this.end(ctx, 400, "name has invalid length", null);
-            return;
+        if (name.length() < 4 || name.length() > 32) {
+            return null;
         }
 
-        final boolean voiceChan = obj.getBoolean("voice", false);
-        final IChannel channel;
-        if (voiceChan) {
-            channel = new GuildVoiceChannelImpl();
+        IGuildChannel channel;
+        if (ctx.getBodyAsJson().getBoolean("voice", false)) {
+            channel = IGuildVoiceChannel.create();
         } else {
-            channel = new GuildTextChannelImpl();
+            channel = IGuildTextChannel.create();
         }
-
-        channel.setName(name); // @todo: Take into account other payload fields (?)
-
-        this.submitAudit(guild.getId(), user.getId(), AuditLogEntryType.CHANNEL_CREATE);
-
-        ctx.response().end(channel.toJson().encode());
+        channel.setName(name);
+        channel.setGuildId(ctx.<IGuild>get("parent").getId());
+        return channel;
     }
 
-    private void handleListChannels(final RoutingContext ctx) {
-        final JsonObject obj = ctx.getBodyAsJson();
-        if (obj == null) {
-            this.end(ctx, 400, "Invalid JSON payload", null);
-            return;
-        }
-
-        final IUser user = this.getRequester(ctx);
-        final IGuild guild = Squirrel.getInstance() // TODO: Aggregation
-                .getBoomerDatabaseManager()
-                .findFirstEntity(IGuild.class, SquirrelCollection.GUILDS,
-                        Filters.eq(new ObjectId(ctx.pathParam("id"))));
-
-        if (guild == null) {
-            this.end(ctx, 404, "Guild not found", null);
-            return;
-        }
-
-        // final IMember member = guild.getMemberForUser(user.getId());
-        // if (member == null) {
-        //     this.fail(ctx, 404, "Guild not found", null);
-        //     return;
-        // }
-
-        final JsonArray out = new JsonArray();
-
-        // try {
-        //     for (final IChannel chan : guild.getRealChannels().get()) { // Channel-chan (#^.^#)
-        //         final JsonObject jsonChan = new JsonObject();
-        //         jsonChan.put("name", chan.getName());
-        //         jsonChan.put("id", chan.getId().toHexString());
-        //         jsonChan.put("voice", chan instanceof IVoiceChannel);
-        //         out.add(jsonChan);
-        //     }
-        // } catch (InterruptedException | ExecutionException e) { // Shouldn't be called
-        //     e.printStackTrace();
-        // }
-
-        ctx.response().end(out.encode());
-    }
-
-    private void handleDeleteChannel(final RoutingContext ctx) {
-        final IUser user = this.getRequester(ctx);
-        final IGuild guild = this.getGuild(ctx);
-        if (guild == null) {
-            // noinspection UnnecessaryReturnStatement
-            return; // Payload already handled; No extra processing required
-        }
-
-        // final IMember member = guild.getMemberForUser(user.getId());
-        // if (member.hasEffectivePermission(Permissions.GUILD_MANAGE_CHANNELS)) {
-        //     this.fail(ctx, 403, "Missing permissions", null);
-        //     // noinspection UnnecessaryReturnStatement
-        //     return;
-        // }
-
-        // TODO
+    @Override
+    protected Bson composeUpdate(RoutingContext ctx) {
+        return null; // TODO: Update channels
     }
 }

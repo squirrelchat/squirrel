@@ -29,10 +29,6 @@ package chat.squirrel.database.entities.channels.impl;
 
 import chat.squirrel.database.entities.AbstractEntity;
 import chat.squirrel.database.entities.channels.IChannel;
-import org.bson.types.ObjectId;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 public abstract class AbstractChannel extends AbstractEntity implements IChannel {
     private String name;
@@ -45,12 +41,5 @@ public abstract class AbstractChannel extends AbstractEntity implements IChannel
     @Override
     public void setName(final String name) {
         this.name = name;
-    }
-
-    @Override
-    public Future<Boolean> hasAccess(final ObjectId user) {
-        return CompletableFuture.supplyAsync(() -> {
-            return true; // TODO: Actual fucking perm checks angry
-        });
     }
 }

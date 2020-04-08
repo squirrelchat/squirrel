@@ -29,52 +29,81 @@ package chat.squirrel.modules.guilds;
 
 import chat.squirrel.Squirrel;
 import chat.squirrel.database.collections.IGuildCollection;
+import chat.squirrel.database.collections.IMemberCollection;
 import chat.squirrel.database.entities.IGuild;
 import chat.squirrel.database.entities.IMember;
-import chat.squirrel.database.entities.IUser;
-import io.vertx.core.http.HttpMethod;
+import chat.squirrel.modules.AbstractCrudModule;
+import com.mongodb.client.result.InsertOneResult;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+import org.bson.conversions.Bson;
 
-import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
-public class ModuleGuilds extends AbstractGuildModule {
-    @Override
-    public void initialize() {
-        this.registerAuthedRoute(HttpMethod.POST, "/guilds", this::handleCreate);
-        this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id", this::notImplemented);
-        this.registerAuthedRoute(HttpMethod.DELETE, "/guilds/:id", this::notImplemented);
+public class ModuleGuilds extends AbstractCrudModule<IGuild> {
+    public ModuleGuilds() {
+        super(Squirrel.getInstance().getDatabaseManager().getCollection(IGuildCollection.class));
     }
 
-    private void handleCreate(final RoutingContext ctx) {
-        final JsonObject obj = ctx.getBodyAsJson();
-        if (obj == null) {
-            this.end(ctx, 400, "Invalid JSON payload", null);
-            return;
-        }
+    @Override
+    public void initialize() {
+        registerCrud("/guilds");
+    }
 
-        if (!obj.containsKey("name")) {
-            this.end(ctx, 400, "Incomplete payload", null);
-            return;
+    @Override
+    protected boolean hasPermission(RoutingContext ctx, AbstractCrudModule.CrudContext context) {
+        switch (context) {
+            case CREATE:
+                return true; // TODO: Max guild cap
+            case READ:
+                return true; // TODO: Is member?
+            case UPDATE:
+                return true; // TODO: Has permissions?
+            case DELETE:
+                return ctx.<IGuild>get("entity").getOwnerId().equals(getRequester(ctx).getId());
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    protected IGuild createEntity(RoutingContext ctx) {
+        final JsonObject obj = ctx.getBodyAsJson();
+        if (obj == null || !obj.containsKey("name")) {
+            return null;
         }
 
         final String name = obj.getString("name");
-        if (name.length() < 3 || name.length() > 32) {
-            this.end(ctx, 400, "Field name has invalid length", null);
-            return;
+        if (name.length() < 2 || name.length() > 32) {
+            return null;
         }
 
-        final IUser user = this.getRequester(ctx);
-        final IGuild newGuild = IGuild.create();
-        final IMember owner = IMember.create();
-        owner.setUserId(user.getId());
-        newGuild.setName(name);
-        newGuild.setMembers(Collections.singleton(owner));
-        newGuild.setOwnerId(user.getId());
+        final IGuild guild = IGuild.create();
+        guild.setName(name);
+        guild.setOwnerId(getRequester(ctx).getId());
+        return guild;
+    }
 
-        Squirrel.getInstance().getDatabaseManager().getCollection(IGuildCollection.class).insertOne(newGuild);
+    @Override
+    protected Bson composeUpdate(RoutingContext ctx) {
+        // TODO: Update guild
+        return null;
+    }
 
-        // MetricsManager.getInstance().happened("guild.create");
-        ctx.response().setStatusCode(201).end(newGuild.toJson().encode());
+    @Override
+    protected CompletionStage<InsertOneResult> insertEntity(IGuild entity) {
+        final IMember member = IMember.create();
+        member.setUserId(entity.getOwnerId());
+        member.setGuildId(entity.getId());
+
+        // TODO: Add default channels
+        final CompletableFuture<InsertOneResult> future = new CompletableFuture<>();
+        final CompletableFuture<InsertOneResult> futureGuild = super.insertEntity(entity).toCompletableFuture();
+        final CompletableFuture<InsertOneResult> futureMember = Squirrel.getInstance()
+                .getDatabaseManager().getCollection(IMemberCollection.class).insertOne(member)
+                .toCompletableFuture();
+        CompletableFuture.allOf(futureGuild, futureMember).thenAccept(v -> future.complete(futureGuild.getNow(null)));
+        return future;
     }
 }

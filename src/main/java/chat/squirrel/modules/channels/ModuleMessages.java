@@ -27,26 +27,70 @@
 
 package chat.squirrel.modules.channels;
 
-import io.vertx.core.http.HttpMethod;
+import chat.squirrel.Squirrel;
+import chat.squirrel.database.collections.IChannelCollection;
+import chat.squirrel.database.collections.IMessageCollection;
+import chat.squirrel.database.entities.channels.IChannel;
+import chat.squirrel.database.entities.messages.IMessage;
+import chat.squirrel.database.entities.messages.ITextMessage;
+import chat.squirrel.modules.AbstractCrudChildEntity;
+import chat.squirrel.utils.Sanitizer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+import org.bson.conversions.Bson;
 
-public class ModuleMessages extends AbstractChannelModule {
-    @Override
-    public void initialize() {
-        this.registerAuthedRoute(HttpMethod.POST, "/channels/:id/messages", this::sendMessage);
+public class ModuleMessages extends AbstractCrudChildEntity<IMessage, IChannel> {
+    public ModuleMessages() {
+        super(
+                Squirrel.getInstance().getDatabaseManager().getCollection(IMessageCollection.class),
+                Squirrel.getInstance().getDatabaseManager().getCollection(IChannelCollection.class),
+                "channelId", "channel_id"
+        );
     }
 
-    private void sendMessage(final RoutingContext ctx) { // TODO
-        final JsonObject obj = ctx.getBodyAsJson();
-        final String content = obj.getString("content");
+    @Override
+    public void initialize() {
+        registerCrud("/channels/:channel_id/messages");
+    }
 
-        if (content == null) {
-            this.end(ctx, 400, "Missing message content", null);
-            return;
+    @Override
+    @SuppressWarnings("DuplicateBranchesInSwitch")
+    protected boolean hasPermission(RoutingContext ctx, CrudContext context) {
+        switch (context) {
+            case CREATE:
+                return true; // TODO: Has permission?
+            case READ:
+                return true; // TODO: Has permission?
+            case UPDATE:
+                return ctx.<IMessage>get("entity").getAuthorId().equals(getRequester(ctx).getId());
+            case DELETE:
+                return true; // TODO: Has permissions?
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    protected IMessage createEntity(RoutingContext ctx) {
+        final JsonObject obj = ctx.getBodyAsJson();
+        if (obj == null || !obj.containsKey("content")) {
+            return null;
         }
 
-        // final IChannel channel = getChannel(ctx);
-        ctx.response().end();
+        final String content = Sanitizer.sanitize(obj.getString("content"), true);
+        if (content.length() == 0 || content.length() > 2000) {
+            return null;
+        }
+
+        final ITextMessage message = ITextMessage.create();
+        message.setAuthorId(getRequester(ctx).getId());
+        message.setChannelId(ctx.<IChannel>get("parent").getId());
+        message.setContents(content);
+        return message;
+    }
+
+    @Override
+    protected Bson composeUpdate(RoutingContext ctx) {
+        return null; // TODO: Update message
     }
 }

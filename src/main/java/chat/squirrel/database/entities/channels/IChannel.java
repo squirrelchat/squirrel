@@ -28,14 +28,9 @@
 package chat.squirrel.database.entities.channels;
 
 import chat.squirrel.database.entities.IEntity;
-import org.bson.types.ObjectId;
-
-import java.util.concurrent.Future;
 
 public interface IChannel extends IEntity {
     void setName(String name);
 
     String getName();
-
-    Future<Boolean> hasAccess(ObjectId user);
 }

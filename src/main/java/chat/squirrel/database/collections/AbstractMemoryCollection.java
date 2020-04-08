@@ -125,6 +125,11 @@ public abstract class AbstractMemoryCollection<T extends IEntity> implements ICo
 
     // UPDATE
     @Override
+    public CompletionStage<T> findAndUpdateEntity(final Bson filter, final Bson ops) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public CompletionStage<UpdateResult> updateEntity(final Bson filter, final Bson ops) {
         throw new UnsupportedOperationException();
     }

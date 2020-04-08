@@ -27,15 +27,10 @@
 
 package chat.squirrel.database.entities.channels.impl;
 
-import chat.squirrel.Squirrel;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
-import chat.squirrel.database.entities.IUser;
 import chat.squirrel.database.entities.channels.IDirectTextChannel;
-import com.mongodb.client.model.Filters;
 import org.bson.types.ObjectId;
 
 import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
 
 public class DirectTextChannelImpl extends AbstractTextChannel implements IDirectTextChannel {
     private Collection<ObjectId> participantIds;
@@ -48,17 +43,5 @@ public class DirectTextChannelImpl extends AbstractTextChannel implements IDirec
     @Override
     public void setParticipantIds(final Collection<ObjectId> participantIds) {
         this.participantIds = participantIds;
-    }
-
-    public CompletableFuture<IUser> getRealFirstParticipant() {
-        return CompletableFuture.supplyAsync(() -> Squirrel.getInstance()
-                .getBoomerDatabaseManager()
-                .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(/* getFirstParticipant() */ null)));
-    }
-
-    public CompletableFuture<IUser> getRealSecondParticipant() {
-        return CompletableFuture.supplyAsync(() -> Squirrel.getInstance()
-                .getBoomerDatabaseManager()
-                .findFirstEntity(IUser.class, SquirrelCollection.USERS, Filters.eq(/* getSecondParticipant() */ null)));
     }
 }

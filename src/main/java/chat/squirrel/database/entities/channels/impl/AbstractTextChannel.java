@@ -27,29 +27,7 @@
 
 package chat.squirrel.database.entities.channels.impl;
 
-import chat.squirrel.Squirrel;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware.SquirrelCollection;
 import chat.squirrel.database.entities.channels.ITextChannel;
-import chat.squirrel.database.entities.messages.IMessage;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Sorts;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractTextChannel extends AbstractChannel implements ITextChannel {
-    @Override
-    public CompletableFuture<List<IMessage>> fetchMessages(final int count) {
-        return CompletableFuture.supplyAsync(() -> {
-            final ArrayList<IMessage> arr = new ArrayList<>();
-            final FindIterable<IMessage> it = Squirrel.getInstance().getBoomerDatabaseManager()
-                    .findEntities(IMessage.class, SquirrelCollection.MESSAGES, Filters.eq("channelId", getId()));
-            it.batchSize(count);
-            it.sort(Sorts.descending("_id"));
-            it.into(arr);
-            return arr;
-        });
-    }
 }

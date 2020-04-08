@@ -29,6 +29,8 @@ package chat.squirrel.database.collections;
 
 import chat.squirrel.database.entities.IEntity;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertManyResult;
 import com.mongodb.client.result.InsertOneResult;
@@ -61,10 +63,7 @@ public abstract class AbstractMongoCollection<T extends IEntity> implements ICol
                 r -> {
                     if (r.failed()) {
                         future.completeExceptionally(r.cause());
-                        System.out.println(r.cause().getMessage());
                     } else {
-                        System.out.println(r.result().getInsertedId());
-                        System.out.println(r.result().wasAcknowledged());
                         future.complete(r.result());
                     }
                 });
@@ -153,6 +152,21 @@ public abstract class AbstractMongoCollection<T extends IEntity> implements ICol
     }
 
     // UPDATE
+    @Override
+    public CompletionStage<T> findAndUpdateEntity(final Bson filter, final Bson ops) {
+        final CompletableFuture<T> future = new CompletableFuture<>();
+        this.worker.executeBlocking(
+                (Promise<T> p) -> p.complete(collection.findOneAndUpdate(filter, ops, new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER))),
+                r -> {
+                    if (r.failed()) {
+                        future.completeExceptionally(r.cause());
+                    } else {
+                        future.complete(r.result());
+                    }
+                });
+        return future;
+    }
+
     @Override
     public CompletionStage<UpdateResult> updateEntity(final Bson filter, final Bson ops) {
         final CompletableFuture<UpdateResult> future = new CompletableFuture<>();

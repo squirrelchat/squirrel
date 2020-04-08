@@ -27,16 +27,44 @@
 
 package chat.squirrel.modules.guilds;
 
+import chat.squirrel.Squirrel;
+import chat.squirrel.database.collections.IGuildCollection;
+import chat.squirrel.database.collections.IRoleCollection;
+import chat.squirrel.database.entities.IGuild;
+import chat.squirrel.database.entities.IRole;
+import chat.squirrel.modules.AbstractCrudChildEntity;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.ext.web.RoutingContext;
+import org.bson.conversions.Bson;
 
-// @todo: CRUDs are common in REST APIs, we should consider making an abstract layer that handles most of the stuff
-public class ModuleGuildRoles extends AbstractGuildModule {
+// TODO: Implement crud methods
+public class ModuleGuildRoles extends AbstractCrudChildEntity<IRole, IGuild> {
+    public ModuleGuildRoles() {
+        super(
+                Squirrel.getInstance().getDatabaseManager().getCollection(IRoleCollection.class),
+                Squirrel.getInstance().getDatabaseManager().getCollection(IGuildCollection.class),
+                "guildId", "guild_id"
+        );
+    }
+
     @Override
     public void initialize() {
-        this.registerAuthedRoute(HttpMethod.POST, "/guilds/:id/roles", this::notImplemented);
-        this.registerAuthedRoute(HttpMethod.GET, "/guilds/:id/roles", this::notImplemented);
-        this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id/roles", this::notImplemented); // Roles order
-        this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:id/roles/:roleId", this::notImplemented);
-        this.registerAuthedRoute(HttpMethod.DELETE, "/guilds/:id/roles/:roleId", this::notImplemented);
+        registerCrud("/guilds/:guild_id/roles");
+        this.registerAuthedRoute(HttpMethod.PATCH, "/guilds/:guild_id/roles", this::notImplemented); // Roles order
+    }
+
+    @Override
+    protected boolean hasPermission(RoutingContext ctx, CrudContext context) {
+        return false;
+    }
+
+    @Override
+    protected IRole createEntity(RoutingContext ctx) {
+        return null;
+    }
+
+    @Override
+    protected Bson composeUpdate(RoutingContext ctx) {
+        return null;
     }
 }

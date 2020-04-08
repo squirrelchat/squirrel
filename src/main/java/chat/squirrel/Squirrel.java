@@ -28,7 +28,6 @@
 package chat.squirrel;
 
 import chat.squirrel.database.DatabaseManager;
-import chat.squirrel.database.DatabaseManagerEditionBoomerware;
 import chat.squirrel.database.collections.IConfigCollection;
 import chat.squirrel.database.entities.config.ISquirrelConfig;
 import chat.squirrel.event.EventBus;
@@ -66,7 +65,6 @@ public final class Squirrel {
 
     // Managers
     private final ModuleManager moduleManager;
-    private final DatabaseManagerEditionBoomerware boomerDbManager;
     private final DatabaseManager databaseManager;
     private final Tokenize tokenize;
     private final NotificationMailManager notifMail;
@@ -114,8 +112,6 @@ public final class Squirrel {
         final String mongoDbName = this.getProperty("database.mongo.db-name", "squirrel");
         final String memoryConfig = this.getProperty("database.memory", "MEMORY");
         this.databaseManager = new DatabaseManager(mongoConString, redisConString, mongoDbName, memoryConfig, vertx);
-        this.boomerDbManager = new DatabaseManagerEditionBoomerware(this.getProperty("database.mongo.con-string"),
-                this.getProperty("database.mongo.db-name", "squirrel"));
 
         ISquirrelConfig config = null;
         try {
@@ -132,9 +128,6 @@ public final class Squirrel {
         this.scheduler.start();
         this.eventBus = new EventBus();
         this.tokenize = new Tokenize(this.config.getSecret());
-
-        LOG.info("Loading modules");
-        this.moduleManager.scanPackage("chat.squirrel.modules");
 
         this.server = vertx.createHttpServer();
 
@@ -183,10 +176,6 @@ public final class Squirrel {
      */
     public DatabaseManager getDatabaseManager() {
         return this.databaseManager;
-    }
-
-    public DatabaseManagerEditionBoomerware getBoomerDatabaseManager() {
-        return this.boomerDbManager;
     }
 
     /**
@@ -253,7 +242,6 @@ public final class Squirrel {
         this.moduleManager.disableModules();
         this.server.close(e -> this.vertx.close());
         // MetricsManager.getInstance().save();
-        this.boomerDbManager.shutdown();
         this.databaseManager.shutdown();
         LOG.info("Shutdown successful, the process should end");
     }
@@ -262,6 +250,9 @@ public final class Squirrel {
      * Actually starts the server and other components
      */
     private void start() {
+        LOG.info("Loading modules");
+        this.moduleManager.scanPackage("chat.squirrel.modules");
+
         LOG.info("Loading routes");
         this.moduleManager.loadModules();
 

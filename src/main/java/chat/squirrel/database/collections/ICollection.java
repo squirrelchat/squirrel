@@ -54,6 +54,8 @@ public interface ICollection<T extends IEntity> {
     CompletionStage<Long> countDocuments(final Bson filters);
 
     // UPDATE
+    CompletionStage<T> findAndUpdateEntity(final Bson filter, final Bson ops);
+
     CompletionStage<UpdateResult> updateEntity(final Bson filter, final Bson ops);
 
     CompletionStage<UpdateResult> updateEntities(final Bson filter, final Bson ops);
