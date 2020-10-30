@@ -33,7 +33,7 @@ import fastifyTokenize from 'fastify-tokenize'
 const fastify = Fastify({ logger: true })
 
 fastify.register(fastifyAuth)
-fastify.register(fastifyMongo, { url: 'mongodb://localhost:27017/powercord' })
+fastify.register(fastifyMongo, { url: 'mongodb://localhost:27017/squirrel' })
 fastify.register(fastifyTokenize, {
   secret: 'test', // todo config
   fastifyAuth: true,
