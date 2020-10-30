@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "allowUnreachableCode": false,
+    "allowJs": false,
+    "module": "commonjs",
+    "target": "es6",
+    "baseUrl": "./src"
+  }
+}
