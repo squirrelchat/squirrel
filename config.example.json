@@ -1,4 +1,5 @@
 {
     "port": 6969,
-    "mongodb": "mongodb://localhost:27017/squirrel"
+    "mongodb": "mongodb://localhost:27017/squirrel",
+    "secret": "test"
 }

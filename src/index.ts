@@ -29,14 +29,14 @@ import Fastify from 'fastify'
 import fastifyAuth from 'fastify-auth'
 import fastifyMongo from 'fastify-mongodb'
 import fastifyTokenize from 'fastify-tokenize'
-import { port, mongodb } from '../config.json'
+import { port, mongodb, secret } from '../config.json'
 
 const fastify = Fastify({ logger: true })
 
 fastify.register(fastifyAuth)
 fastify.register(fastifyMongo, { url: mongodb })
 fastify.register(fastifyTokenize, {
-  secret: 'test', // todo config
+  secret: secret,
   fastifyAuth: true,
   cookie: false,
   // todo: filter useful fields
