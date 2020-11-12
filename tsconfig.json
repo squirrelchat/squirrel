@@ -7,6 +7,7 @@
     "allowJs": false,
     "module": "commonjs",
     "target": "es6",
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "resolveJsonModule": true
   }
 }

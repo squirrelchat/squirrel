@@ -29,11 +29,12 @@ import Fastify from 'fastify'
 import fastifyAuth from 'fastify-auth'
 import fastifyMongo from 'fastify-mongodb'
 import fastifyTokenize from 'fastify-tokenize'
+import { port, mongodb } from '../config.json'
 
 const fastify = Fastify({ logger: true })
 
 fastify.register(fastifyAuth)
-fastify.register(fastifyMongo, { url: 'mongodb://localhost:27017/squirrel' })
+fastify.register(fastifyMongo, { url: mongodb })
 fastify.register(fastifyTokenize, {
   secret: 'test', // todo config
   fastifyAuth: true,
@@ -42,7 +43,7 @@ fastify.register(fastifyTokenize, {
   fetchAccount: (id: string) => fastify.mongo.db.collection('users').findOne({ _id: id })
 })
 
-fastify.listen(6969, (e) => { // todo: config
+fastify.listen(port, (e) => {
   if (e) {
     fastify.log.error(e)
     process.exit(1)
