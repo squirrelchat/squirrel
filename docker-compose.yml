@@ -1,0 +1,49 @@
+# this is for now just a rough draft
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - 8080:80
+    volumes:
+      - ./dev/nginx.conf:/etc/nginx/conf.d/default.conf
+  api:
+    build:
+      context: ./packages/api
+    command: pnpm run dev -- --noClear
+    working_dir: /usr/src/api
+    volumes: 
+      - ./packages/api:/usr/src/api
+  # todo: gateway
+  # todo: frontend
+  # todo: leaf
+  # todo: wind
+  singyeong:
+    image: queer/singyeong:2021-02-05_00.52.16-7eb38d
+    ports:
+      - 4567:4567
+    environment:
+      PORT: 4567
+  mongo:
+    image: mongo:4-bionic
+    ports:
+      - 27017:27017
+    volumes:
+      - db-data:/var/lib/mongodb
+  redis:
+    image: redis:6-alpine
+    ports:
+      - 6379:6379
+  sonic:
+    image: valeriansaliou/sonic:v1.3.0
+    ports:
+      - 1491:1491
+    volumes:
+      - ./dev/sonic.cfg:/etc/sonic.cfg
+      - search-data:/var/lib/sonic
+
+volumes:
+  db-data:
+    driver: local
+  search-data:
+    driver: local

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Borkenware, All rights reserved.
+ * Copyright (c) 2020 Squirrel Chat, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,8 +25,26 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-module.exports = {
-  presets: [
-    [ '@babel/preset-env', { targets: { node: 'current' } } ], '@babel/preset-typescript'
-  ]
-}
+import Fastify from 'fastify'
+import fastifyAuth from 'fastify-auth'
+import fastifyMongo from 'fastify-mongodb'
+import fastifyTokenize from 'fastify-tokenize'
+
+const fastify = Fastify({ logger: true })
+
+fastify.register(fastifyAuth)
+fastify.register(fastifyMongo, { url: 'mongodb://mongo:27017/squirrel' })
+fastify.register(fastifyTokenize, {
+  secret: 'test', // todo config
+  fastifyAuth: true,
+  cookie: false,
+  // todo: filter useful fields
+  fetchAccount: (id: string) => fastify.mongo.db!.collection('users').findOne({ _id: id })
+})
+
+fastify.listen(80, '0.0.0.0', (e) => { // todo: config
+  if (e) {
+    fastify.log.error(e.stack ?? 'An error occurred.')
+    process.exit(1)
+  }
+})
