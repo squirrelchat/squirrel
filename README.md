@@ -1,4 +1,5 @@
 # Squirrel
+![Build status](https://img.shields.io/github/workflow/status/squirrelchat/squirrel/test?style=flat-square)
 [![License](https://img.shields.io/github/license/squirrelchat/squirrel.svg?style=flat-square)](https://github.com/squirrelchat/squirrel/blob/mistress/LICENSE)
 [![Discord](https://img.shields.io/badge/chat-on%20Discord-7289DA.svg?style=flat-square)](https://squirrel.chat/discord)
 
