@@ -1,7 +1,7 @@
 {
-	"name": "@squirrelchat/api",
+	"name": "@squirrelchat/gateway",
 	"version": "0.1.0",
-	"description": "Squirrel Chat's REST API",
+	"description": "Squirrel Chat's websocket gateway",
 	"type": "module",
 	"repository": "git@github.com:squirrelchet/squirrel.git",
 	"license": "BSD-3-Clause",
@@ -12,13 +12,12 @@
 		"test": "jest"
 	},
 	"dependencies": {
-		"fastify": "^3.12.0",
-		"fastify-auth": "^1.0.1",
-		"fastify-tokenize": "^1.3.1"
+		"ws": "^7.4.3"
 	},
 	"devDependencies": {
 		"@types/jest": "^26.0.20",
 		"@types/node": "^14.14.31",
+		"@types/ws": "^7.4.0",
 		"jest": "^26.6.3",
 		"ts-jest": "^26.5.2",
 		"ts-node": "^9.1.1",

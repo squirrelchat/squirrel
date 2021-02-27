@@ -25,22 +25,3 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import fastifyFactory from 'fastify'
-import fastifyAuth from 'fastify-auth'
-import fastifyTokenize from 'fastify-tokenize'
-
-const fastify = fastifyFactory({ logger: true })
-
-fastify.register(fastifyAuth)
-fastify.register(fastifyTokenize, {
-  secret: 'test', // todo config
-  fastifyAuth: true,
-  cookie: false,
-  fetchAccount: () => null // todo
-})
-
-fastify.ready()
-  .then(
-    () => fastify.listen(80, '0.0.0.0'), // todo: config
-    (e) => console.error('Failed to start the API', e)
-  )

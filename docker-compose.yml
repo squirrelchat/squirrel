@@ -15,21 +15,22 @@ services:
     volumes: 
       - ./packages/api:/usr/src/api
   # todo: gateway
-  # todo: frontend
   # todo: leaf
   # todo: wind
+  ## Internal services
   singyeong:
     image: queer/singyeong:2021-02-05_00.52.16-7eb38d
     ports:
       - 4567:4567
     environment:
       PORT: 4567
-  mongo:
-    image: mongo:4-bionic
+  ## Databases
+  scylla:
+    image: scylladb/scylla
     ports:
-      - 27017:27017
+      - 9042:9042
     volumes:
-      - db-data:/var/lib/mongodb
+      - db-data:/var/lib/scylla/data
   redis:
     image: redis:6-alpine
     ports:
