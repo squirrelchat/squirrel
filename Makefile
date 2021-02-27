@@ -29,9 +29,9 @@ upgrade-deps-dry:
 .PHONY: test-dockerized
 test-dockerized:
 	$(compose-test) up -d
-	$(compose-test) exec -w /opt/squirrel node pnpm i
-	$(compose-test) exec -w /opt/squirrel/packages/api node pnpm run test
-	$(compose-test) exec -w /opt/squirrel/packages/gateway node pnpm run test
+	$(compose-test) exec -T -w /opt/squirrel node pnpm i
+	$(compose-test) exec -T -w /opt/squirrel/packages/api node pnpm run test
+	$(compose-test) exec -T -w /opt/squirrel/packages/gateway node pnpm run test
 	$(compose-test) down --volumes
 
 .PHONY: lint-dockerized
