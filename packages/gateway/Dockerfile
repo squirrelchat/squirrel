@@ -1,4 +1,4 @@
 FROM node:lts-alpine
-RUN curl -sL https://unpkg.com/@pnpm/self-installer | node
+RUN wget -qO - https://pnpm.js.org/pnpm.js | node - add --global pnpm
 
 # todo

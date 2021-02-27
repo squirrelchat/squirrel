@@ -1,4 +1,13 @@
 services:
+  node:
+    build:
+      context: .
+      dockerfile: ./dev/Dockerfile.node
+    image: node-pnpm
+    volumes:
+      - ./packages:/opt/squirrel/packages
+      - ./pnpm-lock.yaml:/opt/squirrel/pnpm-lock.yaml
+      - ./pnpm-workspace.yaml:/opt/squirrel/pnpm-workspace.yaml
   ## Internal services
   singyeong:
     image: queer/singyeong:2021-02-05_00.52.16-7eb38d
