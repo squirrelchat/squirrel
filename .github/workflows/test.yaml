@@ -16,27 +16,6 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    services:
-      singyeong:
-        image: queer/singyeong:2021-02-05_00.52.16-7eb38d
-        ports:
-          - 4567:4567
-        env:
-          PORT: 4567
-      scylla:
-        image: scylladb/scylla
-        ports:
-          - 9042:9042
-      redis:
-        image: redis:6-alpine
-        ports:
-          - 6379:6379
-      sonic:
-        image: valeriansaliou/sonic:v1.3.0
-        ports:
-          - 1491:1491
-        volumes:
-          - ./dev/sonic.cfg:/etc/sonic.cfg
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-node@v1
@@ -44,5 +23,10 @@ jobs:
         with:
           version: 5.15.0
           run_install: true
+      - name: start services
+        run: docker-compose -p squirrel_test -f docker-compose.test.yml up -d
       - name: test
         run: make test
+      - name: stop services
+        if: ${{ always() }}
+        run: docker-compose down

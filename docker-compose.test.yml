@@ -1,0 +1,21 @@
+services:
+  singyeong:
+    image: queer/singyeong:2021-02-05_00.52.16-7eb38d
+    ports:
+      - 4567:4567
+    env:
+      PORT: 4567
+  scylla:
+    image: scylladb/scylla
+    ports:
+      - 9042:9042
+  redis:
+    image: redis:6-alpine
+    ports:
+      - 6379:6379
+  sonic:
+    image: valeriansaliou/sonic:v1.3.0
+    ports:
+      - 1491:1491
+    volumes:
+      - ./dev/sonic.cfg:/etc/sonic.cfg
