@@ -1,5 +1,7 @@
 workdir := $(shell pwd)
 compose-test := docker-compose -p squirrel_test -f $(workdir)/docker-compose.test.yml
+# todo: better way to get db dsn?
+migrate := .bin/migrate -database cassandra://127.0.0.1 -path migrations
 
 .PHONY: dev
 dev:
@@ -14,6 +16,7 @@ test:
 lint:
 	# todo
 
+## Deps
 .PHONY: upgrade-deps
 upgrade-deps:
 	cd packages/api; pnpx ncu -u;
@@ -25,15 +28,21 @@ upgrade-deps-dry:
 	cd packages/api; pnpx ncu
 	cd packages/gateway; pnpx ncu
 
-# Those methods are useful to use as one-liners in CI envs
-.PHONY: test-dockerized
-test-dockerized:
-	$(compose-test) up -d
-	$(compose-test) exec -T -w /opt/squirrel node pnpm i
-	$(compose-test) exec -T -w /opt/squirrel/packages/api node pnpm run test
-	$(compose-test) exec -T -w /opt/squirrel/packages/gateway node pnpm run test
-	$(compose-test) down --volumes
+## Database
+.PHONY: migration
+migration: .bin/migrate
+	$(migrate) create -ext cql -dir migrations $(shell bash -c 'read -p "Migration name: " name; echo $$name')
 
-.PHONY: lint-dockerized
-lint-dockerized:
-	# todo
+.PHONY: migrate
+migrate: .bin/migrate
+	$(migrate) up
+
+.PHONY: rollback
+rollback: .bin/migrate
+	$(migrate) down 1
+
+## Tools/misc
+.bin/migrate:
+	# todo: account for win/macos installs
+	curl -sL https://github.com/golang-migrate/migrate/releases/download/v4.14.1/migrate.linux-amd64.tar.gz | tar -xz
+	mv migrate.linux-amd64 .bin/migrate
